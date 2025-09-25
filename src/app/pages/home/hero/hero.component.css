@@ -1,0 +1,57 @@
+.hero-section {
+  position: relative;
+  height: 90vh;
+  background-image: url('/assets/images/fondo-gym.jpg');
+  background-size: cover;
+  background-position: center 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  text-align: center;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1); /* Levemente más oscuro para el contraste */
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 20px;
+  text-align: center; /* Centra el texto */
+}
+
+h1 {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    height: 60vh;
+    background-position: center bottom; /* Ahora la imagen se alinea a la parte inferior y al centro */
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+}
