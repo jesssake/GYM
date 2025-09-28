@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Asegúrate de tener CommonModule si usas alguna directiva
 
 @Component({
   selector: 'app-services',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   template: `
     <section class="services-section">
       <div class="services-container">
-        <h2>Nuestros Servicios</h2>
+        <h2 class="section-title">Nuestros Servicios</h2>
         <div class="services-grid">
           <div class="service-item">
             <i class="fas fa-dumbbell"></i>
