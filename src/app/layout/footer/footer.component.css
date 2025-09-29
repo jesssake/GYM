@@ -1,3 +1,4 @@
+/* Sección Principal del Footer */
 .footer-section {
   background-color: #000000;
   color: #fff;
@@ -29,11 +30,12 @@
 .footer-column h3 {
   font-size: 1.5rem;
   margin-bottom: 25px;
-  color: #e53935;
+  color: #e53935; /* Títulos en rojo de la marca */
 }
 
+/* Estilo para las listas (Horarios y Contacto) */
 .footer-column ul {
-  list-style: none;
+  list-style: none; /* Quitamos las viñetas por defecto */
   padding: 0;
   margin: 0;
 }
@@ -41,24 +43,58 @@
 .footer-column ul li {
   margin-bottom: 15px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .footer-column ul li i {
   margin-right: 10px;
-  color: #e53935;
+  color: #e53935; /* Íconos de contacto en rojo */
+  font-size: 18px;
 }
 
-.social-icons a {
-  color: #fff;
-  font-size: 24px;
-  margin-right: 20px;
-  transition: color 0.3s ease;
+/* NUEVO ESTILO: Link de Contacto (Dirección) */
+.footer-link {
+    color: #fff; /* Blanco por defecto */
+    text-decoration: none; /* Eliminar el subrayado */
+    transition: color 0.3s ease;
 }
 
-.social-icons a:hover {
-  color: #e53935;
+.footer-link:hover {
+    color: #e53935; /* Rojo de la marca al hacer hover */
+    cursor: pointer;
 }
+/* FIN NUEVO ESTILO */
+
+/* --- ESTILOS DE REDES SOCIALES (SÍGUENOS) --- */
+
+.footer-column:last-child {
+    text-align: left;
+}
+
+.social-links {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+.social-icon {
+    /* Estado normal: Blanco */
+    color: #fff;
+    font-size: 28px;
+    text-decoration: none;
+    list-style: none;
+    display: inline-block;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.social-icon:hover {
+    /* Estado hover: Rojo */
+    color: #e53935;
+    transform: scale(1.1);
+}
+
+/* --- FIN ESTILOS DE REDES SOCIALES --- */
 
 .footer-bottom {
   text-align: center;
@@ -78,5 +114,12 @@
   }
   .footer-column ul li {
     justify-content: center;
+  }
+
+  .footer-column:last-child {
+      text-align: center;
+  }
+  .social-links {
+      justify-content: center;
   }
 }
