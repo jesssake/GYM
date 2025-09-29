@@ -1,0 +1,192 @@
+/* Sección Contenedora General */
+.planes-section {
+    background-color: #111; /* Fondo muy oscuro */
+    color: #fff;
+    padding: 80px 20px;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h2 {
+    font-size: 3rem;
+    color: #e53935; /* Título principal en rojo */
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #bbb;
+    margin-bottom: 50px;
+}
+
+/* --- GRID DE TARJETAS DE PRECIOS --- */
+.pricing-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap; /* Para responsividad */
+}
+
+.pricing-card {
+    background-color: #000; /* Fondo de tarjeta negro */
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 40px 20px;
+    width: 300px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    position: relative;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px); /* Efecto de elevación sutil */
+    border-color: #e53935; /* Borde rojo al pasar el mouse */
+}
+
+/* Tarjeta Destacada (Plan Mensual) */
+.pricing-card.featured {
+    border-color: #e53935; /* Borde rojo permanente */
+    box-shadow: 0 10px 30px rgba(229, 57, 53, 0.5); /* Sombra roja llamativa */
+    transform: scale(1.05); /* Ligeramente más grande */
+}
+
+.popular-tag {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #e53935; /* Fondo rojo */
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Títulos de Planes */
+.pricing-card h3 {
+    font-size: 1.8rem;
+    color: #e53935; /* Título de la tarjeta en rojo */
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+
+/* Estilos de Precio */
+.price {
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+.currency {
+    font-size: 1.5rem;
+    vertical-align: top;
+    color: #aaa;
+}
+
+.amount {
+    font-size: 4rem;
+    line-height: 1;
+    color: #fff;
+}
+
+.period {
+    display: block;
+    color: #888;
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+/* Lista de Características */
+.pricing-card ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.pricing-card ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #1a1a1a;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+}
+
+.pricing-card ul li i {
+    margin-right: 10px;
+    color: #e53935; /* Checkmarks en rojo */
+}
+
+.pricing-card ul li.disabled {
+    color: #444; /* Ítems deshabilitados en gris oscuro */
+    text-decoration: line-through;
+}
+
+.pricing-card ul li.disabled i {
+    color: #444;
+}
+
+/* Botones de Llamada a la Acción */
+.btn-primary, .btn-secondary {
+    display: block;
+    padding: 15px 0;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.btn-primary {
+    background-color: #e53935; /* Rojo de la marca */
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
+}
+
+.btn-primary:hover {
+    background-color: #c62828;
+}
+
+.btn-secondary {
+    background-color: #333; /* Gris oscuro para el secundario */
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.btn-secondary:hover {
+    background-color: #444;
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+    .pricing-grid {
+        gap: 20px;
+    }
+    .pricing-card.featured {
+        transform: scale(1.03);
+    }
+}
+
+@media (max-width: 768px) {
+    .pricing-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+    .pricing-card {
+        width: 90%;
+        max-width: 400px;
+    }
+    .pricing-card.featured {
+        transform: scale(1.0);
+    }
+    h2 {
+        font-size: 2.5rem;
+    }
+}
