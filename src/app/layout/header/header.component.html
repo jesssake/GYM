@@ -7,12 +7,15 @@
       <a href="#" class="login">Inicia Sesión | Regístrate</a>
     </div>
   </div>
+
   <div class="header-bottom">
     <nav class="main-nav">
       <ul>
-        <li><a href="#">Inicio</a></li>
-        <li><a href="#">Conoce Tu Gym</a></li>
-        <li><a href="#">Planes</a></li>
+        <li><a [routerLink]="['/']">INICIO</a></li>
+
+        <li><a [routerLink]="['/']" fragment="conocetugym">CONOCE TU GYM</a></li>
+
+        <li><a [routerLink]="['/planes']">PLANES</a></li>
       </ul>
     </nav>
   </div>

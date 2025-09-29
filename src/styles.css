@@ -4,3 +4,7 @@ html, body {
   padding: 0;
   box-sizing: border-box;
 }
+html {
+    /* Esto hace que todos los saltos a IDs (#planes) sean suaves */
+    scroll-behavior: smooth;
+}
