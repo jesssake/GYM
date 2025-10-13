@@ -1,0 +1,41 @@
+<section class="about-container">
+    <div class="intro-section">
+        <h2 class="main-message">
+            Vive la experiencia <span class="highlight">Train Station</span> y disfruta de un ambiente agradable y seguro con las mejores instalaciones al mejor precio.
+        </h2>
+    </div>
+
+    <div class="facilities-grid">
+
+        <div class="facility-card" (click)="openModal('pesas')">
+            <img src="assets/images/instalacion-pesas.jpg" alt="Área de peso libre e integrado">
+            <p class="card-title">Peso Libre e Integrado</p>
+        </div>
+
+        <div class="facility-card" (click)="openModal('clases')">
+            <img src="assets/images/instalacion-clases.jpg" alt="Salón de clases grupales">
+            <p class="card-title">Salón de clases</p>
+        </div>
+
+        <div class="facility-card" (click)="openModal('funcional')">
+            <img src="assets/images/instalacion-funcional.jpg" alt="Áreas de entrenamiento funcional">
+            <p class="card-title">Áreas funcionales</p>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <a [routerLink]="['/planes']" class="cta-button">¡Inscríbete ya!</a>
+    </div>
+
+</section>
+
+<div class="modal-overlay" *ngIf="activeFacility" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="closeModal()">×</button>
+
+        <h3 class="modal-title">{{ facilityDetails[activeFacility].title }}</h3>
+        <p class="modal-description">{{ facilityDetails[activeFacility].description }}</p>
+
+        <img class="modal-image" [src]="facilityDetails[activeFacility].img" [alt]="activeTitle">
+    </div>
+</div>

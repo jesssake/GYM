@@ -1,0 +1,140 @@
+/* 1. Contenedor Principal y Estilos de Texto */
+.about-container {
+    /* Mantenemos el padding inferior alto para dar espacio al botón antes del footer. */
+    padding: 60px 5% 120px;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    text-align: center;
+}
+
+.intro-section {
+    max-width: 900px;
+    margin: 0 auto 50px;
+}
+
+.main-message {
+    font-size: 2.5rem;
+    line-height: 1.4;
+    font-weight: 300;
+}
+
+.highlight {
+    color: rgb(209, 2, 0); /* ROJO característico */
+    font-weight: 700;
+}
+
+/* 2. Estilos del Grid de Tarjetas y Cliqueabilidad */
+.facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.facility-card {
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.facility-card:hover {
+    transform: translateY(-5px);
+}
+
+.facility-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-title {
+    padding: 20px 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+/* 3. Estilos del Botón CTA (Call to Action) */
+.cta-section {
+    text-align: center;
+    /* CORRECCIÓN DE ESPACIO: El margen superior empuja el botón. */
+    margin-top: 100px;
+    position: relative;
+    z-index: 5;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 15px 40px;
+    /* CORRECCIÓN DE COLOR: Usamos el rojo principal de tu diseño. */
+    background-color: rgb(209, 2, 0);
+    color: #f0f0f0; /* Texto blanco en el botón rojo */
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(209, 2, 0, 0.5); /* Sombra roja */
+}
+
+.cta-button:hover {
+    background-color: rgb(255, 30, 27); /* Un rojo ligeramente más claro al pasar el ratón */
+}
+
+/* 4. Estilos del Modal (Overlay) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 5. Estilos del Contenido del Modal */
+.modal-content {
+    background-color: #1f1f1f;
+    color: #f0f0f0;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 8px 25px rgba(209, 2, 0, 0.3);
+}
+
+.modal-title {
+    color: rgb(209, 2, 0);
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.modal-image {
+    width: 100%;
+    height: auto;
+    max-height: 350px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+/* 6. Botón de Cierre del Modal */
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #f0f0f0;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+}
