@@ -1,0 +1,224 @@
+/* -------------------------------------- */
+/* 1. Contenedor Principal (Estilo Oscuro y Compacto) */
+/* -------------------------------------- */
+.login-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* Fondo negro de tu gimnasio */
+    background-color: #1a1a1a;
+    /* Padding reducido para compacidad */
+    padding: 20px 15px;
+}
+
+.login-box {
+    /* Fondo del cuadro de login (más oscuro que el fondo de la página) */
+    background-color: #0d0d0d;
+    /* Padding interno reducido para compacidad */
+    padding: 25px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+
+    /* === RESPLANDOR ROJO Y BORDE (Tu estilo) === */
+    border: 2px solid #e53935;
+    box-shadow:
+        0 0 8px rgba(229, 57, 53, 0.4),
+        0 0 15px rgba(229, 57, 53, 0.2);
+    /* ========================================= */
+
+    transition: all 0.3s ease;
+}
+
+/* -------------------------------------- */
+/* 2. Títulos y Links Superiores */
+/* -------------------------------------- */
+.title {
+    /* Título principal en Rojo de acento */
+    color: #e53935;
+    font-size: 1.6rem;
+    margin-bottom: 2px;
+}
+
+.subtitle {
+    /* Subtítulo en gris claro */
+    color: #aaa;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+/* Si usas la estructura de link de registro superior (como en el ejemplo de Adobe) */
+.register-top-link {
+    font-size: 0.9rem;
+    color: #ccc; /* Texto gris claro */
+    margin-bottom: 15px;
+    text-align: left;
+}
+.register-top-link .link-register {
+    color: #e53935; /* Link en rojo */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+
+/* -------------------------------------- */
+/* 3. Estilos del Formulario */
+/* -------------------------------------- */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    color: #f0f0f0; /* Labels en blanco */
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333; /* Borde oscuro */
+    border-radius: 4px;
+    background-color: #222; /* Fondo de campo oscuro */
+    color: #f0f0f0; /* Texto en blanco */
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #e53935; /* Borde rojo al enfocar */
+    outline: none;
+}
+
+/* -------------------------------------- */
+/* 4. Botón Principal (Rojo) */
+/* -------------------------------------- */
+.btn-primary {
+    background-color: #e53935; /* Rojo Principal */
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 1.0rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 5px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #c62828;
+}
+
+/* -------------------------------------- */
+/* 5. Separador 'O' */
+/* -------------------------------------- */
+.separator-or {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 15px 0;
+    color: #888; /* Color de la 'O' */
+}
+
+.separator-or hr {
+    flex-grow: 1;
+    border: none;
+    border-top: 1px solid #333; /* Línea separadora oscura */
+    margin: 0 10px;
+}
+
+.separator-or span {
+    background-color: #0d0d0d; /* Fondo del cuadro de login para ocultar la línea detrás de la 'O' */
+    padding: 0 10px;
+}
+
+/* -------------------------------------- */
+/* 6. Botones de Inicio de Sesión Social */
+/* -------------------------------------- */
+.social-login-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.3s; /* Transición más suave */
+}
+
+/* Estilo para los ÍCONOS (Font Awesome) */
+.btn-social i {
+    width: 20px;
+    margin-right: 12px;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+/* Estilos Específicos de Color */
+.google {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ddd;
+}
+.google:hover { background-color: #f0f0f0; }
+
+.facebook {
+    background-color: #1877f2;
+    color: #fff;
+    border: 1px solid #1877f2;
+}
+.facebook:hover { background-color: #1562c2; }
+
+.apple {
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #000;
+}
+.apple:hover { background-color: #333; }
+
+
+/* -------------------------------------- */
+/* 7. Enlaces de Pie de Página */
+/* -------------------------------------- */
+.footer-links {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #ccc;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.footer-links p {
+    color: #ccc; /* Asegura que el texto "¿Eres nuevo usuario?" sea claro */
+}
+
+.footer-links a {
+    color: #e53935; /* Links en rojo de acento */
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}

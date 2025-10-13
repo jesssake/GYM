@@ -1,22 +1,28 @@
 <header class="header">
-  <div class="header-top">
-    <div class="logo">
-      <img src="assets/images/logo.jpg" alt="Logo de tu gimnasio">
+    <div class="header-content">
+        <div class="logo">
+            <a [routerLink]="['/']">
+                <img src="assets/images/logo.jpg" alt="Logo de tu gimnasio">
+            </a>
+        </div>
+
+        <nav class="main-nav" [class.open]="isMenuOpen">
+            <ul>
+                <li><a [routerLink]="['/']" (click)="closeMenu()">INICIO</a></li>
+                <li><a [routerLink]="['/conocetugym']" (click)="closeMenu()">CONOCE TU GYM</a></li>
+                <li><a [routerLink]="['/planes']" (click)="closeMenu()">PLANES</a></li>
+            </ul>
+            <a [routerLink]="['/planes']" class="mobile-cta" (click)="closeMenu()">¡Inscríbete ya!</a>
+        </nav>
+
+<div class="auth-menu-container">
+    <div class="auth-buttons desktop-auth">
+        <a [routerLink]="['/login']" class="btn-login-cta">INICIAR SESIÓN</a>
     </div>
-    <div class="auth-buttons">
-      <a href="#" class="login">Inicia Sesión | Regístrate</a>
-    </div>
-  </div>
 
-  <div class="header-bottom">
-    <nav class="main-nav">
-      <ul>
-        <li><a [routerLink]="['/']">INICIO</a></li>
-
-        <li><a [routerLink]="['/']" fragment="conocetugym">CONOCE TU GYM</a></li>
-
-        <li><a [routerLink]="['/planes']">PLANES</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
+    <button class="menu-toggle" (click)="toggleMenu()">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </button>
+</div>
