@@ -35,17 +35,43 @@
 /* -------------------------------------- */
 /* 2. Títulos y Links Superiores (COMPACTOS) */
 /* -------------------------------------- */
+.title-step {
+    color: #f0f0f0;
+    font-size: 0.8rem;
+    font-weight: 400;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
 .title {
     color: #e53935;
     font-size: 1.6rem;
-    margin-bottom: 2px;
+    margin-bottom: 15px;
 }
 
-.subtitle {
-    color: #aaa;
+.subtitle-registro {
+    color: #f0f0f0;
+    font-size: 1.1rem;
+    margin-top: 10px;
     margin-bottom: 15px;
-    font-size: 0.9rem;
+    font-weight: 500;
 }
+
+.back-to-login {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+.back-to-login .link-login {
+    color: #e53935;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.back-to-login .link-login:hover {
+    color: #fff;
+}
+
 
 /* -------------------------------------- */
 /* 3. Estilos del Formulario y CAMPOS DE ENTRADA */
@@ -67,46 +93,39 @@
     font-weight: 600;
 }
 
-/* NUEVOS ESTILOS UNIFICADOS PARA TODOS LOS INPUTS (CORREO Y CONTRASEÑA) */
+/* ESTILOS UNIFICADOS PARA TODOS LOS INPUTS (CORREO Y CONTRASEÑA) */
 .login-form input[type="email"],
 .password-input-group input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #333; /* Borde oscuro */
+    border: 1px solid #333;
     border-radius: 4px;
-    background-color: #222; /* Fondo gris oscuro */
-    color: #f0f0f0; /* Texto claro */
+    background-color: #222; /* Fondo oscuro */
+    color: #f0f0f0;
     font-size: 1rem;
     box-sizing: border-box;
     transition: border-color 0.3s;
 }
 
-/* Asegurar que el input de correo no tenga padding extra */
 .login-form input[type="email"] {
     padding-right: 10px;
 }
 
-/* Foco rojo aplicado a ambos */
 .login-form input[type="email"]:focus,
 .password-input-group input:focus {
     border-color: #e53935;
     outline: none;
 }
-/* FIN ESTILOS UNIFICADOS */
 
-
-/* Estilos para el campo de contraseña (conserva la posición del ojo) */
 .password-input-group {
     position: relative;
     width: 100%;
 }
 
 .password-input-group input {
-    /* Mantener el padding derecho para el ojo */
     padding-right: 40px;
 }
 
-/* ESTILOS CLAVE DEL ÍCONO (Font Awesome) */
 .toggle-password {
     position: absolute;
     right: 5px;
@@ -128,6 +147,53 @@
 
 .toggle-password:hover i {
     color: #e53935;
+}
+
+/* VALIDACIÓN DE REGLAS DE CONTRASEÑA */
+.password-rules-container {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #1c1c1c;
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.password-rules-container h3 {
+    font-size: 1rem;
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #f0f0f0;
+    font-weight: 600;
+}
+
+.password-rules-container ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.password-rules-container li {
+    padding-left: 20px; /* Espacio para el icono que se agrega en HTML */
+    position: relative;
+    line-height: 1.5;
+}
+
+/* Reglas de color para los mensajes de validación */
+.password-rules-container li.valid {
+    color: #4caf50; /* Verde */
+}
+
+.password-rules-container li.invalid {
+    color: #e53935; /* Rojo */
+}
+
+/* Mensaje de validación básica */
+.validation-message {
+    color: #e53935;
+    font-size: 0.8rem;
+    margin-top: 4px;
 }
 
 
@@ -176,81 +242,50 @@
 }
 
 /* -------------------------------------- */
-/* 6. Botones de Inicio de Sesión Social */
+/* 6. Botones de Inicio de Sesión Social (CÍRCULOS SUPERIORES) */
 /* -------------------------------------- */
 .social-login-options {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: center;
+    gap: 15px;
     margin-bottom: 15px;
 }
 
-.btn-social {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.3s;
+.btn-social.social-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 0;
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
 }
 
-.btn-social img {
-    width: 20px;
-    height: 20px;
-    margin-right: 12px;
+.btn-social.social-circle:hover {
+    border-color: #e53935;
+}
+
+.btn-social.social-circle img {
+    width: 24px;
+    height: 24px;
+    margin-right: 0;
     object-fit: contain;
-    vertical-align: middle;
 }
 
-
-/* Estilos Específicos de Color */
-.google {
+/* Colores específicos para cada botón */
+.btn-social.social-circle.google {
     background-color: #fff;
-    color: #000;
-    border: 1px solid #ddd;
 }
-.google:hover { background-color: #f0f0f0; }
 
-.facebook {
+.btn-social.social-circle.facebook {
     background-color: #1877f2;
-    color: #fff;
-    border: 1px solid #1877f2;
 }
-.facebook:hover { background-color: #1562c2; }
 
-.apple {
+.btn-social.social-circle.apple {
     background-color: #000;
-    color: #fff;
-    border: 1px solid #000;
-}
-.apple:hover { background-color: #333; }
-
-
-/* -------------------------------------- */
-/* 7. Enlaces de Pie de Página */
-/* -------------------------------------- */
-.footer-links {
-    margin-top: 8px;
-    font-size: 0.85rem;
-    color: #ccc;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-.footer-links p {
-    color: #ccc;
 }
 
-.footer-links a {
-    color: #e53935;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-links a:hover {
-    color: #fff;
+/* Asegura que los logos de Facebook y Apple (si son negros por defecto) se vean blancos */
+.btn-social.social-circle.facebook img,
+.btn-social.social-circle.apple img {
+    filter: brightness(0) invert(1);
 }
