@@ -1,0 +1,189 @@
+/* Copiado de registro.component.css para mantener la consistencia visual */
+
+/* -------------------------------------- */
+/* 1. Contenedor Principal (CORRECCIÓN DE SCROLL/ALTURA) */
+/* -------------------------------------- */
+.login-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* CORRECCIÓN: Usar min-height y auto para permitir que crezca */
+    min-height: 100vh;
+    height: auto;
+
+    /* Fondo idéntico */
+    background-image: url('../../../assets/images/fondoregistroperfil.avif');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: scroll;
+    background-color: #1a1a1a;
+
+    overflow-y: auto;
+    /* Aumentar padding vertical para dar espacio al botón inferior */
+    padding: 50px 15px;
+}
+
+.login-box {
+    /* Estilo oscuro con transparencia y borde rojo */
+    background-color: rgba(13, 13, 13, 0.9);
+    padding: 25px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    /* CORRECCIÓN: Centrar con margin 0 auto para que el padding del contenedor haga el trabajo */
+    margin: 0 auto;
+
+    border: 2px solid #e53935;
+    box-shadow:
+        0 0 8px rgba(229, 57, 53, 0.4),
+        0 0 15px rgba(229, 57, 53, 0.2);
+}
+
+/* -------------------------------------- */
+/* 2. Títulos y Subtítulos */
+/* -------------------------------------- */
+.title {
+    color: #f0f0f0;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+}
+
+.title-step {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+/* -------------------------------------- */
+/* 3. Estilos del Formulario (General) */
+/* -------------------------------------- */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    color: #f0f0f0;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #222;
+    color: #f0f0f0;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    /* Mantener appearance: none para selects en diseño oscuro */
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #e53935;
+    outline: none;
+}
+
+/* -------------------------------------- */
+/* 4. Estilos de Campos Específicos */
+/* -------------------------------------- */
+.form-group-inline {
+    display: flex;
+    gap: 15px;
+}
+
+.form-group-inline .form-group {
+    flex: 1;
+}
+
+/* Checkbox de Términos */
+.form-check-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+    text-align: left;
+    color: #f0f0f0;
+    font-size: 0.9rem;
+}
+
+.form-check-group input[type="checkbox"] {
+    margin-top: 3px;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    /* Estilo personalizado del checkbox */
+    background-color: #222;
+    border: 1px solid #e53935;
+    /* Es importante que el checkbox mantenga su appearance original para funcionar bien */
+    appearance: checkbox;
+    -webkit-appearance: checkbox;
+}
+
+.link-secundario {
+    color: #e53935;
+    text-decoration: none;
+}
+
+/* -------------------------------------- */
+/* 5. Botón Principal (Crear Cuenta) */
+/* -------------------------------------- */
+.btn-primary {
+    background-color: #e53935;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 1.0rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+    width: 100%; /* Asegurar que ocupe todo el ancho */
+}
+
+.btn-primary:hover {
+    background-color: #c62828;
+}
+
+/* -------------------------------------- */
+/* 6. Mensajes y Enlaces de Navegación */
+/* -------------------------------------- */
+.validation-message {
+    color: #ff4d4f;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    text-align: left;
+    padding-left: 2px;
+}
+
+.back-link {
+    text-align: center; /* Centrar el enlace de volver */
+    margin-top: 20px;
+}
+
+.back-link .link-login {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.back-link .link-login:hover {
+    color: #e53935;
+}
