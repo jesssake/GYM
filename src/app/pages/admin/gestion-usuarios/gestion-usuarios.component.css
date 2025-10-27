@@ -1,0 +1,47 @@
+/* Estilos básicos para esta vista, puedes reutilizar los del PanelAdmin */
+.management-card {
+    background-color: #2c2c2c;
+    padding: 25px;
+    border-radius: 8px;
+}
+.action-panel {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.search-input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #1a1a1a;
+    color: white;
+    flex-grow: 1;
+}
+.btn-primary, .btn-secondary {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.btn-primary {
+    background-color: #e53935; /* Rojo de acento */
+    color: white;
+}
+.btn-secondary {
+    background-color: #4CAF50; /* Color de éxito/agregar */
+    color: white;
+}
+.btn-action.danger {
+    background-color: #D32F2F; /* Rojo para eliminar */
+    color: white;
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.data-table th, .data-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+}

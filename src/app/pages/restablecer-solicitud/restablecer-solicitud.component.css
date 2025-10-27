@@ -1,0 +1,163 @@
+/* -------------------------------------- */
+/* 1. Contenedor Principal (FONDO Y CENTRADO VERTICAL PERFECTO) */
+/* -------------------------------------- */
+.login-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Usa min-height para que crezca si el contenido lo requiere */
+    height: auto; /* Permite que el contenedor se ajuste */
+
+    /* Fondo IDÉNTICO al de login/registro. Asegúrate de que la ruta sea correcta. */
+    background-image: url('../../../assets/images/fondorestablecersolicitud.avif'); /* Ajusta la ruta si es necesario */
+    background-size: cover;
+    background-position: center center;
+    background-attachment: scroll;
+    background-color: #1a1a1a;
+    overflow-y: auto; /* Permite scroll si el contenido es demasiado largo */
+    padding: 20px 15px; /* Añadir padding para espacio en móviles */
+}
+
+.login-box {
+    background-color: rgba(13, 13, 13, 0.9);
+    padding: 25px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    margin: 20px 0; /* Centrar verticalmente con margen, pero mantener el padding del contenedor */
+    border: 2px solid #e53935;
+    box-shadow:
+        0 0 8px rgba(229, 57, 53, 0.4),
+        0 0 15px rgba(229, 57, 53, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* -------------------------------------- */
+/* 2. Títulos y Subtítulos */
+/* -------------------------------------- */
+.title {
+    color: #e53935; /* Color principal rojo */
+    font-size: 1.6rem;
+    margin-bottom: 2px;
+}
+
+.subtitle {
+    color: #aaa;
+    margin-bottom: 25px; /* Aumentar para separar del formulario */
+    font-size: 0.9rem;
+}
+
+/* -------------------------------------- */
+/* 3. Estilos del Formulario y CAMPOS DE ENTRADA */
+/* -------------------------------------- */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    color: #f0f0f0;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+/* Estilos unificados para inputs */
+.login-form input[type="email"],
+.login-form input[type="password"] { /* Añadí password por si acaso, aunque aquí solo hay email */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #222;
+    color: #f0f0f0;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.login-form input[type="email"]:focus,
+.login-form input[type="password"]:focus {
+    border-color: #e53935;
+    outline: none;
+}
+
+/* Mensajes de validación */
+.validation-message {
+    color: #e53935; /* Rojo de error */
+    font-size: 0.85rem;
+    margin-top: 5px;
+    text-align: left;
+    padding-left: 2px; /* Pequeño ajuste para alineación */
+}
+
+/* -------------------------------------- */
+/* 4. Botón Principal */
+/* -------------------------------------- */
+.btn-primary {
+    background-color: #e53935;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 1.0rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 15px; /* Espacio superior */
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #c62828;
+}
+
+.btn-primary:disabled {
+    background-color: #4a1c1c; /* Color más oscuro o deshabilitado para el botón */
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* -------------------------------------- */
+/* 5. Estilos para Mensajes de Éxito */
+/* -------------------------------------- */
+.success-message {
+    color: #4caf50; /* Verde de éxito */
+    font-size: 0.9rem;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #4caf50;
+    border-radius: 4px;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+/* -------------------------------------- */
+/* 6. Enlaces de Pie de Página (Volver al Login) */
+/* -------------------------------------- */
+.footer-links {
+    margin-top: 25px; /* Aumentar el margen superior para separarlo */
+    font-size: 0.85rem;
+    color: #ccc;
+    display: flex;
+    flex-direction: column; /* Asegura que el enlace esté centrado */
+    align-items: center; /* Centra horizontalmente */
+    gap: 5px;
+}
+
+.footer-links .link-login {
+    color: #e53935; /* Color principal rojo */
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links .link-login:hover {
+    color: #fff;
+}

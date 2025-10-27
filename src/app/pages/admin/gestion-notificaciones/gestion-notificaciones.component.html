@@ -1,0 +1,45 @@
+<div class="management-card">
+    <h1>Gestión de Notificaciones</h1>
+    <p>Recibe notificaciones sobre clientes cuya mensualidad esté por terminar o ya haya terminado[cite: 42, 43].</p>
+
+    <div class="content-section">
+        <h2>Configuración de Alertas</h2>
+        <div class="form-row">
+            <label for="antelacion">Enviar alerta de expiración antes de:</label>
+            <select id="antelacion" class="select-input">
+                <option>7 días</option>
+                <option>5 días</option>
+                <option>3 días</option>
+            </select>
+        </div>
+        <button class="btn-primary">Guardar Configuración</button>
+    </div>
+
+    <hr>
+
+    <h2>Clientes con Mensualidad por Expirar</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Nombre del Cliente</th>
+                <th>Correo Electrónico</th>
+                <th>Fecha de Expiración</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Sofia Martínez</td>
+                <td>sofia@email.com</td>
+                <td>2025-11-01</td>
+                <td class="status-warning">Por terminar</td>
+            </tr>
+            <tr>
+                <td>Roberto Díaz</td>
+                <td>roberto@email.com</td>
+                <td>2025-10-25</td>
+                <td class="status-danger">Terminada</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

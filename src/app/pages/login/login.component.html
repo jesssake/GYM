@@ -2,7 +2,6 @@
     <div class="login-box">
         <h2 class="title">INICIO DE SESIÓN</h2>
         <p class="subtitle">Accede a tus rutinas y planes exclusivos.</p>
-
         <form (ngSubmit)="onSubmit()" class="login-form">
             <div class="form-group">
                 <label for="email">Dirección de correo electrónico</label>
@@ -17,7 +16,6 @@
                            name="password"
                            required
                            placeholder="••••••••">
-
                     <button type="button"
                             class="toggle-password"
                             (click)="togglePasswordVisibility()">
@@ -26,7 +24,6 @@
                     </button>
                 </div>
             </div>
-
             <button type="submit" class="btn-primary">CONTINUAR</button>
         </form>
 
@@ -35,7 +32,6 @@
             <span>O</span>
             <hr>
         </div>
-
         <div class="social-login-options">
             <button class="btn-social google">
                 <img src="assets/icons/google-logo.svg" alt="Google Logo">
@@ -53,7 +49,7 @@
 
         <div class="footer-links">
             <p>¿Eres un nuevo usuario? <a [routerLink]="['/registro']" class="link-register">Crear una cuenta</a></p>
-            <a href="#" class="link-forgot">Olvidé mi contraseña</a>
+            <a [routerLink]="['/recuperar']" class="link-forgot-password">Olvidé mi contraseña</a>
         </div>
     </div>
 </div>
