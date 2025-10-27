@@ -1,0 +1,30 @@
+<div class="admin-layout">
+
+    <aside class="admin-sidebar">
+        <h2 class="admin-title">Panel de Administración</h2>
+        <nav>
+            <ul>
+                <li>
+                    <a [routerLink]="['usuarios']" routerLinkActive="active" class="nav-link">
+                        <i class="fas fa-users-cog"></i> Gestión de Usuarios
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="['contenido']" routerLinkActive="active" class="nav-link">
+                        <i class="fas fa-edit"></i> Gestión de Contenido
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="['notificaciones']" routerLinkActive="active" class="nav-link">
+                        <i class="fas fa-bell"></i> Notificaciones
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="admin-content">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>

@@ -1,110 +1,129 @@
 /* Sección General: FONDO OSCURO DE GIMNASIO */
 .services-section {
-  padding: 80px 20px;
-  background-color: #1a1a1a; /* Fondo oscuro */
-  color: #f0f0f0; /* Texto claro para contraste */
-  text-align: center;
-  font-family: Arial, sans-serif;
+    /* Mantenemos el padding ajustado */
+    padding: 50px 20px;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    text-align: center;
+    font-family: Arial, sans-serif;
 }
 
 .services-container {
-  max-width: 1200px;
-  margin: 0 auto;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* Título de la Sección: Destacado en Rojo */
 .section-title {
-  font-size: 48px;
-  font-weight: bold;
-  color: #e53935; /* El color rojo principal */
-  margin-bottom: 60px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+    font-size: 48px;
+    font-weight: bold;
+    color: #e53935;
+    /* Mantenemos el margen ajustado */
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Por defecto, flexible */
-  gap: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    /* Mantenemos el gap ajustado */
+    gap: 30px;
+    align-items: stretch;
 }
 
-/* --- AJUSTE PARA 2x2 EN PANTALLAS GRANDES (992px o más) --- */
-@media (min-width: 992px) {
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr); /* Fuerza 2 columnas iguales: 2x2 */
-    max-width: 900px; /* Limita el ancho para centrar la cuadrícula de 2x2 */
-    margin: 0 auto; /* Centra la cuadrícula */
-  }
+/* --- DISEÑO DESEADO: 2x2 en pantallas grandes (769px en adelante) --- */
+@media (min-width: 769px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 900px;
+        margin: 0 auto;
+    }
 }
 /* ----------------------------------------------------------- */
 
 
 /* Item Individual de Servicio: Tarjetas Oscuras */
 .service-item {
-  background-color: #2c2c2c; /* Fondo oscuro de la tarjeta */
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
-  border: 1px solid #444;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    /* Mantenemos el padding ajustado */
+    padding: 30px;
+    background-color: #2c2c2c;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+    border: 1px solid #444;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
 }
 
 /* EFECTO HOVER: Tarjeta se eleva y cambia a ROJO con DEGRADADO */
 .service-item:hover {
-  transform: translateY(-15px) scale(1.02);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(45deg, #e53935, #c62828); /* Degradado rojo */
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(45deg, #e53935, #c62828);
 }
 
 .service-item i {
-  font-size: 60px;
-  color: #e53935; /* Íconos rojos por defecto */
-  margin-bottom: 25px;
-  transition: color 0.4s ease;
+    font-size: 60px;
+    color: #e53935;
+    /* Mantenemos el margen ajustado */
+    margin-bottom: 15px;
+    transition: color 0.4s ease;
 }
 
 .service-item:hover i {
-  color: #fff; /* Íconos blancos al pasar el ratón */
+    color: #fff;
 }
 
 .service-item h3 {
-  font-size: 28px;
-  color: #e53935; /* Títulos rojos por defecto */
-  margin-bottom: 20px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: color 0.4s ease;
+    /* 🚨 AJUSTE DE FUENTE: De 28px a 26px */
+    font-size: 26px;
+    color: #e53935;
+    /* Mantenemos el margen ajustado */
+    margin-bottom: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.4s ease;
 }
 
 .service-item:hover h3 {
-  color: #fff; /* Títulos blancos al pasar el ratón */
+    color: #fff;
 }
 
+/* Párrafo de Descripción */
 .service-item p {
-  font-size: 18px;
-  color: #bdbdbd; /* Gris claro para el texto de la descripción */
-  line-height: 1.7;
-  transition: color 0.4s ease;
+    /* 🚨 AJUSTE DE FUENTE: De 18px a 16px */
+    font-size: 16px;
+    color: #bdbdbd;
+    /* 🚨 AJUSTE DE LINE-HEIGHT: De 1.7 a 1.55 (para más compresión) */
+    line-height: 1.55;
+    transition: color 0.4s ease;
+
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .service-item:hover p {
-  color: #f0f0f0; /* Texto blanco más brillante al pasar el ratón */
+    color: #f0f0f0;
 }
 
-/* Media Queries para dispositivos móviles */
+/* Media Queries para dispositivos móviles (sin cambios) */
 @media (max-width: 768px) {
-  .services-section {
-    padding: 60px 15px;
-  }
+    .services-section {
+        padding: 60px 15px;
+    }
 
-  .section-title {
-    font-size: 36px;
-    margin-bottom: 40px;
-  }
+    .section-title {
+        font-size: 36px;
+        margin-bottom: 40px;
+    }
 }
