@@ -1,1 +1,115 @@
-<p>perfil-usuario works!</p>
+<div class="profile-container">
+  <div class="profile-card">
+    <h1>Mi Perfil de Usuario</h1>
+
+    <div class="photo-section">
+      <img *ngIf="fotoPerfilUrl" [src]="fotoPerfilUrl" alt="Foto de Perfil" class="profile-image">
+      <i *ngIf="!fotoPerfilUrl" class="fas fa-user-circle default-profile-icon"></i>
+
+      <label for="file-upload" class="photo-upload-label">
+        <i class="fas fa-camera"></i> Cambiar Foto
+      </label>
+
+      <input
+        id="file-upload"
+        type="file"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        style="display: none;"
+      >
+    </div>
+
+    <form (ngSubmit)="guardarCambios()">
+      <h2 class="section-heading">Información de Cuenta</h2>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Nombre:</label>
+          <input type="text" [(ngModel)]="usuario.nombre" name="nombre" required>
+        </div>
+        <div class="form-field">
+          <label>Email:</label>
+          <input type="email" [(ngModel)]="usuario.email" name="email" disabled>
+        </div>
+        <div class="form-field">
+          <label>Fecha de Nacimiento:</label>
+          <input type="date" [(ngModel)]="usuario.fechaNacimiento" name="fechaNacimiento">
+        </div>
+        <div class="form-field">
+          <label>Rol:</label>
+          <input type="text" [value]="usuario.rol" disabled>
+        </div>
+      </div>
+
+      <h2 class="section-heading">Datos Biométricos y Metas</h2>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Peso (kg):</label>
+          <input type="number" [(ngModel)]="usuario.peso" name="peso" step="0.1">
+          <label class="unit-label">kg</label>
+        </div>
+        <div class="form-field">
+          <label>Altura (cm):</label>
+          <input type="number" [(ngModel)]="usuario.altura" name="altura">
+          <label class="unit-label">cm</label>
+        </div>
+        <div class="form-field">
+          <label>Meta Principal:</label>
+          <select [(ngModel)]="usuario.meta" name="meta">
+            <option *ngFor="let meta of metasDisponibles" [value]="meta.value">
+              {{ meta.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary full-width-btn">Guardar Cambios</button>
+    </form>
+  </div>
+
+  <!-- Modal del recortador -->
+  <div class="cropper-modal" *ngIf="mostrarCropper">
+    <div class="cropper-content">
+      <h3 class="cropper-title">Recortar Foto de Perfil</h3>
+
+      <div class="cropper-area">
+        <image-cropper
+          #imageCropper
+          [imageChangedEvent]="imageChangedEvent"
+          [maintainAspectRatio]="true"
+          [aspectRatio]="1 / 1"
+          [resizeToWidth]="256"
+          format="png"
+          (imageCropped)="imageCropped($event)"
+          (loadImageFailed)="onLoadImageFailed()"
+          style="max-width: 100%; height: 350px;"
+        ></image-cropper>
+      </div>
+
+      <div class="cropper-preview">
+        <h4>Previsualización</h4>
+        <img [src]="croppedImage" alt="Recorte" class="preview-img" *ngIf="croppedImage">
+        <div *ngIf="!croppedImage" class="preview-placeholder">Ajusta el recorte para ver la previsualización</div>
+      </div>
+
+      <div class="status-area">
+        <div *ngIf="statusMessage" [class.error]="statusIsError" class="status-message">
+          {{ statusMessage }}
+        </div>
+      </div>
+
+      <div class="cropper-actions">
+        <button class="btn-secondary" (click)="cancelarRecorte()" [disabled]="isUploading">Cancelar</button>
+
+        <!-- Botón deshabilitado hasta que croppedImage tenga valor. Muestra spinner si está subiendo -->
+        <button
+          class="btn-primary"
+          [disabled]="!croppedImage || isUploading"
+          (click)="guardarFotoRecortada()"
+        >
+          <span *ngIf="!isUploading">Guardar y Recortar</span>
+          <span *ngIf="isUploading" class="spinner">Procesando...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

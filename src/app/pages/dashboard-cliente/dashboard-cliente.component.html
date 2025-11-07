@@ -1,1 +1,35 @@
-<p>dashboard-cliente works!</p>
+<div class="dashboard-container">
+
+    <header class="welcome-header">
+        <h1>{{ getGreeting() }}, {{ userName }}</h1>
+        <p>Nivel actual: <strong>{{ userLevel }}</strong>. ¡Sigue con tu progreso!</p>
+    </header>
+
+    <div class="metrics-grid">
+        <div class="metric-card" *ngFor="let metric of metrics">
+            <i class="fas {{ metric.icon }}"></i>
+            <span class="value">{{ metric.value }}</span>
+            <span class="label">{{ metric.label }}</span>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <h2>Acciones Rápidas</h2>
+        <div class="actions-grid">
+            <a [routerLink]="[action.path]" class="action-card" *ngFor="let action of quickActions">
+                <i class="fas {{ action.icon }} icon-large"></i>
+                <p>{{ action.title }}</p>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Próximo Evento Destacado</h2>
+        <div class="highlight-card">
+            <p>Clase de Yoga para Relajación: <strong>Sábado 10, 10:00 AM.</strong></p>
+            <a [routerLink]="['/area-privada/actividades']" class="btn-info">Ver Detalles y Reservar</a>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,133 @@
+/* ---------------------------------------------------- */
+/* CONTENEDOR PRINCIPAL DEL SIDEBAR */
+/* ---------------------------------------------------- */
+.sidebar-container {
+    width: 250px;
+    min-width: 250px; /* Asegura que no se haga más pequeño */
+    background-color: #1a1a1a; /* Fondo oscuro */
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Sombra sutil a la derecha */
+    height: calc(100vh - 60px); /* Ocupa la altura restante debajo de la Navbar (60px) */
+    position: sticky; /* Se mantiene fijo mientras el contenido central hace scroll */
+    top: 60px; /* Posicionado justo debajo de la Navbar */
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+/* ---------------------------------------------------- */
+/* ENCABEZADO Y TÍTULOS */
+/* ---------------------------------------------------- */
+.menu-header {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 15px;
+}
+
+.menu-header h3 {
+    color: #ff5252; /* Rojo vibrante */
+    font-size: 18px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ---------------------------------------------------- */
+/* NAVEGACIÓN (LOS ENLACES) */
+/* ---------------------------------------------------- */
+.sidebar-nav {
+    flex-grow: 1; /* Permite que el menú ocupe el espacio principal */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #ccc; /* Gris claro para texto inactivo */
+    font-size: 16px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-link i {
+    margin-right: 15px;
+    width: 20px; /* Alinea los iconos verticalmente */
+    text-align: center;
+}
+
+/* Estado al pasar el mouse (hover) */
+.nav-link:hover {
+    background-color: #333;
+    color: white;
+}
+
+/* Estado del enlace activo (la página actual) */
+.nav-link.active {
+    background-color: #e53935; /* Color primario: Rojo */
+    color: white;
+    border-left: 5px solid #ffca28; /* Detalle de color secundario: Amarillo */
+    padding-left: 15px; /* Compensa el ancho del borde */
+    font-weight: 600;
+}
+
+/* ---------------------------------------------------- */
+/* BOTÓN DE CERRAR SESIÓN */
+/* ---------------------------------------------------- */
+.btn-logout {
+    width: 90%;
+    /* 🚨 AJUSTE: Centrado se logra con margin-left/right: auto */
+    margin: 20px auto 10px; /* Centrado y separado del menú */
+    padding: 10px;
+    background-color: transparent;
+    border: 1px solid #ff5252;
+    color: #ff5252;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 600;
+    /* Estos estilos ya están bien para el contenido interno del botón: */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.btn-logout:hover {
+    background-color: #ff5252;
+    color: white;
+}
+/* ---------------------------------------------------- */
+/* MINIATURA DE PERFIL (NUEVA SECCIÓN) */
+/* ---------------------------------------------------- */
+.profile-miniatura {
+    display: flex;
+    align-items: center;
+    padding: 0 20px 20px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+}
+
+.miniatura-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ffca28; /* Borde amarillo para resaltar */
+    margin-right: 15px;
+    box-shadow: 0 0 8px rgba(255, 202, 40, 0.3);
+}
+
+.miniatura-info h4 {
+    font-size: 16px;
+    margin: 0;
+    color: white;
+    font-weight: 600;
+}
+
+.miniatura-info p {
+    font-size: 12px;
+    margin: 0;
+    color: #aaa;
+}

@@ -1,0 +1,36 @@
+<aside class="sidebar-container">
+
+  <div class="profile-miniatura">
+    <img
+        [src]="fotoPerfilSidebar$ | async"
+        alt="Foto de Perfil"
+        class="miniatura-img"
+    >
+    <div class="miniatura-info">
+      <h4>Hola, {{ currentRole }}!</h4>
+      <p>Área de Cliente</p>
+    </div>
+  </div>
+
+  <div class="menu-header">
+    <h3 *ngIf="currentRole === 'Cliente'">Área Cliente</h3>
+    <h3 *ngIf="currentRole === 'Admin'">Panel Admin</h3>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="[item.path]"
+      routerLinkActive="active"
+      class="nav-link"
+    >
+      <i class="fas {{ item.icon }}"></i>
+      <span>{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <button class="btn-logout" (click)="logout()">
+    <i class="fas fa-power-off"></i> Salir
+  </button>
+
+</aside>

@@ -1,45 +1,36 @@
 <div class="management-card">
     <h1>Gestión de Notificaciones</h1>
-    <p>Recibe notificaciones sobre clientes cuya mensualidad esté por terminar o ya haya terminado[cite: 42, 43].</p>
+    <p>Recibe notificaciones sobre clientes cuya mensualidad esté por terminar o ya haya terminado, incluyendo el nombre del cliente, por medio de correo electrónico.</p>
 
-    <div class="content-section">
-        <h2>Configuración de Alertas</h2>
-        <div class="form-row">
-            <label for="antelacion">Enviar alerta de expiración antes de:</label>
-            <select id="antelacion" class="select-input">
-                <option>7 días</option>
-                <option>5 días</option>
-                <option>3 días</option>
-            </select>
-        </div>
-        <button class="btn-primary">Guardar Configuración</button>
+    <h2>Configuración de Alertas</h2>
+    <div class="form-group config-panel">
+        <label for="antelacion" style="margin-right: 10px;">Enviar alerta de expiración con antelación de:</label>
+        <select id="antelacion" class="select-input" [(ngModel)]="selectedDays">
+            <option>7 días</option>
+            <option>5 días</option>
+            <option>3 días</option>
+        </select>
+        <button class="btn-primary" (click)="guardarConfiguracion()">Guardar Configuración</button>
     </div>
 
-    <hr>
+    <hr style="border-color: #333; margin: 30px 0;">
 
     <h2>Clientes con Mensualidad por Expirar</h2>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Nombre del Cliente</th>
-                <th>Correo Electrónico</th>
-                <th>Fecha de Expiración</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Sofia Martínez</td>
-                <td>sofia@email.com</td>
-                <td>2025-11-01</td>
-                <td class="status-warning">Por terminar</td>
-            </tr>
-            <tr>
-                <td>Roberto Díaz</td>
-                <td>roberto@email.com</td>
-                <td>2025-10-25</td>
-                <td class="status-danger">Terminada</td>
-            </tr>
-        </tbody>
-    </table>
+
+    <div class="client-list">
+
+        <div class="list-header">
+            <span>Nombre del Cliente</span>
+            <span>Correo Electrónico</span>
+            <span>Fecha de Expiración</span>
+            <span>Estado</span>
+        </div>
+
+        <div class="list-row" *ngFor="let client of clients">
+            <span>{{ client.name }}</span>
+            <span>{{ client.email }}</span>
+            <span>{{ client.expirationDate }}</span>
+            <span [ngClass]="client.statusClass">{{ client.status }}</span>
+        </div>
+    </div>
 </div>

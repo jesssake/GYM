@@ -1,0 +1,12 @@
+<app-navbar></app-navbar>
+
+<div class="main-layout-container">
+
+    <app-sidebar *ngIf="mostrarSidebar"></app-sidebar>
+
+    <main class="router-content-area" [class.full-width]="!mostrarSidebar">
+        <router-outlet></router-outlet>
+    </main>
+</div>
+
+<app-footer *ngIf="!mostrarSidebar"></app-footer>

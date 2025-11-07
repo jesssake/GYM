@@ -1,0 +1,47 @@
+/* Estilos generales de la aplicación */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #121212; /* Fondo de la aplicación */
+    color: #e0e0e0;
+}
+
+/* Contenedor principal que maneja el Sidebar y el Contenido */
+.main-layout-container {
+    display: flex;
+    margin-top: 60px; /* Separación de la navbar (asumiendo 60px de altura) */
+    width: 100%;
+}
+
+/* Área de contenido principal */
+.router-content-area {
+    flex-grow: 1;
+    box-sizing: border-box;
+    padding: 30px;
+
+    /* 🚨 CLAVE DE CORRECCIÓN: Evita el espacio negro al final del scroll */
+    padding-bottom: 50px;
+
+    background-color: #1e1e1e; /* Fondo del área privada (Dashboard, Perfil, etc.) */
+
+    /* CLAVE ABSOLUTA: Altura fija y scroll interno para el área privada */
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+
+/* Estilo para cuando el sidebar NO está visible (RUTAS PÚBLICAS) */
+.router-content-area.full-width {
+    width: 100%;
+
+    /* Ajustes para rutas públicas (no deben tener padding lateral extra ni scroll fijo) */
+    padding: 0;
+
+    /* Restaurar padding-bottom para que el contenido empuje al Footer */
+    padding-bottom: 30px; /* o 0, dependiendo de si el contenido público tiene su propio espaciado */
+
+    background-color: transparent; /* Permite que se vea el fondo general */
+
+    /* CLAVE: Permitimos que el contenido crezca para que el Footer se posicione debajo */
+    height: auto;
+    overflow-y: visible;
+}

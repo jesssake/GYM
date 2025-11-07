@@ -1,1 +1,29 @@
-<p>recomendaciones works!</p>
+<div class="recommendations-container">
+    <h1>Recomendaciones Personalizadas</h1>
+
+    <h2 class="section-heading">Entrenamientos para tu Meta</h2>
+    <p class="section-description">Estas rutinas están seleccionadas basándose en tu meta de <strong>{{ metaUsuario }}</strong>.</p>
+
+    <div class="grid-recomendaciones">
+
+        <div class="recommendation-card" *ngFor="let rec of entrenamientosRecomendados">
+            <h3>{{ rec.titulo }}</h3>
+            <p class="meta-tag">Meta: {{ rec.meta }}</p>
+            <p class="description">{{ rec.descripcion }}</p>
+            <button class="btn-primary" (click)="verDetalleEntrenamiento(rec.titulo)">
+                Ver Detalle / Añadir
+            </button>
+        </div>
+
+    </div>
+
+    <h2 class="section-heading">Artículos y Tips de Interés</h2>
+    <div class="article-list">
+        <div class="article-item" *ngFor="let articulo of articulosRecomendados">
+            <span class="category-badge">{{ articulo.categoria }}</span>
+            <a href="#" (click)="verArticulo(articulo.url, $event)">
+                {{ articulo.titulo }}
+            </a>
+            </div>
+    </div>
+</div>

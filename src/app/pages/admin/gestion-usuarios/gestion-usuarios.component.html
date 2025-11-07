@@ -1,11 +1,18 @@
 <div class="management-card">
     <h1>Gestión de Usuarios</h1>
-    <p>Panel para administrar usuarios registrados, roles, y entrenadores (añadir/eliminar coach)[cite: 34, 36, 37, 38].</p>
+    <p>Panel para administrar usuarios registrados, roles, y entrenadores (añadir/eliminar coach).</p>
 
     <div class="action-panel">
-        <input type="text" placeholder="Buscar usuario o correo electrónico..." class="search-input">
-        <button class="btn-primary">Buscar</button>
-        <button class="btn-secondary">Agregar Entrenador</button>
+        <input
+            type="text"
+            placeholder="Buscar usuario, rol o correo electrónico..."
+            class="text-input search-input"
+            style="flex-grow: 1;"
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="buscarUsuarios()"
+        >
+        <button class="btn-primary" (click)="buscarUsuarios()">Buscar</button>
+        <button class="btn-secondary" (click)="agregarEntrenador()">Agregar Entrenador</button>
     </div>
 
     <table class="data-table">
@@ -17,8 +24,26 @@
             </tr>
         </thead>
         <tbody>
-            <tr><td>Cliente Juan Pérez</td><td>Cliente</td><td><button class="btn-action">Cambiar Rol</button></td></tr>
-            <tr><td>Coach María Gómez</td><td>Coach</td><td><button class="btn-action danger">Eliminar Coach</button></td></tr>
+            <tr *ngFor="let user of users">
+                <td>{{ user.name }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    <button
+                        *ngIf="user.actions.includes('Cambiar Rol')"
+                        class="btn-action"
+                        (click)="cambiarRol(user.id)"
+                    >
+                        Cambiar Rol
+                    </button>
+                    <button
+                        *ngIf="user.actions.includes('Eliminar Coach')"
+                        class="btn-action danger"
+                        (click)="eliminarCoach(user.id)"
+                    >
+                        Eliminar Coach
+                    </button>
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>

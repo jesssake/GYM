@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+// 🚨 CORRECCIÓN: Importar ambos guards
+import { authGuard } from './guards/auth-guard';
+import { adminGuard } from './guards/admin-guard'; // <--- NUEVO IMPORT
 
 // ----------------------------------------------------
 // Componentes Públicos Existentes
@@ -12,7 +15,7 @@ import { RegistroPerfilComponent } from './pages/registro-perfil/registro-perfil
 import { RestablecerSolicitudComponent } from './pages/restablecer-solicitud/restablecer-solicitud.component';
 
 // ----------------------------------------------------
-// Componentes Privados - ADMINISTRADOR (4)
+// Componentes Privados - ADMINISTRADOR
 // ----------------------------------------------------
 import { PanelAdminComponent } from './pages/admin/panel-admin/panel-admin.component';
 import { GestionUsuariosComponent } from './pages/admin/gestion-usuarios/gestion-usuarios.component';
@@ -20,7 +23,7 @@ import { GestionContenidoComponent } from './pages/admin/gestion-contenido/gesti
 import { GestionNotificacionesComponent } from './pages/admin/gestion-notificaciones/gestion-notificaciones.component';
 
 // ----------------------------------------------------
-// Componentes Privados - CLIENTE (5)
+// Componentes Privados - CLIENTE
 // ----------------------------------------------------
 import { DashboardClienteComponent } from './pages/dashboard-cliente/dashboard-cliente.component';
 import { PerfilUsuarioComponent } from './pages/perfil-usuario/perfil-usuario.component';
@@ -28,60 +31,58 @@ import { EntrenamientosComponent } from './pages/entrenamientos/entrenamientos.c
 import { ActividadesExtrasComponent } from './pages/actividades-extras/actividades-extras.component';
 import { RecomendacionesComponent } from './pages/recomendaciones/recomendaciones.component';
 
-// 🚨 IMPORTAR GUARDS AQUÍ (Se crearán más adelante)
-// import { AuthGuard } from './guards/auth.guard';
-
 
 export const routes: Routes = [
-    // ----------------------------------------------------
-    // RUTAS PÚBLICAS (Sin sesión)
-    // ----------------------------------------------------
-    { path: '', component: HomeComponent },
-    { path:'conocetugym', component: AboutComponent },
-    { path: 'planes', component: PlanesComponent },
-    { path: 'login', component: LoginComponent },
-    { path: 'registro', component: RegistroComponent },
-    { path: 'registro/perfil', component: RegistroPerfilComponent },
-    { path: 'recuperar', component: RestablecerSolicitudComponent },
+	// ----------------------------------------------------
+	// RUTAS PÚBLICAS
+	// ----------------------------------------------------
+	{ path: '', component: HomeComponent, title: 'Inicio | Train Station Gym' },
+	{ path:'conocetugym', component: AboutComponent, title: 'Acerca de Nosotros' },
+	{ path: 'planes', component: PlanesComponent, title: 'Nuestros Planes' },
+	{ path: 'login', component: LoginComponent, title: 'Iniciar Sesión' },
+	{ path: 'registro', component: RegistroComponent, title: 'Crear Cuenta' },
+	{ path: 'registro/perfil', component: RegistroPerfilComponent, title: 'Completar Perfil' },
+	{ path: 'recuperar', component: RestablecerSolicitudComponent, title: 'Restablecer Contraseña' },
 
-    // ----------------------------------------------------
-    // RUTAS PRIVADAS (Requiere sesión iniciada)
-    // ----------------------------------------------------
-    {
-        path: 'area-privada',
-        // canActivate: [AuthGuard], // 🚨 Descomentar cuando implementes el Guard
-        children: [
+	// ----------------------------------------------------
+	// RUTAS PRIVADAS (Requiere sesión iniciada)
+	// ----------------------------------------------------
+	{
+		path: 'area-privada',
+		// 🚨 Capa 1: Proteger todo el área con authGuard (verifica sesión activa)
+		canActivate: [authGuard],
+		children: [
 
-            // 1. RUTAS DEL CLIENTE (El primer lugar al que va un cliente)
-            { path: 'dashboard', component: DashboardClienteComponent },
-            { path: 'perfil', component: PerfilUsuarioComponent },
-            { path: 'mis-entrenamientos', component: EntrenamientosComponent },
-            { path: 'actividades', component: ActividadesExtrasComponent },
-            { path: 'recomendaciones', component: RecomendacionesComponent },
+			// 1. RUTAS DEL CLIENTE (Acceso a todos los logueados)
+			{ path: 'dashboard', component: DashboardClienteComponent, title: 'Dashboard' },
+			{ path: 'perfil', component: PerfilUsuarioComponent, title: 'Mi Perfil' },
+			{ path: 'mis-entrenamientos', component: EntrenamientosComponent, title: 'Mis Entrenamientos' },
+			{ path: 'actividades', component: ActividadesExtrasComponent, title: 'Actividades y Avisos' },
+			{ path: 'recomendaciones', component: RecomendacionesComponent, title: 'Recomendaciones' },
 
-            // Redirige la ruta /area-privada al dashboard del cliente por defecto
-            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+			// Redirige la ruta /area-privada
+			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 
-            // 2. PANEL DE ADMINISTRACIÓN (Ruta principal del Admin)
-            {
-                path: 'admin',
-                component: PanelAdminComponent,
-                // canActivate: [AdminGuard], // 🚨 Opcional: Usar un guard específico
-                children: [
-                    // Sub-rutas que se cargan en el <router-outlet> del PanelAdminComponent
-                    { path: 'usuarios', component: GestionUsuariosComponent },
-                    { path: 'contenido', component: GestionContenidoComponent },
-                    { path: 'notificaciones', component: GestionNotificacionesComponent },
+			// 2. PANEL DE ADMINISTRACIÓN
+			{
+				path: 'admin',
+				// 🚨 Capa 2: Proteger por rol con adminGuard
+				canActivate: [adminGuard],
+				component: PanelAdminComponent,
+				children: [
+					// Sub-rutas que se cargan en el <router-outlet> del PanelAdminComponent
+					{ path: 'usuarios', component: GestionUsuariosComponent, title: 'Administrar Usuarios ' },
+					{ path: 'contenido', component: GestionContenidoComponent, title: 'Administrar Contenido' },
+					{ path: 'notificaciones', component: GestionNotificacionesComponent, title: 'Administrar Notificaciones' },
 
-                    // Redirige /area-privada/admin a la gestión de usuarios por defecto
-                    { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
-                ]
-            },
-        ]
-    },
-
-    // ----------------------------------------------------
-    // RUTA CATCH-ALL (Cualquier otra ruta no definida va al inicio)
-    // ----------------------------------------------------
-    { path: '**', redirectTo: '' }
+					// Redirige /area-privada/admin por defecto
+					{ path: '', redirectTo: 'usuarios', pathMatch: 'full' },
+				]
+			},
+		]
+	},
+	// ----------------------------------------------------
+	// RUTA CATCH-ALL (404)
+	// ----------------------------------------------------
+	{ path: '**', redirectTo: '' } // Redirige cualquier ruta no definida al inicio
 ];
