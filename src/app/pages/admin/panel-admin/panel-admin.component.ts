@@ -1,16 +1,17 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // <-- Añadido CommonModule
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router'; // <-- Añadidos módulos de Routing
+import { CommonModule } from '@angular/common';
+// 🧹 Eliminamos RouterLink y RouterLinkActive de las importaciones
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-panel-admin',
-  standalone: true, // <-- El componente es standalone
-  // CORRECCIÓN CLAVE: Incluir CommonModule y los módulos de Routing
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  standalone: true,
+  // CORRECCIÓN CLAVE: Solo necesitamos CommonModule y RouterOutlet
+  // RouterOutlet es necesario para que cargue las sub-rutas (Usuarios, Contenido, etc.)
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './panel-admin.component.html',
   styleUrl: './panel-admin.component.css'
 })
-// CORRECCIÓN: Usamos el nombre de clase completo para consistencia
 export class PanelAdminComponent {
-  // No se necesita código aquí por ahora
+  // No se necesita código aquí por ahora, el componente actúa solo como un layout contenedor.
 }

@@ -1,25 +1,47 @@
 <div class="management-card">
     <h1>Gestión de Contenido</h1>
-    <p>Administra las Rutinas de Principiantes y el contenido de Actividades Extras[cite: 40, 41].</p>
+    <p>Administra las Rutinas para Principiantes y el contenido de Actividades Extras (Avisos/Eventos).</p>
 
     <h2>Rutinas de Principiantes</h2>
-    <p>El administrador es quien pone las rutinas de los principiantes[cite: 41].</p>
-    <div class="form-group">
-        <input type="text" placeholder="Nombre de la Rutina" class="text-input">
-        <textarea placeholder="Descripción detallada de los ejercicios, repeticiones y músculo trabajado"></textarea>
-        <input type="file" accept="image/*">
-        <button class="btn-primary">Guardar Rutina</button>
+    <p>El administrador es quien pone las rutinas de los principiantes.</p>
+
+    <div class="form-section">
+        <label>Nombre de la Rutina</label>
+        <input type="text" [(ngModel)]="routineName" placeholder="Ej: Pecho y Tríceps - Nivel 1" class="text-input">
+
+        <label>Descripción detallada de los ejercicios, repeticiones y músculo trabajado</label>
+        <textarea [(ngModel)]="routineDescription" placeholder="Ej: 3 series de 10 repeticiones. Músculo: Bíceps y Antebrazo."></textarea>
+
+        <label>Imagen del Ejercicio</label>
+        <input type="file" accept="image/*" class="text-input">
+
+        <button class="btn-primary" style="width: auto;" (click)="guardarRutina()">Guardar Rutina</button>
     </div>
 
-    <hr>
+    <hr style="border-color: #333; margin: 30px 0;">
 
     <h2>Actividades Extras / Avisos</h2>
-    <p>Añada contenido en el apartado de actividades extras del cliente (ej. Eventos, avisos de cierre)[cite: 40].</p>
-    <div class="form-group">
-        <input type="text" placeholder="Título del Aviso" class="text-input">
-        <textarea placeholder="Contenido de la actividad (Ej. Evento de Navidad, Aviso de cierre por mantenimiento)"></textarea>
-        <label for="fecha-expiracion">Fecha de Expiración:</label>
-        <input type="date" id="fecha-expiracion" class="text-input">
-        <button class="btn-primary">Guardar Actividad/Aviso</button>
+    <p>Añada contenido en el apartado de actividades extras del cliente (Ej. Eventos, avisos de cierre).</p>
+
+    <div class="form-section">
+        <label>Título del Aviso</label>
+        <input type="text" [(ngModel)]="noticeTitle" placeholder="Ej: Evento de Navidad - Recaudación de Juguetes" class="text-input">
+
+        <label>Contenido de la actividad</label>
+        <textarea [(ngModel)]="noticeContent" placeholder="Detalles del evento, fechas y horarios."></textarea>
+
+        <div class="form-group" style="justify-content: space-between; gap: 20px;">
+
+            <div style="flex-basis: 45%;">
+                <label for="fecha-inicio">Fecha y Hora de Inicio del Evento/Aviso</label>
+                <input type="datetime-local" [(ngModel)]="startDate" id="fecha-inicio" class="text-input">
+            </div>
+
+            <div style="flex-basis: 45%;">
+                <label for="fecha-expiracion">Fecha y Hora de Fin/Expiración</label>
+                <input type="datetime-local" [(ngModel)]="endDate" id="fecha-expiracion" class="text-input">
+            </div>
+        </div>
+        <button class="btn-primary" style="width: auto; margin-top: 10px;" (click)="guardarActividad()">Guardar Actividad/Aviso</button>
     </div>
 </div>

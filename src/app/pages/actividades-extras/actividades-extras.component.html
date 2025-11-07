@@ -1,1 +1,46 @@
-<p>actividades-extras works!</p>
+<div class="activities-container">
+    <h1>Actividades Extras y Avisos</h1>
+
+    <h2 class="section-heading">Avisos Importantes</h2>
+    <div class="grid-avisos">
+        <div class="aviso-card" *ngFor="let aviso of avisos">
+            <h3>{{ aviso.titulo }}</h3>
+            <p>{{ aviso.contenido }}</p>
+            <p class="aviso-date">
+                Publicado: {{ aviso.fecha | date:'EEEE, d \'de\' MMMM \'de\' yyyy, h:mm a' }}
+            </p>
+        </div>
+        <div *ngIf="avisos.length === 0" class="no-data">
+            <p>No hay avisos recientes.</p>
+        </div>
+    </div>
+
+    <h2 class="section-heading">Próximas Actividades</h2>
+    <div class="grid-actividades">
+
+        <div class="actividad-card" *ngFor="let act of actividades">
+            <h3>{{ act.titulo }}</h3>
+            <p class="description">{{ act.descripcion }}</p>
+
+            <div class="details">
+                <span class="detail-item">
+                    Inicio: {{ act.fecha | date:'EEEE, d \'de\' MMMM \'de\' yyyy, h:mm a' }}
+                </span>
+
+                <span *ngIf="act.fechaFin" class="detail-item">
+                    Expira: {{ act.fechaFin | date:'EEEE, d \'de\' MMMM \'de\' yyyy, h:mm a' }}
+                </span>
+            </div>
+
+            <div class="action-buttons">
+                <button *ngIf="!act.inscrito" class="btn-primary" (click)="inscribirse(act.id)">
+                    Inscribirse
+                </button>
+                <button *ngIf="act.inscrito" class="btn-secondary" (click)="cancelarInscripcion(act.id)">
+                    Inscrito (Cancelar)
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

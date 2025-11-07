@@ -1,1 +1,50 @@
-<p>entrenamientos works!</p>
+<div class="training-container">
+    <h1>Mis Entrenamientos</h1>
+
+    <div class="content-wrapper">
+
+        <div class="routine-list-panel">
+            <h2 class="panel-heading">Rutinas Asignadas</h2>
+
+            <div *ngFor="let rutina of rutinas"
+                 class="routine-card"
+                 [ngClass]="{'active-routine-card': rutina.id === rutinaSeleccionada?.id, 'completed': rutina.estado === 'Completada'}"
+                 (click)="seleccionarRutina(rutina)">
+                <h3>{{ rutina.nombre }}</h3>
+                <p>Foco: {{ rutina.foco }}</p>
+                <span class="status-badge" [ngClass]="{'status-ok': rutina.estado === 'Completada', 'status-warning': rutina.estado === 'Pendiente'}">
+                    {{ rutina.estado }}
+                </span>
+            </div>
+
+            <div *ngIf="rutinas.length === 0" class="no-data">
+                <p>Aún no tienes rutinas asignadas.</p>
+            </div>
+        </div>
+
+        <div class="routine-detail-panel" *ngIf="rutinaSeleccionada">
+            <h2 class="panel-heading">{{ rutinaSeleccionada.nombre }}</h2>
+            <p class="detail-info">Haz clic en el botón al completar cada ejercicio.</p>
+
+            <div class="exercise-list">
+                <div *ngFor="let ejercicio of ejerciciosDetalle" class="exercise-item">
+                    <div class="exercise-info">
+                        <h3>{{ ejercicio.nombre }}</h3>
+                        <p>Series: <strong>{{ ejercicio.series }}</strong> | Reps: <strong>{{ ejercicio.repeticiones }}</strong></p>
+                        <p class="musculo-foco">Músculo: {{ ejercicio.musculo }}</p>
+                    </div>
+                    <button class="btn"
+                            [ngClass]="{'btn-primary': !ejercicio.completado, 'btn-secondary-dark': ejercicio.completado}"
+                            (click)="marcarEjercicioCompletado(ejercicio)">
+                        {{ ejercicio.completado ? 'Hecho' : 'Marcar Hecho' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="no-routine-selected" *ngIf="!rutinaSeleccionada && rutinas.length > 0">
+            <p>Selecciona una rutina de la izquierda para ver los ejercicios.</p>
+        </div>
+
+    </div>
+</div>
