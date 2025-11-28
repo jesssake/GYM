@@ -1,0 +1,49 @@
+.cropper-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+}
+
+.file-input input {
+  display: none;
+}
+
+.file-input {
+  background: #222;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  width: fit-content;
+}
+
+.preview-container, .final-preview {
+  text-align: center;
+}
+
+.preview-img, .preview-final {
+  max-width: 250px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.crop-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.crop-controls input {
+  width: 80px;
+}
+
+.btn-recortar {
+  background: #0284c7;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

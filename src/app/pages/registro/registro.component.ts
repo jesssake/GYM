@@ -2,107 +2,132 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
+import { AuthService, RegisterData } from '../../services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
-// Interfaz para la definición de reglas
 interface PasswordRules {
-    minLength: boolean;
-    hasBothCases: boolean;
-    hasNumberOrSymbol: boolean;
-    notContainsEmail: boolean;
+  minLength: boolean;
+  hasBothCases: boolean;
+  hasNumberOrSymbol: boolean;
+  notContainsEmail: boolean;
 }
 
 @Component({
-    selector: 'app-registro',
-    standalone: true,
-    imports: [
-        CommonModule,
-        RouterModule,
-        FormsModule
-    ],
-    templateUrl: './registro.component.html',
-    styleUrl: './registro.component.css'
+  selector: 'app-registro',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule
+  ],
+  templateUrl: './registro.component.html',
+  styleUrl: './registro.component.css'
 })
 export class RegistroComponent {
 
-    // PROPIEDAD para controlar el tipo de input (text/password)
-    passwordVisible: boolean = false;
+  isLoading: boolean = false;
+  passwordVisible: boolean = false;
+  errorMessage: string = '';
 
-    // Propiedad para llevar el estado de cada regla
-    passwordRules: PasswordRules = {
+  passwordRules: PasswordRules = {
+    minLength: false,
+    hasBothCases: false,
+    hasNumberOrSymbol: false,
+    notContainsEmail: false
+  };
+
+  get allRulesMet(): boolean {
+    return Object.values(this.passwordRules).every(rule => rule === true);
+  }
+
+  currentEmail: string = '';
+  currentPasswordValue: string = '';
+
+  // *** IMPORTANTE ***
+  // Hacemos el servicio "public" para usarlo DIRECTAMENTE desde el HTML
+  constructor(
+    private router: Router,
+    public authService: AuthService
+  ) {}
+
+  togglePasswordVisibility() {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
+  onEmailChange(email: string) {
+    this.currentEmail = email;
+
+    if (this.currentPasswordValue.length > 0) {
+      this.onPasswordChange(this.currentPasswordValue);
+    }
+  }
+
+  onPasswordChange(password: string) {
+    this.currentPasswordValue = password;
+    this.errorMessage = '';
+
+    if (password.length === 0) {
+      this.passwordRules = {
         minLength: false,
         hasBothCases: false,
         hasNumberOrSymbol: false,
         notContainsEmail: false
+      };
+      return;
+    }
+
+    // 1. Longitud mínima
+    this.passwordRules.minLength = password.length >= 8;
+
+    // 2. Mayúsculas y minúsculas
+    this.passwordRules.hasBothCases =
+      /[a-z]/.test(password) && /[A-Z]/.test(password);
+
+    // 3. Número o símbolo
+    this.passwordRules.hasNumberOrSymbol =
+      /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+    // 4. Que NO contenga el correo
+    const emailPart = this.currentEmail.split('@')[0];
+
+    this.passwordRules.notContainsEmail =
+      !password.toLowerCase().includes(this.currentEmail.toLowerCase()) &&
+      !password.toLowerCase().includes(emailPart.toLowerCase());
+  }
+
+  onSubmit(form: NgForm) {
+    this.errorMessage = '';
+    form.control.markAllAsTouched();
+
+    if (form.invalid || !this.allRulesMet) {
+      this.errorMessage =
+        'Por favor, completa todos los campos y verifica las reglas de contraseña.';
+      return;
+    }
+
+    this.isLoading = true;
+
+    const registrationData: RegisterData = {
+      nombre: `${form.value.nombres} ${form.value.apellidos}`,
+      email: form.value.email,
+      password: form.value.password
     };
 
-    // Variables auxiliares para la validación en tiempo real
-    currentEmail: string = '';
-    currentPasswordValue: string = '';
+    this.authService.register(registrationData).subscribe({
+      next: (response) => {
+        console.log('Registro exitoso. Token recibido:', response.token);
+        this.router.navigate(['/perfil']);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading = false;
+        this.errorMessage =
+          err.error?.msg || 'Error desconocido al registrar el usuario.';
+        console.error('Error de registro:', err);
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
 
-    constructor(private router: Router) { }
-
-    // Método SIMPLIFICADO: Alterna la propiedad para cambiar el ícono y el tipo de input
-    togglePasswordVisibility() {
-        this.passwordVisible = !this.passwordVisible;
-    }
-
-    // Método para actualizar el email y revalidar la contraseña
-    onEmailChange(email: string) {
-        this.currentEmail = email;
-        if (this.currentPasswordValue) {
-            this.onPasswordChange(this.currentPasswordValue);
-        }
-    }
-
-    // Método para validar la contraseña en tiempo real
-    onPasswordChange(password: string) {
-        this.currentPasswordValue = password;
-
-        // Si la contraseña está vacía, reinicia las reglas
-        if (password.length === 0) {
-            this.passwordRules = {
-                minLength: false,
-                hasBothCases: false,
-                hasNumberOrSymbol: false,
-                notContainsEmail: false
-            };
-            return;
-        }
-
-        // 1. Validar longitud
-        this.passwordRules.minLength = password.length >= 8;
-
-        // 2. Validar minúsculas y mayúsculas
-        this.passwordRules.hasBothCases = /[a-z]/.test(password) && /[A-Z]/.test(password);
-
-        // 3. Validar número o símbolo
-        this.passwordRules.hasNumberOrSymbol = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-
-        // 4. Validar que no contenga el email
-        const emailPart = this.currentEmail.split('@')[0];
-        this.passwordRules.notContainsEmail =
-            !password.toLowerCase().includes(this.currentEmail.toLowerCase()) &&
-            !password.toLowerCase().includes(emailPart.toLowerCase());
-    }
-
-    // Envío del formulario
-    onSubmit(form: NgForm) {
-        form.control.markAllAsTouched();
-
-        const allPasswordRulesMet = Object.values(this.passwordRules).every(rule => rule === true);
-
-        if (form.invalid || !allPasswordRulesMet) {
-            if (!allPasswordRulesMet) {
-                console.error('La contraseña no cumple con todas las reglas de seguridad.');
-            }
-            return;
-        }
-
-        console.log('Paso 1 completado. Redirigiendo a Paso 2.');
-
-        sessionStorage.setItem('temp_reg_email', form.value.email);
-        sessionStorage.setItem('temp_reg_password', form.value.password);
-
-        this.router.navigate(['/registro/perfil']);
-    }
 }

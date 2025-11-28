@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RecomendacionesComponent } from './recomendaciones.component'; // 🚨 CORRECCIÓN: Usar el nombre de la clase con Component
 
-import { Recomendaciones } from './recomendaciones.component';
-
-describe('Recomendaciones', () => {
-  let component: Recomendaciones;
-  let fixture: ComponentFixture<Recomendaciones>;
+describe('RecomendacionesComponent', () => { // 🚨 CORRECCIÓN: Usar el nombre de la clase con Component
+  let component: RecomendacionesComponent;
+  let fixture: ComponentFixture<RecomendacionesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Recomendaciones]
+      imports: [RecomendacionesComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Recomendaciones);
+    fixture = TestBed.createComponent(RecomendacionesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

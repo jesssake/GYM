@@ -1,18 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+// 🚨 CORRECCIÓN: Usar el nombre de la clase con Component
+import { DashboardClienteComponent } from './dashboard-cliente.component';
 
-import { DashboardCliente } from './dashboard-cliente.component';
-
-describe('DashboardCliente', () => {
-  let component: DashboardCliente;
-  let fixture: ComponentFixture<DashboardCliente>;
+describe('DashboardClienteComponent', () => { // 🚨 CORRECCIÓN: Usar el nombre de la clase con Component
+  let component: DashboardClienteComponent;
+  let fixture: ComponentFixture<DashboardClienteComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DashboardCliente]
+      // Usar el nombre de la clase con Component
+      imports: [DashboardClienteComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DashboardCliente);
+    fixture = TestBed.createComponent(DashboardClienteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

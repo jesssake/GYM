@@ -87,9 +87,10 @@
     font-size: 1rem;
     box-sizing: border-box;
     transition: border-color 0.3s;
-    /* Mantener appearance: none para selects en diseño oscuro */
-    appearance: none;
+
+    /* CORRECCIÓN DE ORDEN DE PREFIJOS CSS */
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .form-group input:focus,
@@ -126,12 +127,14 @@
     flex-shrink: 0;
     width: 16px;
     height: 16px;
+
     /* Estilo personalizado del checkbox */
     background-color: #222;
     border: 1px solid #e53935;
-    /* Es importante que el checkbox mantenga su appearance original para funcionar bien */
-    appearance: checkbox;
+
+    /* CORRECCIÓN DE ORDEN DE PREFIJOS CSS */
     -webkit-appearance: checkbox;
+    appearance: checkbox;
 }
 
 .link-secundario {
@@ -148,7 +151,7 @@
     border: none;
     padding: 12px;
     border-radius: 5px;
-    font-size: 1.0rem;
+    font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
     text-transform: uppercase;

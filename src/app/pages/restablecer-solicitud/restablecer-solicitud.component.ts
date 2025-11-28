@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http'; // Importamos para errores
+
+import { AuthService } from '../../services/auth.service'; // 🚨 Importamos el servicio
 
 @Component({
   selector: 'app-restablecer-solicitud',
@@ -15,10 +18,15 @@ export class RestablecerSolicitudComponent {
   // Propiedades para mostrar mensajes al usuario
   message: string = '';
   isError: boolean = false;
+  isLoading: boolean = false; // 🚨 Para manejar el estado de carga
 
-  constructor() { }
+  constructor(private authService: AuthService) { } // 🚨 Inyectamos el servicio
 
   onSubmit(form: NgForm) {
+    // Limpiamos mensajes anteriores
+    this.message = '';
+    this.isError = false;
+
     // Evitar el envío si el formulario no es válido
     form.control.markAllAsTouched();
 
@@ -29,17 +37,29 @@ export class RestablecerSolicitudComponent {
     }
 
     const email = form.value.email;
+    this.isLoading = true; // Activamos el loader
 
-    // ⚠️ AQUÍ VA LA LLAMADA A TU BACKEND
-    // this.authService.requestPasswordReset(email).subscribe(...)
+    // 🚀 LLAMADA A TU BACKEND
+    this.authService.requestPasswordReset(email).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        // Respuesta exitosa del backend
+        this.message = res.msg; // Usamos el mensaje del backend
+        this.isError = false;
 
-    console.log(`Solicitud de restablecimiento enviada para: ${email}`);
+        // Opcional: limpiar solo el botón
+        form.resetForm({ email: email });
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading = false;
 
-    // Simulación de respuesta exitosa
-    this.message = '¡Enlace de restablecimiento enviado! Revisa tu bandeja de entrada (y la carpeta de spam).';
-    this.isError = false;
+        // Captura errores reales del servidor (500)
+        this.message =
+          err.error?.msg || 'Error del servidor. Inténtalo de nuevo más tarde.';
+        this.isError = true;
 
-    // Limpiar el estado del formulario después del éxito para deshabilitar el botón
-    form.resetForm({ email: email });
+        console.error('Error solicitud de restablecimiento:', err);
+      }
+    });
   }
 }

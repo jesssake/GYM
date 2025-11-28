@@ -1,21 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router'; // 🚨 Solo necesitamos RouterLink
-import { AuthService } from '../../services/auth.service'; // 🚨 REQUERIDO: Importar el AuthService
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
     <header class="navbar-header">
       <div class="logo">
         <a [routerLink]="['/']">Train Station Gym</a>
       </div>
       <nav class="public-links">
+
+        <!-- 🚨 CORRECCIÓN EN EL TEMPLATE: Eliminamos la clase 'client-area-link' para que use el estilo por defecto de 'public-links a' -->
+        <a
+          [routerLink]="['/area-privada']"
+          routerLinkActive="active"
+          *ngIf="authService.isLoggedIn()"
+          [routerLinkActiveOptions]="{exact: false}"
+        >
+          Inicio
+        </a>
+
+        <!-- Enlaces Públicos -->
         <a [routerLink]="['/conocetugym']" routerLinkActive="active">Conoce Gym</a>
         <a [routerLink]="['/planes']" routerLinkActive="active">Planes</a>
 
+        <!-- Botones de Autenticación -->
         <a [routerLink]="['/login']" class="btn-access" *ngIf="!authService.isLoggedIn()">
           <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
         </a>
@@ -26,8 +39,8 @@ import { AuthService } from '../../services/auth.service'; // 🚨 REQUERIDO: Im
       </nav>
     </header>
   `,
-  // Estilos omitidos por brevedad, asumiendo que ya son correctos.
   styles: [`
+    /* Estilos existentes */
     .navbar-header {
       position: fixed;
       top: 0;
@@ -61,10 +74,15 @@ import { AuthService } from '../../services/auth.service'; // 🚨 REQUERIDO: Im
       padding: 5px 10px;
       transition: color 0.2s, border-bottom 0.2s;
     }
+    /* Estilo para enlace activo y hover (aplica ahora a 'Inicio' también) */
     .public-links a:hover, .public-links a.active {
       color: white;
       border-bottom: 2px solid #e53935;
     }
+
+    /* 🚨 ESTILOS ELIMINADOS: Se quitan los estilos específicos de .client-area-link */
+
+    /* Estilos de botones */
     .btn-access {
       padding: 8px 15px;
       border-radius: 5px;
@@ -92,11 +110,10 @@ import { AuthService } from '../../services/auth.service'; // 🚨 REQUERIDO: Im
 })
 export class NavbarComponent implements OnInit {
 
-  // Hacemos el AuthService público para usarlo en el template
   constructor(public authService: AuthService) { }
 
   ngOnInit(): void {
-    // Si necesitas inicializar algo al cargar el componente
+    // La lógica de inicio de sesión debe estar en AuthService
   }
 
   /**

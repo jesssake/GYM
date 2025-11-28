@@ -1,6 +1,12 @@
 <div class="activities-container">
     <h1>Actividades Extras y Avisos</h1>
 
+    <!-- 🔔 ÁREA DE MENSAJES (Success / Error) -->
+    <div class="status-area">
+        <p class="status-message success" *ngIf="successMessage">{{ successMessage }}</p>
+        <p class="status-message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    </div>
+
     <h2 class="section-heading">Avisos Importantes</h2>
     <div class="grid-avisos">
         <div class="aviso-card" *ngFor="let aviso of avisos">

@@ -1,0 +1,75 @@
+<div class="login-page-container">
+    <div class="login-box">
+
+        <h1 class="title">Restablecer Contraseña</h1>
+        <p class="subtitle">Ingresa tu nueva contraseña. Debe ser de al menos 6 caracteres.</p>
+
+        <div *ngIf="message" [ngClass]="{'validation-message': isError, 'success-message': !isError}">
+            {{ message }}
+        </div>
+
+        <form
+            #f="ngForm"
+            (ngSubmit)="onSubmit(f)"
+            class="login-form"
+            novalidate
+            *ngIf="tokenValid"
+        >
+
+            <div class="form-group">
+                <label for="password">Nueva Contraseña</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    ngModel
+                    #passwordInput="ngModel"
+                    placeholder="••••••••"
+                    minlength="6"
+                >
+
+                <div
+                    *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
+                    class="validation-message"
+                >
+                    La contraseña debe tener al menos 6 caracteres.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Contraseña</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    required
+                    ngModel
+                    #confirmPasswordInput="ngModel"
+                    placeholder="••••••••"
+                >
+
+                <div
+                    *ngIf="f.controls['confirmPassword']?.value && passwordInput.value !== confirmPasswordInput.value"
+                    class="validation-message"
+                >
+                    Las contraseñas no coinciden.
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                class="btn-primary"
+                [disabled]="f.invalid || isLoading || passwordInput.value !== confirmPasswordInput.value"
+            >
+                {{ isLoading ? 'Cambiando...' : 'Restablecer Contraseña' }}
+            </button>
+
+        </form>
+
+        <div class="footer-links">
+            <a [routerLink]="['/login']" class="link-login">← Volver al inicio de sesión</a>
+        </div>
+
+    </div>
+</div>

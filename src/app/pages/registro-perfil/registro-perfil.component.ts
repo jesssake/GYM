@@ -12,61 +12,79 @@ import { FormsModule, NgForm } from '@angular/forms';
         RouterModule
     ],
     templateUrl: './registro-perfil.component.html',
-    styleUrl: './registro-perfil.component.css'
+
+    // ❗ CORRECCIÓN IMPORTANTE: styleUrl ➝ styleUrls
+    styleUrls: ['./registro-perfil.component.css']
 })
 export class RegistroPerfilComponent implements OnInit {
 
-    // Datos temporales del Paso 1 (Credenciales)
+    // Estado del botón
+    isLoading: boolean = false;
+
+    // Datos del Paso 1
     private tempEmail: string | null = null;
     private tempPassword: string | null = null;
 
-    constructor(private router: Router) { }
+    constructor(private router: Router) {}
 
     ngOnInit(): void {
-        // 1. Recuperar los datos de sesión del Paso 1
+
+        // Recuperar datos del Paso 1
         this.tempEmail = sessionStorage.getItem('temp_reg_email');
         this.tempPassword = sessionStorage.getItem('temp_reg_password');
 
-        // 2. Comprobar si los datos existen
+        // Validar que existan
         if (!this.tempEmail || !this.tempPassword) {
-            // Si faltan datos, redirigir al Paso 1
-            alert('Error: Datos de inicio de sesión faltantes. Por favor, reinicia el registro.');
+            console.error('Error: datos del Paso 1 faltantes. Redirigiendo...');
             this.router.navigate(['/registro']);
         }
     }
 
-    // Función de envío para el Paso 2: CREACIÓN FINAL DE LA CUENTA
-    onSubmit(formValue: any) {
-        // La validación de min/max de edad se maneja a través de los atributos en el HTML y NgForm.
-        // Solo necesitamos asegurarnos de que el formulario es válido en su totalidad.
+    // Recibimos TODO el formulario (NgForm)
+    onSubmit(f: NgForm) {
 
-        // 1. Combinar los datos de los dos pasos
+        // Marcar todo para mostrar errores
+        f.control.markAllAsTouched();
+
+        if (f.invalid) {
+            console.error("Formulario inválido. Verifica los campos.");
+            return;
+        }
+
+        if (this.isLoading) return; // evitar doble clic
+
+        this.isLoading = true;
+
+        const v = f.value;
+
+        // Combinar datos de Paso 1 + Paso 2
         const registroFinalGYM = {
-            // Datos del Paso 1 (Credenciales)
             email: this.tempEmail,
             password: this.tempPassword,
-
-            // Datos del Paso 2 (Perfil GYM)
-            nombre: formValue.nombre,
-            apellido: formValue.apellido,
-            edad: formValue.edad,
-            sexo: formValue.sexo,
-            experiencia: formValue.experiencia,
-
-            aceptoTerminos: formValue.aceptoTerminos
+            nombre: v.nombre,
+            apellido: v.apellido,
+            edad: v.edad,
+            sexo: v.sexo,
+            experiencia: v.experiencia,
+            aceptoTerminos: v.aceptoTerminos
         };
 
-        // 2. Aquí harías la LLAMADA FINAL a tu API/Servicio de registro
-        // Ejemplo: this.gymAuthService.finalizarRegistro(registroFinalGYM).subscribe(...)
+        // Simulación de servicio asíncrono
+        setTimeout(() => {
 
-        console.log('DATOS FINALES DE REGISTRO GYM ENVIADOS:', registroFinalGYM);
+            console.log("DATOS FINALES ENVIADOS:", registroFinalGYM);
 
-        // 3. Limpiar los datos temporales después del envío exitoso
-        sessionStorage.removeItem('temp_reg_email');
-        sessionStorage.removeItem('temp_reg_password');
+            // Limpiar datos temporales
+            sessionStorage.removeItem('temp_reg_email');
+            sessionStorage.removeItem('temp_reg_password');
 
-        // 4. Navegación: Simular éxito y redirigir al home
-        alert(`¡Cuenta de ${formValue.nombre} creada con éxito! Bienvenido al Train Station GYM.`);
-        this.router.navigate(['/']); // Redirigir a la página de inicio o login
+            console.log(`¡Cuenta creada exitosamente para ${v.nombre}!`);
+
+            this.isLoading = false;
+
+            // Redirigir al home o login
+            this.router.navigate(['/']);
+
+        }, 1500);
     }
 }

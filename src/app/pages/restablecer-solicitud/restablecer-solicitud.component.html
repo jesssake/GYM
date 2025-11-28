@@ -1,32 +1,53 @@
 <div class="login-page-container">
-    <div class="login-box">
+  <div class="login-box">
 
-        <h1 class="title">Recuperar Contraseña</h1>
-        <p class="subtitle">Introduce tu dirección de correo electrónico y te enviaremos un enlace para restablecerla.</p>
+    <h1 class="title">Recuperar Contraseña</h1>
+    <p class="subtitle">
+      Introduce tu dirección de correo electrónico y te enviaremos un enlace para restablecerla.
+    </p>
 
-        <form #f="ngForm" (ngSubmit)="onSubmit(f)" class="login-form" novalidate>
-            <div class="form-group">
-                <label for="email">Dirección de correo electrónico</label>
-                <input type="email" id="email" name="email" required
-                        ngModel #emailInput="ngModel" placeholder="tu.correo@ejemplo.com"
-                        pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$">
+    <form #f="ngForm" (ngSubmit)="onSubmit(f)" class="login-form" novalidate>
+      <div class="form-group">
+        <label for="email">Dirección de correo electrónico</label>
 
-                <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched || f.submitted)" class="validation-message">
-                    Por favor, ingresa un correo electrónico válido.
-                </div>
-            </div>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          ngModel
+          #emailInput="ngModel"
+          placeholder="tu.correo@ejemplo.com"
+          pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
+        >
 
-            <div *ngIf="message" [ngClass]="{'validation-message': isError, 'success-message': !isError}">
-                {{ message }}
-            </div>
-
-            <button type="submit" class="btn-primary" [disabled]="f.invalid || !f.dirty">
-                Enviar enlace
-            </button>
-        </form>
-
-        <div class="footer-links"> <a [routerLink]="['/login']" class="link-login">← Volver al inicio de sesión</a>
+        <div
+          *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched || f.submitted)"
+          class="validation-message"
+        >
+          Por favor, ingresa un correo electrónico válido.
         </div>
+      </div>
 
+      <div
+        *ngIf="message"
+        [ngClass]="{ 'validation-message': isError, 'success-message': !isError }"
+      >
+        {{ message }}
+      </div>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="f.invalid || isLoading"
+      >
+        {{ isLoading ? 'Enviando...' : 'Enviar enlace' }}
+      </button>
+    </form>
+
+    <div class="footer-links">
+      <a [routerLink]="['/login']" class="link-login">← Volver al inicio de sesión</a>
     </div>
+
+  </div>
 </div>

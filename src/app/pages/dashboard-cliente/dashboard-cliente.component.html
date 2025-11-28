@@ -2,8 +2,26 @@
 
     <header class="welcome-header">
         <h1>{{ getGreeting() }}, {{ userName }}</h1>
-        <p>Nivel actual: <strong>{{ userLevel }}</strong>. ¡Sigue con tu progreso!</p>
+        <p>Tu meta actual: <strong>{{ userLevel }}</strong>. ¡Sigue con tu progreso!</p>
     </header>
+
+    <div class="membership-status-card highlight-card">
+        <h2 style="margin-top: 0;">Mi Membresía</h2>
+        <ng-container *ngIf="isMembresiaLoading; else membresiaContent">
+            <p>Cargando estado de membresía...</p>
+        </ng-container>
+
+        <ng-template #membresiaContent>
+            <ng-container *ngIf="membershipStatus; else noMembresia">
+                <p>Plan Activo: <strong>{{ membershipStatus.plan_name }}</strong></p>
+                <p>Expira el: <strong>{{ membershipStatus.fecha_fin | date: 'longDate' }}</strong></p>
+            </ng-container>
+            <ng-template #noMembresia>
+                <p style="color: #f44336; font-weight: bold;">⚠️ No tienes una membresía activa.</p>
+                <a [routerLink]="['/area-privada/planes']" class="btn-primary">Ver Planes Disponibles</a>
+            </ng-template>
+        </ng-template>
+    </div>
 
     <div class="metrics-grid">
         <div class="metric-card" *ngFor="let metric of metrics">
@@ -14,8 +32,14 @@
     </div>
 
     <div class="quick-actions">
-        <h2>Acciones Rápidas</h2>
-        <div class="actions-grid">
+        <h2>Mi Rutina de Hoy</h2>
+        <div class="highlight-card" *ngIf="!isRoutineLoading">
+             <p>Rutina: <strong>{{ currentRoutineTitle }}</strong></p>
+             <a [routerLink]="['/area-privada/mis-entrenamientos']" class="btn-info" *ngIf="currentRoutineTitle !== 'No tienes una rutina asignada.'">
+                Iniciar Rutina
+             </a>
+        </div>
+        <div class="actions-grid" *ngIf="!isRoutineLoading">
             <a [routerLink]="[action.path]" class="action-card" *ngFor="let action of quickActions">
                 <i class="fas {{ action.icon }} icon-large"></i>
                 <p>{{ action.title }}</p>
@@ -25,11 +49,21 @@
     </div>
 
     <div class="content-section">
-        <h2>Próximo Evento Destacado</h2>
-        <div class="highlight-card">
-            <p>Clase de Yoga para Relajación: <strong>Sábado 10, 10:00 AM.</strong></p>
-            <a [routerLink]="['/area-privada/actividades']" class="btn-info">Ver Detalles y Reservar</a>
-        </div>
+        <h2>📢 Avisos y Noticias</h2>
+
+        <ng-container *ngIf="activeNotices.length > 0; else noNotices">
+            <div class="highlight-card notice-card" *ngFor="let notice of activeNotices | slice:0:3">
+                <p class="notice-title"><strong>{{ notice.titulo }}</strong></p>
+                <p class="notice-message">{{ notice.mensaje }}</p>
+                <span class="notice-date">Publicado: {{ notice.fecha_inicio | date: 'shortDate' }}</span>
+            </div>
+        </ng-container>
+
+        <ng-template #noNotices>
+            <div class="highlight-card">
+                 <p>No hay avisos ni eventos destacados por ahora. ¡A seguir entrenando!</p>
+            </div>
+        </ng-template>
     </div>
 
 </div>

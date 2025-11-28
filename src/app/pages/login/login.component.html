@@ -1,71 +1,88 @@
 <div class="login-page-container">
     <div class="login-box">
+
+        <!-- Título principal -->
         <h2 class="title">INICIO DE SESIÓN</h2>
         <p class="subtitle">Accede a tus rutinas y planes exclusivos.</p>
 
+        <!-- Formulario de inicio de sesión -->
         <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
 
+            <!-- Campo Email -->
             <div class="form-group">
                 <label for="email">Dirección de correo electrónico</label>
-                <input type="email"
-                       id="email"
-                       name="email"
-                       required
-                       placeholder="tu.correo@ejemplo.com"
-                       [(ngModel)]="credenciales.email"> </div>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="tu.correo@ejemplo.com"
+                    [(ngModel)]="credenciales.email"
+                >
+                <!-- ngIf para validación -->
+                <!-- <p *ngIf="...">Mensaje</p> -->
+            </div>
 
+            <!-- Campo Contraseña -->
             <div class="form-group">
                 <label for="password">Contraseña</label>
+
                 <div class="password-input-group">
-                    <input [type]="passwordVisible ? 'text' : 'password'"
-                           id="password"
-                           name="password"
-                           required
-                           placeholder="••••••••"
-                           [(ngModel)]="credenciales.password"> <button type="button"
-                            class="toggle-password"
-                            (click)="togglePasswordVisibility()">
-                        <i class="fa-solid"
-                           [ngClass]="passwordVisible ? 'fa-eye' : 'fa-eye-slash'"></i>
+                    <input
+                        [type]="passwordVisible ? 'text' : 'password'"
+                        id="password"
+                        name="password"
+                        required
+                        placeholder="••••••••"
+                        [(ngModel)]="credenciales.password"
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        (click)="togglePasswordVisibility()"
+                    >
+                        <i
+                            class="fa-solid"
+                            [ngClass]="passwordVisible ? 'fa-eye' : 'fa-eye-slash'"
+                        ></i>
                     </button>
                 </div>
             </div>
 
+            <!-- Mensaje de error -->
             <div *ngIf="errorMessage" class="error-message">
                 {{ errorMessage }}
             </div>
 
-            <button type="submit"
-                    class="btn-primary"
-                    [disabled]="!loginForm.valid">
-                CONTINUAR
+            <!-- Botón principal -->
+            <button
+                type="submit"
+                class="btn-primary"
+                [disabled]="!loginForm.valid || isLoading"
+            >
+                {{ isLoading ? 'Cargando...' : 'CONTINUAR' }}
             </button>
         </form>
-
-        <div class="separator-or">
-            <hr>
-            <span>O</span>
-            <hr>
-        </div>
-
-        <div class="social-login-options">
-            <button class="btn-social google">
-                <img src="assets/icons/google-logo.svg" alt="Google Logo">
-                Continuar con Google
-            </button>
-            <button class="btn-social facebook">
-                <img src="assets/icons/facebook-logo.svg" alt="Facebook Logo">
-                Continuar con Facebook
-            </button>
-            <button class="btn-social apple">
-                <img src="assets/icons/apple-logo.svg" alt="Apple Logo">
-                Continuar con Apple
-            </button>
-        </div>
-
+        <!-- Enlaces inferiores -->
         <div class="footer-links">
-            <p>¿Eres un nuevo usuario? <a [routerLink]="['/registro']" class="link-register">Crear una cuenta</a></p>
-            <a [routerLink]="['/recuperar']" class="link-forgot-password">Olvidé mi contraseña</a>
+            <p>
+                ¿Eres un nuevo usuario?
+                <a
+                    [routerLink]="['/registro']"
+                    class="link-register"
+                >
+                    Crear una cuenta
+                </a>
+            </p>
+
+            <a
+                [routerLink]="['/recuperar']"
+                class="link-forgot-password"
+            >
+                Olvidé mi contraseña
+            </a>
         </div>
+
     </div>
 </div>

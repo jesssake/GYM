@@ -93,30 +93,29 @@
     font-weight: 600;
 }
 
-/* ESTILOS UNIFICADOS PARA TODOS LOS INPUTS (CORREO Y CONTRASEÑA) */
-.login-form input[type="email"],
+/* 🔥 ESTILOS UNIFICADOS PARA TODOS LOS INPUTS */
+/* (Nombre, Apellido, Correo y Contraseña) */
+.login-form .form-input-text,
 .password-input-group input {
     width: 100%;
     padding: 10px;
     border: 1px solid #333;
     border-radius: 4px;
-    background-color: #222; /* Fondo oscuro */
+    background-color: #222;
     color: #f0f0f0;
     font-size: 1rem;
     box-sizing: border-box;
     transition: border-color 0.3s;
 }
 
-.login-form input[type="email"] {
-    padding-right: 10px;
-}
-
-.login-form input[type="email"]:focus,
+/* Efecto Focus Unificado */
+.login-form .form-input-text:focus,
 .password-input-group input:focus {
     border-color: #e53935;
     outline: none;
 }
 
+/* Contenedor de contraseña */
 .password-input-group {
     position: relative;
     width: 100%;
@@ -149,7 +148,7 @@
     color: #e53935;
 }
 
-/* VALIDACIÓN DE REGLAS DE CONTRASEÑA */
+/* VALIDACIÓN DE CONTRASEÑA */
 .password-rules-container {
     margin-top: 15px;
     padding: 10px;
@@ -175,21 +174,19 @@
 }
 
 .password-rules-container li {
-    padding-left: 20px; /* Espacio para el icono que se agrega en HTML */
+    padding-left: 20px;
     position: relative;
     line-height: 1.5;
 }
 
-/* Reglas de color para los mensajes de validación */
 .password-rules-container li.valid {
-    color: #4caf50; /* Verde */
+    color: #4caf50;
 }
 
 .password-rules-container li.invalid {
-    color: #e53935; /* Rojo */
+    color: #e53935;
 }
 
-/* Mensaje de validación básica */
 .validation-message {
     color: #e53935;
     font-size: 0.8rem;
@@ -242,7 +239,7 @@
 }
 
 /* -------------------------------------- */
-/* 6. Botones de Inicio de Sesión Social (CÍRCULOS SUPERIORES) */
+/* 6. Botones de Inicio de Sesión Social */
 /* -------------------------------------- */
 .social-login-options {
     display: flex;
@@ -271,7 +268,6 @@
     object-fit: contain;
 }
 
-/* Colores específicos para cada botón */
 .btn-social.social-circle.google {
     background-color: #fff;
 }
@@ -284,7 +280,6 @@
     background-color: #000;
 }
 
-/* Asegura que los logos de Facebook y Apple (si son negros por defecto) se vean blancos */
 .btn-social.social-circle.facebook img,
 .btn-social.social-circle.apple img {
     filter: brightness(0) invert(1);

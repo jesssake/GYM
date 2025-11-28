@@ -1,7 +1,8 @@
 import { Routes } from '@angular/router';
-// 🚨 CORRECCIÓN: Importar ambos guards
+
+// 🚨 Importar guards correctamente
 import { authGuard } from './guards/auth-guard';
-import { adminGuard } from './guards/admin-guard'; // <--- NUEVO IMPORT
+import { adminGuard } from './guards/admin-guard';
 
 // ----------------------------------------------------
 // Componentes Públicos Existentes
@@ -13,6 +14,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegistroComponent } from './pages/registro/registro.component';
 import { RegistroPerfilComponent } from './pages/registro-perfil/registro-perfil.component';
 import { RestablecerSolicitudComponent } from './pages/restablecer-solicitud/restablecer-solicitud.component';
+import { RestablecerConfirmarComponent } from './pages/restablecer-confirmar/restablecer-confirmar.component';
 
 // ----------------------------------------------------
 // Componentes Privados - ADMINISTRADOR
@@ -31,58 +33,61 @@ import { EntrenamientosComponent } from './pages/entrenamientos/entrenamientos.c
 import { ActividadesExtrasComponent } from './pages/actividades-extras/actividades-extras.component';
 import { RecomendacionesComponent } from './pages/recomendaciones/recomendaciones.component';
 
+// 🚨 NUEVO: Importar MembresiaComponent
+import { MembresiaComponent } from './pages/membresia/membresia.component';
 
 export const routes: Routes = [
-	// ----------------------------------------------------
-	// RUTAS PÚBLICAS
-	// ----------------------------------------------------
-	{ path: '', component: HomeComponent, title: 'Inicio | Train Station Gym' },
-	{ path:'conocetugym', component: AboutComponent, title: 'Acerca de Nosotros' },
-	{ path: 'planes', component: PlanesComponent, title: 'Nuestros Planes' },
-	{ path: 'login', component: LoginComponent, title: 'Iniciar Sesión' },
-	{ path: 'registro', component: RegistroComponent, title: 'Crear Cuenta' },
-	{ path: 'registro/perfil', component: RegistroPerfilComponent, title: 'Completar Perfil' },
-	{ path: 'recuperar', component: RestablecerSolicitudComponent, title: 'Restablecer Contraseña' },
 
-	// ----------------------------------------------------
-	// RUTAS PRIVADAS (Requiere sesión iniciada)
-	// ----------------------------------------------------
-	{
-		path: 'area-privada',
-		// 🚨 Capa 1: Proteger todo el área con authGuard (verifica sesión activa)
-		canActivate: [authGuard],
-		children: [
+    // ----------------------------------------------------
+    // RUTAS PÚBLICAS
+    // ----------------------------------------------------
+    { path: '', component: HomeComponent, title: 'Inicio | Train Station Gym' },
+    { path: 'conocetugym', component: AboutComponent, title: 'Acerca de Nosotros' },
+    { path: 'planes', component: PlanesComponent, title: 'Nuestros Planes' },
+    { path: 'login', component: LoginComponent, title: 'Iniciar Sesión' },
+    { path: 'registro', component: RegistroComponent, title: 'Crear Cuenta' },
+    { path: 'registro/perfil', component: RegistroPerfilComponent, title: 'Completar Perfil' },
+    { path: 'recuperar', component: RestablecerSolicitudComponent, title: 'Solicitar Restablecimiento' },
+    { path: 'restablecer-confirmar', component: RestablecerConfirmarComponent, title: 'Cambiar Contraseña' },
 
-			// 1. RUTAS DEL CLIENTE (Acceso a todos los logueados)
-			{ path: 'dashboard', component: DashboardClienteComponent, title: 'Dashboard' },
-			{ path: 'perfil', component: PerfilUsuarioComponent, title: 'Mi Perfil' },
-			{ path: 'mis-entrenamientos', component: EntrenamientosComponent, title: 'Mis Entrenamientos' },
-			{ path: 'actividades', component: ActividadesExtrasComponent, title: 'Actividades y Avisos' },
-			{ path: 'recomendaciones', component: RecomendacionesComponent, title: 'Recomendaciones' },
+    // ----------------------------------------------------
+    // RUTAS PRIVADAS (requieren sesión)
+    // ----------------------------------------------------
+    {
+        path: 'area-privada',
+        canActivate: [authGuard],
+        children: [
 
-			// Redirige la ruta /area-privada
-			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+            // CLIENTE
+            { path: 'dashboard', component: DashboardClienteComponent, title: 'Dashboard' },
+            { path: 'perfil', component: PerfilUsuarioComponent, title: 'Mi Perfil' },
+            { path: 'mis-entrenamientos', component: EntrenamientosComponent, title: 'Mis Entrenamientos' },
+            { path: 'actividades', component: ActividadesExtrasComponent, title: 'Actividades y Avisos' },
+            { path: 'recomendaciones', component: RecomendacionesComponent, title: 'Recomendaciones' },
 
-			// 2. PANEL DE ADMINISTRACIÓN
-			{
-				path: 'admin',
-				// 🚨 Capa 2: Proteger por rol con adminGuard
-				canActivate: [adminGuard],
-				component: PanelAdminComponent,
-				children: [
-					// Sub-rutas que se cargan en el <router-outlet> del PanelAdminComponent
-					{ path: 'usuarios', component: GestionUsuariosComponent, title: 'Administrar Usuarios ' },
-					{ path: 'contenido', component: GestionContenidoComponent, title: 'Administrar Contenido' },
-					{ path: 'notificaciones', component: GestionNotificacionesComponent, title: 'Administrar Notificaciones' },
+            // 🚨 NUEVA RUTA PARA "Mi Suscripción"
+            { path: 'membresia', component: MembresiaComponent, title: 'Mi Suscripción' },
 
-					// Redirige /area-privada/admin por defecto
-					{ path: '', redirectTo: 'usuarios', pathMatch: 'full' },
-				]
-			},
-		]
-	},
-	// ----------------------------------------------------
-	// RUTA CATCH-ALL (404)
-	// ----------------------------------------------------
-	{ path: '**', redirectTo: '' } // Redirige cualquier ruta no definida al inicio
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+
+            // PANEL ADMIN
+            {
+                path: 'admin',
+                canActivate: [adminGuard],
+                component: PanelAdminComponent,
+                children: [
+                    { path: 'usuarios', component: GestionUsuariosComponent, title: 'Administrar Usuarios' },
+                    { path: 'contenido', component: GestionContenidoComponent, title: 'Administrar Contenido' },
+                    { path: 'notificaciones', component: GestionNotificacionesComponent, title: 'Administrar Notificaciones' },
+
+                    { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
+                ]
+            }
+        ]
+    },
+
+    // ----------------------------------------------------
+    // RUTA 404
+    // ----------------------------------------------------
+    { path: '**', redirectTo: '' }
 ];

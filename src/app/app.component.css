@@ -2,7 +2,7 @@
 :host {
     display: block;
     min-height: 100vh;
-    background-color: #121212; /* Fondo de la aplicación */
+    background-color: #121212; /* Fondo de la aplicación (host) */
     color: #e0e0e0;
 }
 
@@ -19,10 +19,11 @@
     box-sizing: border-box;
     padding: 30px;
 
-    /* 🚨 CLAVE DE CORRECCIÓN: Evita el espacio negro al final del scroll */
-    padding-bottom: 50px;
+    /* 🚨 CORRECCIÓN CLAVE 2: Eliminar el fondo. Permitir que el fondo del Panel Admin se muestre. */
+    background-color: transparent;
 
-    background-color: #1e1e1e; /* Fondo del área privada (Dashboard, Perfil, etc.) */
+    /* CLAVE DE CORRECCIÓN: Evita el espacio negro al final del scroll */
+    padding-bottom: 50px;
 
     /* CLAVE ABSOLUTA: Altura fija y scroll interno para el área privada */
     height: calc(100vh - 60px);
@@ -35,11 +36,9 @@
 
     /* Ajustes para rutas públicas (no deben tener padding lateral extra ni scroll fijo) */
     padding: 0;
+    padding-bottom: 30px;
 
-    /* Restaurar padding-bottom para que el contenido empuje al Footer */
-    padding-bottom: 30px; /* o 0, dependiendo de si el contenido público tiene su propio espaciado */
-
-    background-color: transparent; /* Permite que se vea el fondo general */
+    background-color: transparent;
 
     /* CLAVE: Permitimos que el contenido crezca para que el Footer se posicione debajo */
     height: auto;

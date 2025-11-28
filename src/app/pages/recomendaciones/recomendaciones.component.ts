@@ -1,7 +1,23 @@
+// src/app/pages/recomendaciones/recomendaciones.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UsuarioApiService } from '../../services/usuario-api.service'; // 🚨 Importar el servicio
 
-// 🚨 Interfaces para tipado fuerte
+// ----------------------------------------------------
+// INTERFACES (Ajustamos para ser más flexibles/realistas de una API)
+// ----------------------------------------------------
+interface Recomendacion {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  meta: string;
+  tipo: 'entrenamiento' | 'articulo'; // Agregamos un tipo para diferenciarlos si vienen juntos
+  url?: string; // Para artículos
+  categoria?: string; // Para artículos
+}
+
+// Nota: Mantendremos las interfaces originales para consistencia si el backend las separa:
 interface EntrenamientoRecomendado {
   id: number;
   titulo: string;
@@ -16,6 +32,9 @@ interface ArticuloRecomendado {
   categoria: string;
 }
 
+// ----------------------------------------------------
+// COMPONENTE CORREGIDO
+// ----------------------------------------------------
 @Component({
   selector: 'app-recomendaciones',
   standalone: true,
@@ -25,29 +44,58 @@ interface ArticuloRecomendado {
 })
 export class RecomendacionesComponent implements OnInit {
 
-  metaUsuario: string = 'Ganar Músculo';
+  // Propiedades para mostrar
+  metaUsuario: string = 'Cargando...';
+  entrenamientosRecomendados: EntrenamientoRecomendado[] = [];
+  articulosRecomendados: ArticuloRecomendado[] = [];
+  isLoading: boolean = true;
+  errorMessage: string | null = null;
 
-  // 🚨 Usamos las interfaces
-  entrenamientosRecomendados: EntrenamientoRecomendado[] = [
-    { id: 201, titulo: 'Rutina Full Body Rápida', descripcion: 'Ideal para días ocupados, ejercita todos los músculos principales en 45 min.', meta: 'Mantenimiento' },
-    { id: 202, titulo: 'Sesión de Cardio Intervalos (HIIT)', descripcion: 'Quema máxima grasa en poco tiempo. Recomendado 3 veces por semana.', meta:'Pérdida de Peso' },
-  ];
+  // 🚨 Inyectamos el servicio
+  constructor(private usuarioService: UsuarioApiService) { }
 
-  articulosRecomendados: ArticuloRecomendado[] = [
-    { id: 301, titulo: 'La Importancia del Descanso Activo', url: '#', categoria: 'Recuperación' },
-    { id: 302, titulo: 'Los 5 Errores Nutricionales de los Principiantes', url: '#', categoria: 'Nutrición' },
-  ];
+  ngOnInit(): void {
+    this.cargarRecomendaciones();
+  }
 
-  constructor() { }
+  cargarRecomendaciones(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
 
-  ngOnInit(): void { }
+    this.usuarioService.getRecommendations().subscribe({
+      next: (res: any) => { // Usamos 'any' porque no tenemos la interfaz de respuesta de esta API
+        if (res.ok) {
+          // Asumimos que la respuesta trae la meta y las listas separadas
+          this.metaUsuario = res.userMeta || 'General';
 
+          // 🚨 Reemplazamos los datos estáticos con los de la API
+          this.entrenamientosRecomendados = res.entrenamientos || [];
+          this.articulosRecomendados = res.articulos || [];
+
+        } else {
+          this.errorMessage = res.msg || 'Error al cargar las recomendaciones.';
+        }
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Error al cargar recomendaciones:', err);
+        this.errorMessage = 'Error de conexión con el servidor.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // ----------------------------------------------------
+  // ACCIONES
+  // ----------------------------------------------------
   verDetalleEntrenamiento(titulo: string): void {
     alert(`[ACCION] Redirigiendo a detalles de: ${titulo}`);
+    // Aquí podrías usar this.router.navigate(['/entrenamiento', id]);
   }
 
   verArticulo(url: string, event: Event): void {
     event.preventDefault();
-    alert(`[ACCION] Simulando apertura de artículo.`);
+    alert(`[ACCION] Redirigiendo a artículo: ${url}`);
+    // Aquí podrías abrir la URL en una nueva pestaña: window.open(url, '_blank');
   }
 }

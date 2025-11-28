@@ -4,7 +4,36 @@ html, body {
   padding: 0;
   box-sizing: border-box;
 }
+
 html {
-    /* Esto hace que todos los saltos a IDs (#planes) sean suaves */
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
+}
+
+/* ============================== */
+/* VARIABLES GLOBALES DEL TEMA */
+/* ============================== */
+:root {
+  --color-dark-bg: #121212;      /* Fondo general del dashboard */
+  --color-card-bg: #1e1e1e;      /* Fondo de tarjetas */
+  --color-primary: #e63946;      /* Rojo principal */
+  --color-text-light: #ffffff;   /* Texto blanco */
+  --color-text-muted: #c5c5c5;   /* Gris suave */
+  --color-active: #5cb85c;       /* Verde del estado */
+  --color-divider: #2e2e2e;      /* Líneas divisorias */
+}
+
+/* ================================================= */
+/* 🚀 CORRECCIÓN CLAVE 1: Aplicar fondo a BODY */
+/* Esto asegura que toda la página sea oscura. */
+/* ================================================= */
+
+body {
+    background-color: var(--color-dark-bg); /* ¡SOLUCIÓN! Aplica el fondo oscuro */
+    color: var(--color-text-light);
+    font-family: Arial, sans-serif;
+}
+
+app-root {
+    display: block;
+    min-height: 100vh;
 }

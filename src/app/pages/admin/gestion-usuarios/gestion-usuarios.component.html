@@ -15,35 +15,52 @@
         <button class="btn-secondary" (click)="agregarEntrenador()">Agregar Entrenador</button>
     </div>
 
-    <table class="data-table">
+    <!-- Indicador de Carga -->
+    <div *ngIf="isLoading" class="loading-indicator" style="text-align: center; padding: 20px;">
+        Cargando usuarios...
+    </div>
+
+    <table class="data-table" *ngIf="!isLoading && users.length > 0">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Nombre</th>
+                <th>Correo Electrónico</th>
                 <th>Rol</th>
+                <th>Fecha Registro</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let user of users">
-                <td>{{ user.name }}</td>
-                <td>{{ user.role }}</td>
+                <td>{{ user.id }}</td>
+                <td>{{ user.nombre }}</td> <!-- ✅ Usar la propiedad 'nombre' del backend -->
+                <td>{{ user.email }}</td>
+                <td>{{ user.rol }}</td> <!-- ✅ Usar la propiedad 'rol' del backend -->
+                <td>{{ user.fecha_registro | date: 'mediumDate' }}</td>
                 <td>
+                    <!-- Cambiar Rol: Cliente <-> Coach -->
                     <button
-                        *ngIf="user.actions.includes('Cambiar Rol')"
+                        *ngIf="user.rol !== 'Administrador'"
                         class="btn-action"
-                        (click)="cambiarRol(user.id)"
+                        (click)="cambiarRol(user.id, user.rol)"
                     >
-                        Cambiar Rol
+                        Cambiar a {{ user.rol === 'Cliente' ? 'Coach' : 'Cliente' }}
                     </button>
+
+                    <!-- Eliminar Usuario -->
                     <button
-                        *ngIf="user.actions.includes('Eliminar Coach')"
                         class="btn-action danger"
-                        (click)="eliminarCoach(user.id)"
+                        (click)="eliminarUsuario(user.id)"
                     >
-                        Eliminar Coach
+                        Eliminar
                     </button>
                 </td>
             </tr>
         </tbody>
     </table>
+
+    <div *ngIf="!isLoading && users.length === 0" style="text-align: center; padding: 20px;">
+        No se encontraron usuarios.
+    </div>
 </div>

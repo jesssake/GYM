@@ -1,15 +1,19 @@
 /* -------------------------------------------------- */
-/* Layout Principal y Reset */
+/* 🛠️ Estilos del Layout Principal del Panel Admin */
 /* -------------------------------------------------- */
-/* 🗑️ ELIMINAMOS .admin-layout, .admin-sidebar, .admin-title, .admin-sidebar nav, .nav-link, etc. */
-/* Estos estilos ya están definidos y aplicados por SidebarComponent y app.component.css */
 
+/* Contenedor principal de la vista, debe tener un fondo oscuro */
+.admin-layout-content {
+    background-color: #1a1a1a; /* Fondo oscuro que coincide con tu tema */
+    padding: 30px; /* Relleno alrededor de la tarjeta de gestión */
+    min-height: 100vh; /* Asegura que el fondo cubra toda la altura de la pantalla */
+}
 
-/* -------------------------------------------------- */
-/* Contenido Principal */
-/* -------------------------------------------------- */
-/* 🗑️ ELIMINAMOS .admin-content y su padding, ya que el padding ahora lo maneja .router-content-area */
-
+/* Área de contenido donde se carga la ruta (<router-outlet>) */
+.admin-content-area {
+    background-color: transparent;
+    display: block;
+}
 
 /* -------------------------------------------------- */
 /* Tarjeta de Gestión (Se mantiene para estilizar la caja gris) */
@@ -40,7 +44,8 @@
 /* -------------------------------------------------- */
 /* Estilos Comunes de Formulario y Tabla (Mantenidos) */
 /* -------------------------------------------------- */
-.form-group, .action-panel {
+.form-group,
+.action-panel {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
@@ -48,7 +53,9 @@
     align-items: center;
 }
 
-.text-input, textarea, .select-input {
+.text-input,
+textarea,
+.select-input {
     padding: 12px;
     border-radius: 6px;
     border: 1px solid #444;
@@ -59,7 +66,9 @@
     width: 100%;
 }
 
-.text-input:focus, textarea:focus, .select-input:focus {
+.text-input:focus,
+textarea:focus,
+.select-input:focus {
     border-color: #ff5252;
     box-shadow: 0 0 0 1px #ff5252;
     outline: none;
@@ -70,7 +79,9 @@ textarea {
     min-height: 120px;
 }
 
-.btn-primary, .btn-secondary, .btn-action {
+.btn-primary,
+.btn-secondary,
+.btn-action {
     padding: 10px 20px;
     border: none;
     border-radius: 6px;
@@ -151,6 +162,14 @@ textarea {
     transition: background-color 0.2s;
 }
 
+.btn-action {
+    background-color: #444;
+    color: white;
+}
+.btn-action:hover {
+    background-color: #555;
+}
+
 .btn-action.danger {
     background-color: #D32F2F;
     color: white;
@@ -159,10 +178,9 @@ textarea {
     background-color: #C62828;
 }
 
-.btn-action {
-    background-color: #444;
-    color: white;
-}
-.btn-action:hover {
-    background-color: #555;
+/* Solución de Host (mantenida por si acaso) */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #1a1a1a;
 }
