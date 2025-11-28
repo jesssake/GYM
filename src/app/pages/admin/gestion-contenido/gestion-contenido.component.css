@@ -1,14 +1,19 @@
+/* 🔎 AJUSTAR .management-card */
 .management-card {
-    background-color: #2c2c2c;
+    background-color: #1e1e1e; /* Color oscuro que coincide con tu tema (más claro que el fondo general) */
     padding: 25px;
     border-radius: 8px;
+    width: 100%; /* Asegura que cubra todo el ancho y no deje espacios blancos */
+    box-sizing: border-box;
 }
+
 .management-card h2 {
     color: #e53935;
     margin-top: 20px;
     border-bottom: 1px solid #444;
     padding-bottom: 5px;
 }
+
 /* Nota: Este .form-group es para el diseño de Rutinas/Actividades, si tienes uno global en panel-admin, el de ahí puede dominar. */
 .form-group {
     display: flex;
@@ -17,17 +22,35 @@
     margin-top: 15px;
     margin-bottom: 30px;
 }
-.text-input, textarea {
+
+/* 🚨 NUEVA CLASE: Para el div que contiene las fechas (reemplaza inline style) */
+.form-group-spaced {
+    flex-direction: row; /* Asegura que estén lado a lado */
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* 🚨 NUEVA CLASE: Para el div contenedor de las fechas (reemplaza inline style) */
+.date-input-wrapper {
+    flex-basis: 45%;
+    display: flex; /* Asegura que label y input estén bien alineados */
+    flex-direction: column;
+}
+
+.text-input,
+textarea {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #444;
     background-color: #1a1a1a;
     color: white;
 }
+
 textarea {
     resize: vertical;
     min-height: 100px;
 }
+
 .btn-primary {
     padding: 10px 15px;
     border: none;
@@ -35,6 +58,23 @@ textarea {
     background-color: #e53935;
     color: white;
     cursor: pointer;
+}
+
+/* 🚨 NUEVA CLASE: Reemplaza style="width: auto;" */
+.btn-auto {
+    width: auto;
+}
+
+/* 🚨 NUEVA CLASE: Reemplaza style="width: auto; margin-top: 10px;" */
+.btn-auto-mt {
+    width: auto;
+    margin-top: 10px;
+}
+
+/* 🚨 NUEVA CLASE: Reemplaza style="border-color: #333; margin: 30px 0;" */
+.hr-separator {
+    border-color: #333;
+    margin: 30px 0;
 }
 
 /* Estilos adicionales para organizar las secciones del formulario */
@@ -54,28 +94,20 @@ textarea {
 /* ----------------------------------------------------------------------- */
 /* CORRECCIÓN CRÍTICA PARA EL SELECTOR DE FECHA Y HORA */
 /* ----------------------------------------------------------------------- */
-
-/* 1. Anula estilos que puedan bloquear el control nativo */
 input[type="datetime-local"] {
-    -webkit-appearance: none; /* Chrome, Safari */
-    -moz-appearance: none;    /* Firefox */
-    appearance: none;         /* Estándar */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 
-    /* Asegura que se respete el color y fondo definidos en .text-input */
     background-color: #1a1a1a;
     color: white;
 
     padding-right: 10px;
 }
 
-/* 2. Hace visible y clicable el ícono del calendario/reloj */
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    /* Fuerza al ícono nativo del navegador a mostrarse (soluciona el 'no hace nada') */
     display: block;
-
-    /* Invierte el color del ícono (de negro/gris a blanco) para que se vea en el fondo oscuro */
     filter: invert(1);
-
     cursor: pointer;
-    opacity: 1; /* Asegura que no sea transparente */
+    opacity: 1;
 }

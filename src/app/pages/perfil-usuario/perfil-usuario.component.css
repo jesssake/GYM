@@ -1,3 +1,8 @@
+/* 🚨 CORRECCIÓN 1: Clase para ocultar el input de tipo file y solo usar la etiqueta */
+.hidden-file-input {
+    display: none;
+}
+
 /* Mantenemos el CSS anterior (diseño oscuro/rojo para formulario y perfil) */
 .profile-container {
     padding: 30px;
@@ -5,6 +10,7 @@
     min-height: calc(100vh - 80px);
     color: white;
 }
+
 .profile-card {
     background-color: #2c2c2c;
     padding: 30px;
@@ -12,6 +18,7 @@
     max-width: 800px;
     margin: 0 auto;
 }
+
 h1 {
     font-size: 32px;
     color: white;
@@ -19,6 +26,7 @@ h1 {
     border-bottom: 2px solid #333;
     padding-bottom: 10px;
 }
+
 .section-heading {
     font-size: 24px;
     color: #ff5252;
@@ -27,22 +35,27 @@ h1 {
     border-bottom: 1px solid #444;
     padding-bottom: 5px;
 }
+
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
     margin-bottom: 20px;
 }
+
 .form-field {
     display: flex;
     flex-direction: column;
 }
+
 .form-field label {
     font-size: 14px;
     color: #ccc;
     margin-bottom: 5px;
 }
-.form-field input, .form-field select {
+
+.form-field input,
+.form-field select {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #444;
@@ -50,15 +63,19 @@ h1 {
     color: white;
     font-size: 16px;
 }
+
 .form-field input:disabled {
     background-color: #383838;
     color: #aaa;
     cursor: not-allowed;
 }
-.form-field input:focus, .form-field select:focus {
+
+.form-field input:focus,
+.form-field select:focus {
     border-color: #e53935;
     outline: none;
 }
+
 .btn-primary {
     padding: 12px 20px;
     border: none;
@@ -69,10 +86,12 @@ h1 {
     font-weight: 600;
     transition: background-color 0.2s;
 }
+
 .btn-primary.full-width-btn {
     width: 100%;
     margin-top: 30px;
 }
+
 .btn-primary:hover {
     background-color: #c62828;
 }
@@ -88,6 +107,7 @@ h1 {
     font-weight: 600;
     transition: background-color 0.2s;
 }
+
 .btn-secondary:hover {
     background-color: #4f4f4f;
 }
@@ -121,20 +141,18 @@ h1 {
 
 /* 🚨 NUEVOS ESTILOS PARA EL ICONO DE USUARIO POR DEFECTO */
 .default-profile-icon {
-    font-size: 142px; /* Tamaño del icono */
-    color: #aaa; /* Color de silueta gris claro */
+    font-size: 142px;
+    color: #aaa;
     width: 150px;
     height: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    /* Replicamos el borde de la imagen para que el icono se vea igual */
     border: 4px solid #ff5252;
     margin-bottom: 15px;
     box-shadow: 0 0 15px rgba(255, 82, 82, 0.2);
 }
-
 
 .photo-upload-label {
     background-color: #ff5252;
@@ -157,11 +175,9 @@ h1 {
     box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
 }
 
-
 /* -------------------------------------------------- */
 /* 🚨 ESTILOS DEL MODAL DE RECORTE (CROPPER) */
 /* -------------------------------------------------- */
-
 .cropper-modal {
     position: fixed;
     top: 0;
@@ -183,12 +199,12 @@ h1 {
     max-width: 900px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     display: grid;
-    grid-template-columns: 2fr 1fr; /* 2/3 para Cropper, 1/3 para Preview */
+    grid-template-columns: 2fr 1fr;
     gap: 30px;
     min-height: 450px;
 }
 
-/* Ajuste para móviles: apilar las columnas */
+/* Ajuste para móviles */
 @media (max-width: 768px) {
     .cropper-content {
         grid-template-columns: 1fr;
@@ -216,7 +232,13 @@ h1 {
     padding: 5px;
 }
 
-/* Estilos de la previsualización */
+/* 🚨 Para el componente image-cropper */
+.cropper-config {
+    max-width: 100%;
+    height: 350px;
+}
+
+/* Previsualización */
 .cropper-preview {
     display: flex;
     flex-direction: column;
@@ -251,7 +273,7 @@ h1 {
     box-shadow: 0 0 15px rgba(255, 82, 82, 0.4);
 }
 
-/* Contenedor de botones del modal */
+/* Contenedor de botones */
 .cropper-actions {
     grid-column: 1 / -1;
     display: flex;
@@ -260,12 +282,12 @@ h1 {
     margin-top: 20px;
 }
 
-/* Ajustes para image-cropper (la librería) */
+/* Ajustes para image-cropper interno */
 :host ::ng-deep image-cropper {
-    /* Esto es necesario para apuntar a los estilos internos de la librería */
     width: 100%;
     height: 100%;
 }
+
 /* -------------------------------------------------- */
 /* ESTILOS PARA MENSAJES DE ESTADO Y SPINNER */
 /* -------------------------------------------------- */
@@ -298,7 +320,6 @@ h1 {
     font-size: 14px;
 }
 
-/* Si quieres animar el texto “Procesando...” */
 .spinner::after {
     content: '';
     display: inline-block;
@@ -318,7 +339,6 @@ h1 {
     }
 }
 
-/* Botón deshabilitado */
 .btn-primary:disabled {
     opacity: 0.6;
     cursor: not-allowed;

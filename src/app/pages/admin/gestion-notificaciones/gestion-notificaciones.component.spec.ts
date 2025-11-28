@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GestionNotificaciones } from './gestion-notificaciones.component';
+import { GestionNotificacionesComponent } from './gestion-notificaciones.component';
 
 describe('GestionNotificaciones', () => {
-  let component: GestionNotificaciones;
-  let fixture: ComponentFixture<GestionNotificaciones>;
+  let component: GestionNotificacionesComponent;
+  let fixture: ComponentFixture<GestionNotificacionesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GestionNotificaciones]
+      imports: [GestionNotificacionesComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GestionNotificaciones);
+    fixture = TestBed.createComponent(GestionNotificacionesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

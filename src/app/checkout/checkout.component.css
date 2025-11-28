@@ -1,0 +1,125 @@
+/* Contenedor general de la página */
+.checkout-page-container {
+    min-height: 100vh;
+    background-color: #111827; /* bg-gray-900 */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 5rem;   /* pt-20 */
+    padding-bottom: 2.5rem; /* pb-10 */
+    font-family: 'Inter', sans-serif;
+}
+
+/* Tarjeta general */
+.checkout-card {
+    width: 100%;
+    max-width: 72rem; /* max-w-6xl */
+    padding: 2rem; /* p-8 */
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4); /* shadow-2xl */
+    background-color: #1f1f1f;
+}
+
+/* Paneles laterales */
+.summary-panel,
+.payment-panel {
+    padding: 1.5rem; /* p-6 */
+    border-radius: 0.5rem; /* rounded-lg */
+    background-color: #2c2c2c;
+}
+
+/* ----------------------------- */
+/* FORMULARIO                    */
+/* ----------------------------- */
+
+.input-group label {
+    display: block;
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    color: #9ca3af; /* text-gray-400 */
+    margin-bottom: 0.25rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem; /* p-3 */
+    border: 1px solid #4a4a4a;
+    border-radius: 0.5rem; /* rounded-lg */
+    background-color: #3a3a3a;
+    color: white;
+    outline: none;
+    transition: 0.2s;
+}
+
+.input-group input:focus {
+    border-color: #ef4444; /* red-500 */
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.4); /* ring-red-500 */
+}
+
+/* ----------------------------- */
+/* MÉTODOS DE PAGO               */
+/* ----------------------------- */
+
+.payment-method-btn {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    font-size: 0.875rem; /* text-sm */
+    border-radius: 9999px; /* rounded-full */
+    border: 1px solid #4b5563; /* border-gray-600 */
+    color: #d1d5db; /* text-gray-300 */
+    background-color: #374151; /* bg-gray-700 */
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.payment-method-btn:hover {
+    background-color: #4b5563; /* hover:bg-gray-600 */
+}
+
+.payment-method-btn.selected-method {
+    border-color: #ef4444; /* red-500 */
+    background-color: #7f1d1d; /* red-800 */
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* ----------------------------- */
+/* BOTÓN DE CONFIRMACIÓN         */
+/* ----------------------------- */
+
+.payment-submit-btn {
+    width: 100%;
+    padding: 0.75rem 0; /* py-3 */
+    margin-top: 2rem; /* mt-8 */
+    font-size: 1.125rem; /* text-lg */
+    font-weight: bold;
+    border-radius: 0.5rem;
+    background-color: #e53935;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.payment-submit-btn:hover:not(:disabled) {
+    background-color: #c62828;
+}
+
+.payment-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ----------------------------- */
+/* CAJA DE ERRORES               */
+/* ----------------------------- */
+
+.error-box {
+    padding: 1rem; /* p-4 */
+    margin-bottom: 1.5rem; /* mb-6 */
+    border-radius: 0.5rem;
+    font-weight: 500;
+    background-color: #ffcccc;
+    color: #cc0000;
+}

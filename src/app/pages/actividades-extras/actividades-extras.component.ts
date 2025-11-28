@@ -1,64 +1,151 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
-// 🚨 Interfaces para tipado fuerte
-interface Aviso {
-  titulo: string;
-  contenido: string;
-  fecha: string; // Usamos string para representar el ISO Date/Time
-}
-
-interface Actividad {
-  id: number;
-  titulo: string;
-  fecha: string;
-  fechaFin: string | null; // Puede ser null
-  descripcion: string;
-  inscrito: boolean;
-}
+// 🚨 Importar el servicio y las interfaces
+import {
+  UsuarioApiService,
+  Actividad,
+  Aviso,
+  NoticeResponse,
+  ActivityResponse,
+  GeneralResponse
+} from '../../services/usuario-api.service';
 
 @Component({
   selector: 'app-actividades-extras',
   standalone: true,
-  imports: [CommonModule, DatePipe, NgIf, NgFor],
+  imports: [CommonModule, DatePipe, NgIf, NgFor, FormsModule],
   templateUrl: './actividades-extras.component.html',
   styleUrl: './actividades-extras.component.css'
 })
 export class ActividadesExtrasComponent implements OnInit {
 
-  // 🚨 Usamos las interfaces. Estos datos deberían venir de un servicio real.
-  actividades: Actividad[] = [
-    { id: 101, titulo: 'Clase de Yoga para Principiantes', fecha: '2025-10-30T18:00:00', fechaFin: null, descripcion: 'Sesión de relajación y estiramiento para liberar tensión.', inscrito: false },
-    { id: 102, titulo: 'Taller de Nutrición Deportiva', fecha: '2025-11-01T10:00:00', fechaFin: '2025-11-01T12:00:00', descripcion: 'Aprende a planificar tus comidas pre y post-entreno para optimizar resultados.', inscrito: true },
-    { id: 103, titulo: 'Torneo de Levantamiento', fecha: '2025-11-15T16:00:00', fechaFin: '2025-11-15T20:00:00', descripcion: '¡Pon a prueba tu fuerza contra otros miembros del gimnasio! Habrá premios.', inscrito: false },
-  ];
+  actividades: Actividad[] = [];
+  avisos: Aviso[] = [];
 
-  avisos: Aviso[] = [
-    { titulo: 'Aviso de Cierre', contenido: 'El gimnasio estará cerrado el 31 de octubre por mantenimiento general. Disculpe las molestias.', fecha: '2025-10-29T10:00:00' },
-    { titulo: 'Nueva Política COVID', contenido: 'Recuerda usar mascarilla en áreas comunes según la nueva normativa de higiene y seguridad.', fecha:'2025-10-28T09:00:00' }
-  ];
+  isLoading: boolean = true;
+  isSaving: boolean = false;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
-  constructor() { }
+  constructor(private usuarioService: UsuarioApiService) { }
 
-  ngOnInit(): void { }
-
-  // 🚨 Tipamos el parámetro
-  inscribirse(actividadId: number): void {
-    const actividad = this.actividades.find(a => a.id === actividadId);
-    if (actividad) {
-      actividad.inscrito = true;
-      console.log(`Te has inscrito exitosamente a: ${actividad.titulo}`);
-      // Aquí iría una llamada a un servicio de Notificación (snackbar) en un proyecto real.
-    }
+  ngOnInit(): void {
+    this.cargarDatos();
   }
 
-  // 🚨 Tipamos el parámetro
+  // ----------------------------------------------------
+  // CARGAR DATOS (Avisos y Actividades)
+  // ----------------------------------------------------
+  cargarDatos(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    // Cargar Avisos
+    this.usuarioService.getActiveNotices().subscribe({
+      next: (res: NoticeResponse) => {
+        if (res.ok) {
+          this.avisos = res.avisos;
+        }
+      },
+      error: (err: any) => {
+        console.error('Error al cargar avisos:', err);
+        // No mostramos error crítico si fallan solo los avisos
+      }
+    });
+
+    // Cargar Actividades
+    this.usuarioService.getActiveActivities().subscribe({
+      next: (res: ActivityResponse) => {
+        if (res.ok) {
+          // 🚨 CORRECCIÓN CLAVE: El backend devuelve 'estaInscrito', pero el HTML pide 'inscrito'.
+          // Mapeamos para que la propiedad usada en el template exista.
+          this.actividades = res.actividades.map(act => ({
+            ...act,
+            inscrito: act.inscrito || act.estaInscrito || false
+          }));
+        } else {
+          this.errorMessage = res.msg || 'Error al cargar actividades.';
+        }
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        this.errorMessage = err.error?.msg || 'Error de conexión al cargar datos.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // ----------------------------------------------------
+  // ACCIONES DE USUARIO: INSCRIBIRSE
+  // ----------------------------------------------------
+  inscribirse(actividadId: number): void {
+    if (this.isSaving) return;
+    this.isSaving = true;
+    this.clearMessages();
+
+    this.usuarioService.inscribirseActividad(actividadId).subscribe({
+      next: (res: GeneralResponse) => {
+        if (res.ok) {
+          this.mostrarMensaje('exito', res.msg || 'Inscripción exitosa!');
+          // 🚨 CORRECCIÓN: Usamos 'inscrito' para actualizar el estado local
+          const actividad = this.actividades.find(a => a.id === actividadId);
+          if (actividad) { actividad.inscrito = true; }
+        } else {
+          this.mostrarMensaje('error', res.msg || 'No se pudo completar la inscripción.');
+        }
+        this.isSaving = false;
+      },
+      error: (err: any) => {
+        this.mostrarMensaje('error', err.error?.msg || 'Error al comunicarse con el servidor.');
+        this.isSaving = false;
+      }
+    });
+  }
+
+  // ----------------------------------------------------
+  // ACCIONES DE USUARIO: CANCELAR
+  // ----------------------------------------------------
   cancelarInscripcion(actividadId: number): void {
-    const actividad = this.actividades.find(a => a.id === actividadId);
-    if (actividad) {
-      actividad.inscrito = false;
-      console.log(`Inscripción cancelada para: ${actividad.titulo}`);
-      // Aquí iría una llamada a un servicio de Notificación (snackbar) en un proyecto real.
+    if (this.isSaving) return;
+    this.isSaving = true;
+    this.clearMessages();
+
+    this.usuarioService.cancelarInscripcionActividad(actividadId).subscribe({
+      next: (res: GeneralResponse) => {
+        if (res.ok) {
+          this.mostrarMensaje('exito', res.msg || 'Inscripción cancelada.');
+          // 🚨 CORRECCIÓN: Usamos 'inscrito' para actualizar el estado local
+          const actividad = this.actividades.find(a => a.id === actividadId);
+          if (actividad) { actividad.inscrito = false; }
+        } else {
+          this.mostrarMensaje('error', res.msg || 'No se pudo cancelar la inscripción.');
+        }
+        this.isSaving = false;
+      },
+      error: (err: any) => {
+        this.mostrarMensaje('error', err.error?.msg || 'Error al comunicarse con el servidor.');
+        this.isSaving = false;
+      }
+    });
+  }
+
+  // ----------------------------------------------------
+  // AUXILIARES
+  // ----------------------------------------------------
+  clearMessages(): void {
+    this.errorMessage = null;
+    this.successMessage = null;
+  }
+
+  private mostrarMensaje(tipo: 'exito' | 'error', mensaje: string): void {
+    this.clearMessages();
+    if (tipo === 'exito') {
+      this.successMessage = mensaje;
+    } else {
+      this.errorMessage = mensaje;
     }
+    setTimeout(() => this.clearMessages(), 5000);
   }
 }

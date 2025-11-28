@@ -1,59 +1,50 @@
 <section class="planes-section" id="planes">
-  <div class="container">
-    <h2>Nuestros Planes de Membresía</h2>
-    <p class="subtitle">Encuentra el plan perfecto que se adapte a tus metas y estilo de vida.</p>
+    <div class="container">
+        <h2>Nuestros Planes de Membresía</h2>
+        <p class="subtitle">Encuentra el plan perfecto que se adapte a tus metas y estilo de vida.</p>
 
-    <div class="pricing-grid">
+        <div class="pricing-grid">
 
-      <div class="pricing-card">
-        <h3>Plan Estudiante</h3>
-        <div class="price">
-          <span class="currency">$</span>
-          <span class="amount">200</span>
-          <span class="period">/ Mes</span>
+            <div
+                *ngFor="let plan of membresias"
+                class="pricing-card"
+                [class.featured]="plan.isFeatured"
+            >
+
+                <h3>{{ plan.nombre }}</h3>
+
+                <div class="price">
+                    <span class="currency">$</span>
+                    <span class="amount">{{ plan.precio }}</span>
+                    <span class="period">/ Mes</span>
+                </div>
+
+                <p *ngIf="plan.isFeatured" class="popular-tag">¡Más popular!</p>
+
+                <ul>
+                    <li *ngFor="let feature of plan.caracteristicas">
+                        <ng-container *ngIf="!feature.includes('(disabled)'); else disabledFeature">
+                            <i class="fas fa-check-circle"></i>
+                            {{ feature }}
+                        </ng-container>
+
+                        <ng-template #disabledFeature>
+                            <i class="fas fa-times-circle disabled-icon"></i>
+                            {{ feature.replace('(disabled)', '').trim() }}
+                        </ng-template>
+                    </li>
+                </ul>
+
+                <a
+                    href="javascript:void(0)"
+                    [class.btn-primary]="plan.isFeatured"
+                    [class.btn-secondary]="!plan.isFeatured"
+                    (click)="seleccionarPlan(plan)"
+                >
+                    {{ plan.isFeatured ? '¡Mejor Opción!' : 'Elegir Plan' }}
+                </a>
+
+            </div>
         </div>
-        <ul>
-          <li><i class="fas fa-check-circle"></i> Acceso a sala de pesas y cardio</li>
-          <li><i class="fas fa-check-circle"></i> Horario regular</li>
-          <li class="disabled"><i class="fas fa-times-circle"></i> Clases grupales ilimitadas</li>
-          <li class="disabled"><i class="fas fa-times-circle"></i> Asesoría nutricional</li>
-        </ul>
-        <a href="#" class="btn-secondary">Elegir Plan</a>
-      </div>
-
-      <div class="pricing-card featured">
-        <h3>Plan Mensual</h3>
-        <div class="price">
-          <span class="currency">$</span>
-          <span class="amount">300</span>
-          <span class="period">/ Mes</span>
-        </div>
-        <p class="popular-tag">¡Más popular!</p>
-        <ul>
-          <li><i class="fas fa-check-circle"></i> Acceso a sala de pesas y cardio</li>
-          <li><i class="fas fa-check-circle"></i> Clases grupales ilimitadas</li>
-          <li><i class="fas fa-check-circle"></i> 1 Sesión de asesoría personalizada</li>
-          <li class="disabled"><i class="fas fa-times-circle"></i> Acceso ilimitado</li>
-        </ul>
-        <a href="#" class="btn-primary">¡Mejor Opción!</a>
-      </div>
-
-      <div class="pricing-card">
-        <h3>Plan Pareja</h3>
-        <div class="price">
-          <span class="currency">$</span>
-          <span class="amount">450</span>
-          <span class="period">/ Mes</span>
-        </div>
-        <ul>
-          <li><i class="fas fa-check-circle"></i> Acceso total a todas las áreas</li>
-          <li><i class="fas fa-check-circle"></i> Clases grupales ilimitadas</li>
-          <li><i class="fas fa-check-circle"></i> Asesoría nutricional y rutinas</li>
-          <li><i class="fas fa-check-circle"></i> Acceso 24/7</li>
-        </ul>
-        <a href="#" class="btn-secondary">Elegir Plan</a>
-      </div>
-
     </div>
-  </div>
 </section>

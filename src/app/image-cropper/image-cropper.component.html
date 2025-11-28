@@ -1,0 +1,38 @@
+<div class="cropper-container">
+
+  <label class="file-input">
+    Seleccionar imagen
+    <input type="file" accept="image/*" (change)="onFileSelected($event)">
+  </label>
+
+  <!-- Vista previa -->
+  <div *ngIf="imagenOriginal" class="preview-container">
+    <img [src]="imagenOriginal" class="preview-img">
+  </div>
+
+  <!-- Controles de recorte -->
+  <div *ngIf="imagenOriginal" class="crop-controls">
+    <label>
+      X:
+      <input type="number" [(ngModel)]="cropX">
+    </label>
+
+    <label>
+      Y:
+      <input type="number" [(ngModel)]="cropY">
+    </label>
+
+    <label>
+      Tamaño:
+      <input type="number" [(ngModel)]="cropSize">
+    </label>
+
+    <button class="btn-recortar" (click)="recortarImagen()">Recortar</button>
+  </div>
+
+  <!-- Vista final -->
+  <div *ngIf="imagenPreview" class="final-preview">
+    <h4>Vista previa del recorte:</h4>
+    <img [src]="imagenPreview" class="preview-final">
+  </div>
+</div>

@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActividadesExtrasComponent } from './actividades-extras.component'; // 🚨 CORRECCIÓN: Usar el nombre de la clase con Component
 
-import { ActividadesExtras } from './actividades-extras.component';
-
-describe('ActividadesExtras', () => {
-  let component: ActividadesExtras;
-  let fixture: ComponentFixture<ActividadesExtras>;
+describe('ActividadesExtrasComponent', () => { // 🚨 CORRECCIÓN: Usar el nombre de la clase con Component
+  let component: ActividadesExtrasComponent;
+  let fixture: ComponentFixture<ActividadesExtrasComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ActividadesExtras]
+      imports: [ActividadesExtrasComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ActividadesExtras);
+    fixture = TestBed.createComponent(ActividadesExtrasComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

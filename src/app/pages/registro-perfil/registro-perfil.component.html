@@ -1,80 +1,155 @@
 <div class="login-page-container">
-    <div class="login-box">
-        <h2 class="title-step">Paso 2 de 2</h2>
-        <h1 class="title">Información de Perfil</h1>
+  <div class="login-box">
+      <h2 class="title-step">Paso 2 de 2</h2>
+      <h1 class="title">Información de Perfil</h1>
 
-        <form #f="ngForm" (ngSubmit)="onSubmit(f.value)" class="profile-form" novalidate>
+      <form #f="ngForm" (ngSubmit)="onSubmit(f.value)" class="profile-form" novalidate>
 
-            <div class="form-group-inline">
-                <div class="form-group">
-                    <label for="nombre">Nombre(s)</label>
-                    <input type="text" id="nombre" name="nombre" required ngModel #nombreInput="ngModel" placeholder="">
-                    <div *ngIf="nombreInput.invalid && (nombreInput.dirty || nombreInput.touched || f.submitted)" class="validation-message">
-                        El nombre es obligatorio.
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="apellido">Apellido(s)</label>
-                    <input type="text" id="apellido" name="apellido" required ngModel #apellidoInput="ngModel" placeholder="">
-                    <div *ngIf="apellidoInput.invalid && (apellidoInput.dirty || apellidoInput.touched || f.submitted)" class="validation-message">
-                        El apellido es obligatorio.
-                    </div>
-                </div>
-            </div>
+          <div class="form-group-inline">
+              <!-- Nombre -->
+              <div class="form-group">
+                  <label for="nombre">Nombre(s)</label>
+                  <input type="text"
+                         id="nombre"
+                         name="nombre"
+                         required
+                         ngModel
+                         #nombreInput="ngModel"
+                         placeholder="Ej: Juan">
 
-            <div class="form-group-inline">
-                <div class="form-group">
-                    <label for="edad">Edad</label>
-                    <input type="number" id="edad" name="edad"
-                           required min="15" max="70"
-                           ngModel #edadInput="ngModel"
-                           placeholder="15 - 70 años">
-                    <div *ngIf="edadInput.invalid && (edadInput.dirty || edadInput.touched || f.submitted)" class="validation-message">
-                        Edad requerida (mínimo 15, máximo 70 años).
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="sexo">Sexo</label>
-                    <select id="sexo" name="sexo" required ngModel #sexoInput="ngModel">
-                        <option value="" disabled selected>Seleccione...</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
-                        <option value="O">Otro</option>
-                    </select>
-                    <div *ngIf="sexoInput.invalid && (sexoInput.dirty || sexoInput.touched || f.submitted)" class="validation-message">
-                        El sexo es obligatorio.
-                    </div>
-                </div>
-            </div>
+                  <div *ngIf="nombreInput.invalid && (nombreInput.dirty || nombreInput.touched || f.submitted)"
+                       class="validation-message">
+                      El nombre es obligatorio.
+                  </div>
+              </div>
 
-            <div class="form-group">
-                <label for="experiencia">Experiencia en el GYM</label>
-                <select id="experiencia" name="experiencia" required ngModel #experienciaInput="ngModel">
-                    <option value="" disabled selected>Seleccione su nivel...</option>
-                    <option value="basica">Básica (Principiante)</option>
-                    <option value="media">Media (Intermedio)</option>
-                    <option value="superior">Superior (Avanzado)</option>
-                </select>
-                <div *ngIf="experienciaInput.invalid && (experienciaInput.dirty || experienciaInput.touched || f.submitted)" class="validation-message">
-                    Por favor, selecciona tu nivel de experiencia.
-                </div>
-            </div>
+              <!-- Apellido -->
+              <div class="form-group">
+                  <label for="apellido">Apellido(s)</label>
+                  <input type="text"
+                         id="apellido"
+                         name="apellido"
+                         required
+                         ngModel
+                         #apellidoInput="ngModel"
+                         placeholder="Ej: Pérez">
 
-            <div class="form-check-group">
-                <input type="checkbox" id="aceptoTerminos" name="aceptoTerminos" required ngModel #terminosInput="ngModel">
-                <label for="aceptoTerminos">
-                    Acepto los <a href="#" class="link-secundario">Términos y Condiciones</a> y la <a href="#" class="link-secundario">Política de Privacidad</a> del GYM.
-                </label>
-                <div *ngIf="terminosInput.invalid && f.submitted" class="validation-message">
-                    Debe aceptar los términos para crear la cuenta.
-                </div>
-            </div>
+                  <div *ngIf="apellidoInput.invalid && (apellidoInput.dirty || apellidoInput.touched || f.submitted)"
+                       class="validation-message">
+                      El apellido es obligatorio.
+                  </div>
+              </div>
+          </div>
 
-            <button type="submit" class="btn-primary">Crear cuenta</button>
-        </form>
+          <div class="form-group-inline">
 
-        <div class="back-link">
-            <a [routerLink]="['/registro']" class="link-login">← Volver al paso anterior</a>
-        </div>
-    </div>
+              <!-- Edad -->
+              <div class="form-group">
+                  <label for="edad">Edad</label>
+                  <input type="number"
+                         id="edad"
+                         name="edad"
+                         required
+                         min="15"
+                         max="70"
+                         ngModel
+                         #edadInput="ngModel"
+                         placeholder="15 - 70 años">
+
+                  <div *ngIf="edadInput.invalid && (edadInput.dirty || edadInput.touched || f.submitted)"
+                       class="validation-message">
+
+                      <span *ngIf="edadInput.errors?.['required']">
+                          La edad es requerida.
+                      </span>
+
+                      <span *ngIf="edadInput.errors?.['min'] || edadInput.errors?.['max']">
+                          La edad debe estar entre 15 y 70 años.
+                      </span>
+
+                  </div>
+              </div>
+
+              <!-- Sexo -->
+              <div class="form-group">
+                  <label for="sexo">Sexo</label>
+
+                  <select id="sexo"
+                          name="sexo"
+                          required
+                          ngModel
+                          #sexoInput="ngModel">
+
+                      <option value="" disabled selected>Seleccione...</option>
+                      <option value="M">Masculino</option>
+                      <option value="F">Femenino</option>
+                      <option value="O">Otro</option>
+
+                  </select>
+
+                  <div *ngIf="sexoInput.invalid && (sexoInput.dirty || sexoInput.touched || f.submitted)"
+                       class="validation-message">
+                      El sexo es obligatorio.
+                  </div>
+              </div>
+          </div>
+
+          <!-- Experiencia -->
+          <div class="form-group">
+              <label for="experiencia">Experiencia en el GYM</label>
+
+              <select id="experiencia"
+                      name="experiencia"
+                      required
+                      ngModel
+                      #experienciaInput="ngModel">
+
+                  <option value="" disabled selected>Seleccione su nivel...</option>
+                  <option value="basica">Básica (Principiante)</option>
+                  <option value="media">Media (Intermedio)</option>
+                  <option value="superior">Superior (Avanzado)</option>
+
+              </select>
+
+              <div *ngIf="experienciaInput.invalid && (experienciaInput.dirty || experienciaInput.touched || f.submitted)"
+                   class="validation-message">
+                  Por favor, selecciona tu nivel de experiencia.
+              </div>
+          </div>
+
+          <!-- Términos -->
+          <div class="form-check-group">
+              <input type="checkbox"
+                     id="aceptoTerminos"
+                     name="aceptoTerminos"
+                     required
+                     ngModel
+                     #terminosInput="ngModel">
+
+              <label for="aceptoTerminos">
+                  Acepto los
+                  <a href="#" class="link-secundario">Términos y Condiciones</a>
+                  y la
+                  <a href="#" class="link-secundario">Política de Privacidad</a> del GYM.
+              </label>
+
+              <div *ngIf="terminosInput.invalid && f.submitted" class="validation-message">
+                  Debe aceptar los términos para crear la cuenta.
+              </div>
+          </div>
+
+          <!-- Botón -->
+          <button type="submit"
+                  class="btn-primary"
+                  [disabled]="!f.valid || isLoading">
+              {{ isLoading ? 'Creando cuenta...' : 'Crear cuenta' }}
+          </button>
+
+      </form>
+
+      <div class="back-link">
+          <a [routerLink]="['/registro']" class="link-login">← Volver al paso anterior</a>
+      </div>
+
+  </div>
 </div>

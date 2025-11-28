@@ -1,45 +1,48 @@
-// Archivo principal del Servidor Express
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
-// Importar los archivos que crearemos más tarde
-const userRoutes = require('./user.routes');
-const dbConfig = require('./db.config'); // Esto inicializa la conexión con MySQL
-
 const app = express();
-const PORT = 3000;
 
-// --- Configuración de Middlewares ---
+// -----------------------------------------------------
+// 1. MIDDLEWARES BÁSICOS
+// -----------------------------------------------------
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
-// 1. CORS: Permite que Angular (Frontend) se conecte
-app.use(cors({
-    origin: 'http://localhost:4200'
-}));
+app.use(
+    cors({
+        origin: ['http://localhost:4200'],
+        credentials: true
+    })
+);
 
-// 2. Body-Parser: Permite recibir datos grandes como el Base64 de la foto
-// El límite '50mb' es crucial para imágenes grandes
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-
-// 3. RUTAS ESTÁTICAS: Hace pública la carpeta 'uploads' para que el navegador vea las fotos
-// http://localhost:3000/uploads/nombre_de_la_foto.png
+// -----------------------------------------------------
+// 3. ARCHIVOS ESTÁTICOS
+// -----------------------------------------------------
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// --- Definición de Rutas ---
+// -----------------------------------------------------
+// 4. RUTAS DEL SISTEMA (Asegúrate de que esta línea esté corregida)
+// -----------------------------------------------------
+app.use('/api/auth', require('./src/routes/auth.routes')); // ✅ USA /api/auth
+app.use('/api/users', require('./src/routes/user.routes'));
+app.use('/api/admin', require('./src/routes/admin.routes'));
+app.use('/api/membresia', require('./src/routes/membresia.routes'));
 
-// Ruta de prueba para verificar que el servidor está encendido
+// -----------------------------------------------------
+// 5. RUTA BASE
+// -----------------------------------------------------
 app.get('/', (req, res) => {
-    res.send('Servidor Backend del Gym Funcionando!');
+    res.send('Backend GymApp funcionando correctamente 🚀');
 });
 
-// Conectar las rutas específicas de los usuarios (foto de perfil, etc.)
-app.use('/api/usuario', userRoutes);
-
-// --- Inicio del Servidor ---
+// -----------------------------------------------------
+// 6. INICIAR SERVIDOR
+// -----------------------------------------------------
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor Express corriendo en el puerto ${PORT}`);
-    console.log(`URL de la API: http://localhost:${PORT}/api/usuario`);
+    console.log(`🔥 Servidor corriendo en http://localhost:${PORT}`);
 });

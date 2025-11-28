@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { EntrenamientosComponent } from './entrenamientos.component'; // 🚨 CORRECCIÓN: Usar el nombre de la clase con Component
 
-import { Entrenamientos } from './entrenamientos.component';
-
-describe('Entrenamientos', () => {
-  let component: Entrenamientos;
-  let fixture: ComponentFixture<Entrenamientos>;
+describe('EntrenamientosComponent', () => { // 🚨 CORRECCIÓN: Usar el nombre de la clase con Component
+  let component: EntrenamientosComponent;
+  let fixture: ComponentFixture<EntrenamientosComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Entrenamientos]
+      imports: [EntrenamientosComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Entrenamientos);
+    fixture = TestBed.createComponent(EntrenamientosComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

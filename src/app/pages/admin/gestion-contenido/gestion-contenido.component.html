@@ -5,43 +5,110 @@
     <h2>Rutinas de Principiantes</h2>
     <p>El administrador es quien pone las rutinas de los principiantes.</p>
 
-    <div class="form-section">
-        <label>Nombre de la Rutina</label>
-        <input type="text" [(ngModel)]="routineName" placeholder="Ej: Pecho y Tríceps - Nivel 1" class="text-input">
+    <form (ngSubmit)="guardarRutina()" class="form-section">
+        <div class="form-field">
+            <label for="rutinaNombre">Nombre de la Rutina</label>
+            <input
+                type="text"
+                [(ngModel)]="routineName"
+                name="routineName"
+                placeholder="Ej: Pecho y Tríceps - Nivel 1"
+                class="text-input"
+                id="rutinaNombre"
+                required
+            />
+        </div>
 
-        <label>Descripción detallada de los ejercicios, repeticiones y músculo trabajado</label>
-        <textarea [(ngModel)]="routineDescription" placeholder="Ej: 3 series de 10 repeticiones. Músculo: Bíceps y Antebrazo."></textarea>
+        <div class="form-field">
+            <label for="rutinaDescripcion">Descripción detallada de los ejercicios, repeticiones y músculo trabajado</label>
+            <textarea
+                [(ngModel)]="routineDescription"
+                name="routineDescription"
+                placeholder="Ej: 3 series de 10 repeticiones. Músculo: Bíceps y Antebrazo."
+                id="rutinaDescripcion"
+                required
+            ></textarea>
+        </div>
 
-        <label>Imagen del Ejercicio</label>
-        <input type="file" accept="image/*" class="text-input">
+        <div class="form-field">
+            <label for="rutinaImagen">Imagen del Ejercicio</label>
+            <input
+                type="file"
+                accept="image/*"
+                (change)="onRoutineImageSelected($event)"
+                class="text-input"
+                id="rutinaImagen"
+            />
+        </div>
 
-        <button class="btn-primary" style="width: auto;" (click)="guardarRutina()">Guardar Rutina</button>
-    </div>
+        <button
+            type="submit"
+            class="btn-primary btn-auto"
+            [disabled]="isSavingRoutine || !routineName || !routineDescription">
+            {{ isSavingRoutine ? 'Guardando Rutina...' : 'Guardar Rutina' }}
+        </button>
+    </form>
 
-    <hr style="border-color: #333; margin: 30px 0;">
+    <hr class="hr-separator" />
 
     <h2>Actividades Extras / Avisos</h2>
     <p>Añada contenido en el apartado de actividades extras del cliente (Ej. Eventos, avisos de cierre).</p>
 
-    <div class="form-section">
-        <label>Título del Aviso</label>
-        <input type="text" [(ngModel)]="noticeTitle" placeholder="Ej: Evento de Navidad - Recaudación de Juguetes" class="text-input">
+    <form (ngSubmit)="guardarActividad()" class="form-section">
+        <div class="form-field">
+            <label for="avisoTitulo">Título del Aviso</label>
+            <input
+                type="text"
+                [(ngModel)]="noticeTitle"
+                name="noticeTitle"
+                placeholder="Ej: Evento de Navidad - Recaudación de Juguetes"
+                class="text-input"
+                id="avisoTitulo"
+                required
+            />
+        </div>
 
-        <label>Contenido de la actividad</label>
-        <textarea [(ngModel)]="noticeContent" placeholder="Detalles del evento, fechas y horarios."></textarea>
+        <div class="form-field">
+            <label for="avisoContenido">Contenido de la actividad</label>
+            <textarea
+                [(ngModel)]="noticeContent"
+                name="noticeContent"
+                placeholder="Detalles del evento, fechas y horarios."
+                id="avisoContenido"
+                required
+            ></textarea>
+        </div>
 
-        <div class="form-group" style="justify-content: space-between; gap: 20px;">
-
-            <div style="flex-basis: 45%;">
+        <div class="form-group form-group-spaced">
+            <div class="date-input-wrapper">
                 <label for="fecha-inicio">Fecha y Hora de Inicio del Evento/Aviso</label>
-                <input type="datetime-local" [(ngModel)]="startDate" id="fecha-inicio" class="text-input">
+                <input
+                    type="datetime-local"
+                    [(ngModel)]="startDate"
+                    name="startDate"
+                    id="fecha-inicio"
+                    class="text-input"
+                    required
+                />
             </div>
 
-            <div style="flex-basis: 45%;">
+            <div class="date-input-wrapper">
                 <label for="fecha-expiracion">Fecha y Hora de Fin/Expiración</label>
-                <input type="datetime-local" [(ngModel)]="endDate" id="fecha-expiracion" class="text-input">
+                <input
+                    type="datetime-local"
+                    [(ngModel)]="endDate"
+                    name="endDate"
+                    id="fecha-expiracion"
+                    class="text-input"
+                />
             </div>
         </div>
-        <button class="btn-primary" style="width: auto; margin-top: 10px;" (click)="guardarActividad()">Guardar Actividad/Aviso</button>
-    </div>
+
+        <button
+            type="submit"
+            class="btn-primary btn-auto"
+            [disabled]="isSavingNotice || !noticeTitle || !noticeContent || !startDate">
+            {{ isSavingNotice ? 'Guardando Aviso...' : 'Guardar Actividad/Aviso' }}
+        </button>
+    </form>
 </div>

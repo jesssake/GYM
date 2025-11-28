@@ -1,0 +1,39 @@
+<div class="container">
+  <h2>Avisos</h2>
+
+  <div class="mb-3">
+    <button class="btn btn-primary" (click)="onCreate()">Crear aviso</button>
+  </div>
+
+  <div *ngIf="loading">Cargando...</div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <table class="table" *ngIf="!loading && avisos.length">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Título</th>
+        <th>Inicio</th>
+        <th>Fin</th>
+        <th>Creado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of avisos">
+        <td>{{ a.id }}</td>
+        <td>{{ a.titulo }}</td>
+        <td>{{ a.fecha_inicio }}</td>
+        <td>{{ a.fecha_fin || '—' }}</td>
+        <td>{{ a.fecha_creacion | date:'short' }}</td> <td>
+          <button class="btn btn-sm btn-outline-secondary me-1" (click)="onEdit(a.id)">Editar</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="onDelete(a.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && !avisos.length" class="alert alert-info">
+    No hay avisos aún.
+  </div>
+</div>

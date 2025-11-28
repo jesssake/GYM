@@ -3,21 +3,20 @@ import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } fr
 import { AuthService } from '../services/auth.service';
 
 /**
- * 🛡️ AuthGuard: Impide el acceso a rutas si el usuario no está logeado.
+ * 🛡️ AuthGuard: Evita el acceso a rutas protegidas si no hay sesión activa.
  */
-// 🚨 ES VITAL QUE ESTÉ MARCADO COMO 'export const'
 export const authGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
 ) => {
-  // Asegúrate de que esta importación sea correcta
+
   const authService = inject(AuthService);
   const router = inject(Router);
 
   if (authService.isLoggedIn()) {
     return true;
-  } else {
-    router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-    return false;
   }
+
+  router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+  return false;
 };

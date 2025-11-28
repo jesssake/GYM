@@ -5,11 +5,13 @@
     <h2>Configuración de Alertas</h2>
     <div class="form-group config-panel">
         <label for="antelacion" style="margin-right: 10px;">Enviar alerta de expiración con antelación de:</label>
-        <select id="antelacion" class="select-input" [(ngModel)]="selectedDays">
-            <option>7 días</option>
-            <option>5 días</option>
-            <option>3 días</option>
+
+        <select id="antelacion" class="select-input" [(ngModel)]="configDays">
+            <option [ngValue]="7">7 días</option>
+            <option [ngValue]="5">5 días</option>
+            <option [ngValue]="3">3 días</option>
         </select>
+
         <button class="btn-primary" (click)="guardarConfiguracion()">Guardar Configuración</button>
     </div>
 

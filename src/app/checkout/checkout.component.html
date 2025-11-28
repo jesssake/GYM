@@ -1,0 +1,106 @@
+<div class="checkout-page-container">
+    <div class="checkout-card">
+        <h1 class="text-3xl font-bold mb-6 text-white text-center">Finalizar Compra</h1>
+
+        <!-- 🚨 Mensaje de Error -->
+        <div *ngIf="errorMessage" class="error-box">
+            <i class="fas fa-exclamation-triangle mr-2"></i> {{ errorMessage }}
+        </div>
+
+        <div *ngIf="plan" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Columna 1: Resumen del Pedido -->
+            <div class="lg:col-span-1 order-2 lg:order-1 summary-panel">
+                <h2 class="text-xl font-semibold mb-4 text-white">Resumen del Pedido</h2>
+                <div class="mb-4 space-y-2 text-gray-300">
+                    <p class="flex justify-between">
+                        <span class="font-bold">{{ plan.nombre }}</span>
+                        <span class="text-lg font-bold text-red-400">{{ plan.precio | currency:'MXN':'symbol':'1.2-2' }}</span>
+                    </p>
+                    <p class="text-sm border-b border-gray-600 pb-2">{{ plan.descripcion }}</p>
+                    <p class="flex justify-between font-bold text-white pt-2">
+                        Total a pagar:
+                        <span class="text-xl text-red-500">{{ plan.precio | currency:'MXN':'symbol':'1.2-2' }}</span>
+                    </p>
+                </div>
+                <div class="mt-4">
+                    <p class="text-sm text-gray-400">Al confirmar la compra, aceptas nuestros Términos y Condiciones.</p>
+                </div>
+            </div>
+
+            <!-- Columna 2: Detalles de Pago -->
+            <div class="lg:col-span-2 order-1 lg:order-2 payment-panel">
+                <h2 class="text-xl font-semibold mb-4 text-white">Información de Pago</h2>
+
+                <!-- Selector de Método de Pago -->
+                <div class="mb-6 flex space-x-4 flex-wrap gap-2">
+                    <button
+                        *ngFor="let method of paymentMethods"
+                        (click)="selectPaymentMethod(method.value)"
+                        [class.selected-method]="selectedMethod === method.value"
+                        class="payment-method-btn"
+                    >
+                        <i class="fas {{ method.icon }}"></i> {{ method.name }}
+                    </button>
+                </div>
+
+                <!-- Formulario de Tarjeta (Visible solo si se selecciona 'card') -->
+                <form [formGroup]="paymentForm" (ngSubmit)="processPayment()" class="space-y-4" *ngIf="selectedMethod === 'card'">
+
+                    <div class="input-group">
+                        <label for="cardName">Nombre en la Tarjeta</label>
+                        <input id="cardName" type="text" formControlName="cardName" placeholder="Nombre completo" required>
+                        <div *ngIf="paymentForm.get('cardName')?.invalid && paymentForm.get('cardName')?.touched" class="text-red-400 text-xs mt-1">Nombre es requerido.</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="cardNumber">Número de Tarjeta</label>
+                        <input id="cardNumber" type="text" formControlName="cardNumber" placeholder="16 dígitos" required>
+                        <div *ngIf="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched" class="text-red-400 text-xs mt-1">Número de tarjeta inválido (16 dígitos).</div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="input-group col-span-2">
+                            <label for="cardExpiry">Vencimiento (MM/AA)</label>
+                            <input id="cardExpiry" type="text" formControlName="cardExpiry" placeholder="MM/AA" required>
+                            <div *ngIf="paymentForm.get('cardExpiry')?.invalid && paymentForm.get('cardExpiry')?.touched" class="text-red-400 text-xs mt-1">Formato MM/AA requerido.</div>
+                        </div>
+                        <div class="input-group col-span-1">
+                            <label for="cardCvv">CVV</label>
+                            <input id="cardCvv" type="password" formControlName="cardCvv" placeholder="123" required>
+                            <div *ngIf="paymentForm.get('cardCvv')?.invalid && paymentForm.get('cardCvv')?.touched" class="text-red-400 text-xs mt-1">CVV (3 o 4 dígitos) requerido.</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center pt-4">
+                        <input id="acceptTerms" type="checkbox" formControlName="acceptTerms" class="form-checkbox h-5 w-5 text-red-600 rounded">
+                        <label for="acceptTerms" class="ml-2 text-sm text-gray-300">Acepto los términos y condiciones.</label>
+                    </div>
+
+                </form>
+
+                <!-- Mensaje para otros métodos de pago -->
+                <div *ngIf="selectedMethod !== 'card'" class="p-6 bg-gray-700 rounded-lg text-gray-300 text-center">
+                    <i class="fas fa-info-circle text-red-500 text-2xl mb-3"></i>
+                    <p *ngIf="selectedMethod === 'paypal'">Serás redirigido a la plataforma de PayPal para completar tu pago de forma segura.</p>
+                    <p *ngIf="selectedMethod === 'transfer'">Se te proporcionarán los datos de la cuenta bancaria después de hacer clic en "Confirmar Pago".</p>
+                </div>
+
+                <!-- Botón Final de Pago -->
+                <button
+                    (click)="processPayment()"
+                    [disabled]="isProcessing || (selectedMethod === 'card' && paymentForm.invalid)"
+                    class="payment-submit-btn"
+                >
+                    <i *ngIf="isProcessing" class="fas fa-spinner fa-spin mr-2"></i>
+                    {{ isProcessing ? 'Procesando...' : 'Confirmar Pago' }}
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="!plan" class="p-8 text-center text-gray-400">
+            <i class="fas fa-frown text-4xl mb-4 text-red-500"></i>
+            <p>Lo sentimos, no pudimos cargar los detalles del plan. <a [routerLink]="['/planes']" class="text-red-400 underline">Volver a Planes</a></p>
+        </div>
+    </div>
+</div>

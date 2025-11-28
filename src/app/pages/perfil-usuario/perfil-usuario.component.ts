@@ -1,178 +1,221 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
-import { finalize } from 'rxjs/operators';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Observer } from 'rxjs';
+import { Router } from '@angular/router';
 
-// Servicios (asegúrate de que estos servicios existan y tengan el método subirFotoPerfil)
+import { EditarFotoComponent } from '../../components/editar-foto/editar-foto.component';
+
+import { UsuarioApiService, Usuario } from '../../services/usuario-api.service';
 import { UsuarioStateService } from '../../services/usuario-state.service';
-import { UsuarioApiService } from '../../services/usuario-api.service';
+
+// Interfaz para respuesta de foto
+interface PhotoUploadResponse {
+    ok: boolean;
+    msg: string;
+    newUrl: string;
+}
 
 @Component({
-  selector: 'app-perfil-usuario',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ImageCropperComponent, HttpClientModule],
-  templateUrl: './perfil-usuario.component.html',
-  styleUrl: './perfil-usuario.component.css',
+    selector: 'app-perfil-usuario',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        EditarFotoComponent
+    ],
+    templateUrl: './perfil-usuario.component.html',
+    styleUrls: ['./perfil-usuario.component.css'],
 })
 export class PerfilUsuarioComponent implements OnInit {
-  @ViewChild('imageCropper', { static: false }) imageCropper: ImageCropperComponent | undefined;
 
-  fotoPerfilUrl: string | null = null;
+    usuario: Usuario = {
+        id: 0,
+        nombre: '',
+        email: '',
+        rol: 'Cliente',
+        fechaNacimiento: '',
+        peso: 0,
+        altura: 0,
+        meta: '',
+        fotoUrl: null,
+    };
 
-  imageChangedEvent: any = '';
-  croppedImage: string | null = null; // base64
-  mostrarCropper: boolean = false;
+    isLoading: boolean = true;
 
-  // Estado UI
-  isUploading: boolean = false;
-  statusMessage: string = '';
-  statusIsError: boolean = false;
+    fotoPerfil: string | null = null;
+    imagenPreviewBase64: string | null = null;
 
-  usuario = {
-    nombre: 'Sofia Martínez',
-    email: 'sofia.m@example.com',
-    fechaNacimiento: '1995-08-15',
-    peso: 65.5,
-    altura: 168,
-    meta: 'ganar-musculo',
-    rol: 'Cliente',
-  };
+    mostrarCropper: boolean = false;
+    isSavingPhoto: boolean = false;
+    isSavingData: boolean = false;
 
-  metasDisponibles = [
-    { value: 'perder-peso', label: 'Perder Peso' },
-    { value: 'ganar-musculo', label: 'Ganar Músculo' },
-    { value: 'mantenerse', label: 'Mantenimiento' },
-  ];
+    mensajeExito = '';
+    mensajeError = '';
 
-  constructor(
-    private usuarioStateService: UsuarioStateService,
-    private usuarioApiService: UsuarioApiService
-  ) {}
+    constructor(
+        private usuarioService: UsuarioApiService,
+        private router: Router,
+        private userStateService: UsuarioStateService // <── 🚨 NUEVO: Servicio de estado
+    ) {}
 
-  ngOnInit(): void {}
-
-  /**
-   * onFileSelected:
-   * - valida tipo de archivo
-   * - abre el cropper
-   * - no fuerza eventos artificialmente (dejamos que ngx-image-cropper dispare imageCropped)
-   */
-  onFileSelected(event: any): void {
-    this.clearStatus();
-    if (!event || !event.target || !event.target.files) return;
-
-    const file: File = event.target.files[0];
-    if (!file) return;
-
-    // Validación básica de tipo (acepta image/*)
-    if (!file.type || !file.type.startsWith('image/')) {
-      this.setErrorStatus('El archivo seleccionado no es una imagen válida.');
-      // limpiar input
-      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
-      return;
+    ngOnInit(): void {
+        this.cargarPerfil();
     }
 
-    // Guardamos el evento para el image-cropper
-    this.imageChangedEvent = event;
-    this.mostrarCropper = true;
-    this.croppedImage = null;
-  }
+    // =====================================================
+    // 1. Cargar Perfil desde Backend + Guardar en State Global
+    // =====================================================
+    cargarPerfil() {
+        this.isLoading = true;
 
-  /**
-   * imageCropped:
-   * - se ejecuta cada vez que el cropper genera un recorte
-   * - aquí asignamos el base64 y habilitamos el botón
-   */
-  imageCropped(event: ImageCroppedEvent) {
-    // event.base64 es el valor que esperamos
-    this.croppedImage = event.base64 ?? null;
-    console.log('🖼️ Imagen recortada lista:', this.croppedImage ? 'Sí' : 'No');
-    if (this.croppedImage) {
-      this.setStatus('Recorte listo. Puedes guardar la imagen.', false);
+        this.usuarioService.obtenerPerfil().subscribe({
+            next: (response) => {
+                if (response.ok) {
+                    const usuarioReal: Usuario = response.user;
+
+                    // 🚨 GUARDAR EN STATE GLOBAL
+                    this.userStateService.actualizarUsuario(usuarioReal);
+
+                    // Actualizamos el formulario local
+                    this.usuario = usuarioReal;
+
+                    if (this.usuario.fechaNacimiento) {
+                        this.usuario.fechaNacimiento = this.usuario.fechaNacimiento.split('T')[0];
+                    }
+
+                    this.fotoPerfil = usuarioReal.fotoUrl || null;
+                    this.isLoading = false;
+                } else {
+                    this.mostrarMensaje("error", "Respuesta inválida del servidor.");
+                    this.isLoading = false;
+                }
+            },
+            error: (err) => {
+                this.isLoading = false;
+
+                if (err.status === 401 || err.status === 403) {
+                    this.mostrarMensaje("error", "Sesión expirada. Por favor, inicia sesión de nuevo.");
+                    localStorage.removeItem('token');
+                    this.router.navigate(['/login']);
+                } else {
+                    const errorMsg = err.error?.msg || "Error al cargar el perfil. Inténtalo más tarde.";
+                    this.mostrarMensaje("error", errorMsg);
+                }
+            }
+        });
     }
-  }
 
-  onLoadImageFailed() {
-    this.setErrorStatus('Error al cargar la imagen en el recortador. Intenta con otro archivo.');
-  }
+    // =====================================================
+    // 2. Actualizar Datos del Perfil
+    // =====================================================
+    guardarDatosPerfil(form: NgForm) {
+        if (form.valid) {
+            this.isSavingData = true;
 
-  /**
-   * guardarFotoRecortada:
-   * - valida que croppedImage exista
-   * - muestra spinner y mensaje
-   * - llama al servicio y maneja respuestas
-   */
-  guardarFotoRecortada(): void {
-    this.clearStatus();
-    console.log('✅ Intento de Guardar y Recortar iniciado.');
+            const observer: Observer<any> = {
+                next: (response) => {
+                    this.mostrarMensaje("exito", response.msg || "Datos de perfil actualizados correctamente.");
+                    this.isSavingData = false;
+                },
+                error: (err) => {
+                    const errorMessage = err.error?.msg || "Error al guardar los datos del perfil.";
+                    this.mostrarMensaje("error", errorMessage);
+                    this.isSavingData = false;
 
-    if (!this.croppedImage) {
-      console.error('❌ Error: No hay imagen recortada lista para guardar.');
-      this.setErrorStatus('Asegúrate de haber seleccionado y recortado una imagen.');
-      return;
+                    if (err.status === 401) {
+                        this.router.navigate(['/login']);
+                    }
+                },
+                complete: () => {}
+            };
+
+            const dataToUpdate = {
+                nombre: this.usuario.nombre,
+                fechaNacimiento: this.usuario.fechaNacimiento,
+                peso: this.usuario.peso,
+                altura: this.usuario.altura,
+                meta: this.usuario.meta,
+            };
+
+            this.usuarioService.actualizarDatos(dataToUpdate).subscribe(observer);
+        }
     }
 
-    this.isUploading = true;
-    this.setStatus('Subiendo imagen...', false);
+    // =====================================================
+    // 3. Subir Foto de Perfil + Actualizar Estado Global
+    // =====================================================
+    guardarFoto() {
+        if (!this.imagenPreviewBase64) {
+            this.mostrarMensaje("error", "No hay imagen recortada para subir.");
+            return;
+        }
 
-    // Aquí asumimos que subirFotoPerfil recibe la imagen base64 y devuelve un observable con { url: '...' }
-    this.usuarioApiService.subirFotoPerfil(this.croppedImage)
-      .pipe(finalize(() => (this.isUploading = false)))
-      .subscribe({
-        next: (response) => {
-          console.log('✅ Subida exitosa. Respuesta del servidor:', response);
-          const nuevaUrlGuardada = response && response.url ? response.url : null;
-          if (nuevaUrlGuardada) {
-            this.fotoPerfilUrl = nuevaUrlGuardada;
-            this.usuarioStateService.actualizarFotoPerfil(nuevaUrlGuardada);
-            this.setStatus('¡Foto de perfil guardada exitosamente!', false);
-          } else {
-            this.setErrorStatus('La subida finalizó pero no se recibió la URL del servidor.');
-          }
-          this.cancelarRecorte();
-        },
-        error: (err) => {
-          console.error('❌ Error al subir la foto al servidor:', err);
-          this.setErrorStatus('Error al guardar la foto. Revisa la consola para más detalles.');
-          // no cerramos inmediatamente si quieres que el usuario intente de nuevo; aquí cerramos
-          this.cancelarRecorte();
-        },
-      });
-  }
+        this.isSavingPhoto = true;
 
-  cancelarRecorte(): void {
-    this.mostrarCropper = false;
-    this.imageChangedEvent = null;
-    this.croppedImage = null;
+        const observer: Observer<PhotoUploadResponse> = {
+            next: (response) => {
+                if (response.ok) {
+                    const newUrl = response.newUrl;
 
-    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+                    // 🚨 ACTUALIZAR GLOBALMENTE LA FOTO DE PERFIL
+                    this.userStateService.actualizarFotoPerfil(newUrl);
 
-    // limpiamos status luego de un corto tiempo
-    setTimeout(() => this.clearStatus(), 1500);
-  }
+                    this.fotoPerfil = newUrl;
+                    this.usuario.fotoUrl = newUrl;
 
-  guardarCambios(): void {
-    console.log('[ACCION] Guardando cambios del perfil (datos):', this.usuario);
-    console.log('Perfil actualizado correctamente!');
-  }
+                    this.mostrarMensaje("exito", response.msg || "Foto actualizada correctamente.");
+                } else {
+                    this.mostrarMensaje("error", response.msg || "Error desconocido al subir foto.");
+                }
 
-  // ---------- Helpers UI ----------
-  private setStatus(msg: string, isError: boolean) {
-    this.statusMessage = msg;
-    this.statusIsError = isError;
-  }
+                this.isSavingPhoto = false;
+                this.mostrarCropper = false;
+            },
+            error: (err) => {
+                const errorMessage = err.error?.msg || "Ocurrió un error al subir la foto.";
+                this.mostrarMensaje("error", errorMessage);
+                this.isSavingPhoto = false;
 
-  private setErrorStatus(msg: string) {
-    this.setStatus(msg, true);
-    console.error(msg);
-  }
+                if (err.status === 401) {
+                    this.router.navigate(['/login']);
+                }
+            },
+            complete: () => {}
+        };
 
-  private clearStatus() {
-    this.statusMessage = '';
-    this.statusIsError = false;
-  }
+        this.usuarioService.subirFotoPerfil(this.imagenPreviewBase64).subscribe(observer);
+    }
+
+    // =====================================================
+    // Métodos Auxiliares
+    // =====================================================
+    abrirCropper() {
+        this.mostrarCropper = true;
+    }
+
+    cerrarCropper() {
+        this.mostrarCropper = false;
+    }
+
+    recibirImagenFinal(base64: string) {
+        this.imagenPreviewBase64 = base64;
+        this.guardarFoto();
+    }
+
+    private mostrarMensaje(tipo: 'exito' | 'error', mensaje: string) {
+        this.mensajeExito = '';
+        this.mensajeError = '';
+
+        if (tipo === 'exito') {
+            this.mensajeExito = mensaje;
+        } else {
+            this.mensajeError = mensaje;
+        }
+
+        setTimeout(() => {
+            this.mensajeExito = '';
+            this.mensajeError = '';
+        }, 5000);
+    }
 }

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GestionContenido } from './gestion-contenido.component';
+import { GestionContenidoComponent } from './gestion-contenido.component';
 
 describe('GestionContenido', () => {
-  let component: GestionContenido;
-  let fixture: ComponentFixture<GestionContenido>;
+  let component: GestionContenidoComponent;
+  let fixture: ComponentFixture<GestionContenidoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GestionContenido]
+      imports: [GestionContenidoComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GestionContenido);
+    fixture = TestBed.createComponent(GestionContenidoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RestablecerSolicitud } from './restablecer-solicitud.component';
+import { RestablecerSolicitudComponent } from './restablecer-solicitud.component';
 
 describe('RestablecerSolicitud', () => {
-  let component: RestablecerSolicitud;
-  let fixture: ComponentFixture<RestablecerSolicitud>;
+  let component: RestablecerSolicitudComponent;
+  let fixture: ComponentFixture<RestablecerSolicitudComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RestablecerSolicitud]
+      imports: [RestablecerSolicitudComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RestablecerSolicitud);
+    fixture = TestBed.createComponent(RestablecerSolicitudComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

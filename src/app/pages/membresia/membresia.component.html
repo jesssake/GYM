@@ -1,0 +1,68 @@
+<!-- Contenedor principal -->
+<div class="membresia-container">
+
+  <!-- Encabezado -->
+  <h2 class="section-title">Mi Suscripción</h2>
+  <p class="section-description">
+    Aquí podrás ver tu plan actual, fecha de vencimiento y opciones de renovación.
+  </p>
+
+  <!-- Estado de carga -->
+  <div *ngIf="isLoading()">
+    <p class="loading-text">Cargando información de tu membresía...</p>
+  </div>
+
+  <!-- Error de servidor -->
+  <div *ngIf="error()">
+    <p class="error-text">{{ error() }}</p>
+  </div>
+
+  <!-- Tarjeta de Membresía -->
+  <div class="card current-plan" *ngIf="!isLoading() && !error()">
+
+    <h3 class="card-title">Tu Membresía Actual</h3>
+
+    <div class="plan-details">
+      <p>Plan: <strong>{{ currentPlan().planName }}</strong></p>
+
+      <p>
+        Estado:
+        <strong
+          [class.active]="currentPlan().status === 'ACTIVO'"
+          [class.expired]="currentPlan().status === 'VENCIDO'"
+          [class.pending]="currentPlan().status === 'PENDIENTE'"
+          [class.error]="currentPlan().status === 'ERROR'"
+        >
+          {{ currentPlan().status }}
+        </strong>
+      </p>
+
+      <p>Precio: <strong>{{ currentPlan().price }}</strong></p>
+      <p>Inicio: <strong>{{ currentPlan().startDate }}</strong></p>
+      <p>Vence el: <strong>{{ currentPlan().expirationDate }}</strong></p>
+    </div>
+
+    <!-- Botones -->
+    <div class="card-actions">
+      <button class="btn-primary" (click)="renovarPlan()">Renovar Ahora</button>
+      <button class="btn-secondary" (click)="cambiarPlan()">Cambiar de Plan</button>
+    </div>
+
+  </div>
+
+  <!-- Historial de Pagos -->
+  <div class="card mt-large" *ngIf="paymentHistory().length > 0">
+    <h3 class="card-title">Historial de Pagos</h3>
+
+    <div *ngFor="let pago of paymentHistory()">
+      <p class="history-item">
+        {{ pago.date }} - {{ pago.description }} - <strong>${{ pago.amount }}</strong>
+      </p>
+    </div>
+
+    <p class="history-item text-muted pointer" (click)="verTodoElHistorial()">
+      Ver todos los pagos...
+    </p>
+  </div>
+
+</div>

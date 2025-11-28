@@ -1,0 +1,138 @@
+/* ======================================= */
+/* Estilos de Membresía (Optimizado Final) */
+/* ======================================= */
+
+/* CONTENEDOR PRINCIPAL */
+.membresia-container {
+    padding: 30px;
+    background: var(--color-dark-bg);
+    min-height: 100vh;
+    color: var(--color-text-light);
+    font-family: 'Inter', sans-serif;
+}
+
+/* TÍTULOS PRINCIPALES */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    margin-bottom: 5px;
+}
+
+.section-description {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin-bottom: 25px;
+}
+
+/* TARJETAS */
+.card {
+    background: var(--color-card-bg);
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 25px;
+    border: 1px solid var(--color-divider);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* TÍTULOS EN TARJETAS */
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+    margin-bottom: 20px;
+}
+
+/* PLAN ACTUAL */
+.current-plan {
+    border-left: 4px solid var(--color-primary);
+    padding-left: 20px;
+}
+
+.plan-details p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: var(--color-text-muted);
+}
+
+.plan-details strong {
+    color: var(--color-text-light);
+    font-weight: 700;
+}
+
+.plan-name {
+    color: var(--color-primary);
+    font-weight: 800;
+}
+
+.plan-status {
+    background-color: var(--color-active);
+    padding: 4px 12px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* BOTONES */
+.card-actions {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-divider);
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 22px;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+/* BOTÓN ROJO */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 2px 6px rgba(230, 57, 70, 0.4);
+}
+
+.btn-primary:hover {
+    background-color: #c4303a;
+    transform: translateY(-2px);
+}
+
+/* BOTÓN SECUNDARIO */
+.btn-secondary {
+    background-color: #3b3b3b;
+    color: var(--color-text-light);
+    border: 1px solid #555;
+}
+
+.btn-secondary:hover {
+    background-color: #4a4a4a;
+    transform: translateY(-2px);
+}
+
+/* HISTORIAL */
+.mt-large {
+    margin-top: 40px;
+}
+
+.history-item {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--color-divider);
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+    text-align: right;
+    font-weight: 600;
+    color: var(--color-primary);
+    cursor: pointer;
+}

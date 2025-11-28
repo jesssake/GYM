@@ -1,52 +1,108 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 🚨 Necesario para [(ngModel)] en el input
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { AuthService } from '../../../services/auth.service';
 
-// 🚨 Define la estructura de tus datos
+// 🚨 Define la estructura de tus datos (coincide con la respuesta del backend)
 interface User {
-  id: number;
-  name: string;
-  role: 'Cliente' | 'Coach';
-  actions: string[]; // ['Cambiar Rol'], ['Eliminar Coach']
+    id: number;
+    nombre: string;
+    email: string;
+    rol: 'Cliente' | 'Administrador' | 'Coach';
+    fecha_registro: string;
 }
 
 @Component({
-  selector: 'app-gestion-usuarios',
-  standalone: true,
-  // 🚨 Añadimos FormsModule para el Two-Way Data Binding del buscador
-  imports: [CommonModule, FormsModule],
-  templateUrl: './gestion-usuarios.component.html',
-  styleUrl: './gestion-usuarios.component.css'
+    selector: 'app-gestion-usuarios',
+    standalone: true,
+    imports: [CommonModule, FormsModule, HttpClientModule],
+    templateUrl: './gestion-usuarios.component.html',
+    styleUrl: './gestion-usuarios.component.css'
 })
 export class GestionUsuariosComponent implements OnInit {
 
-  searchTerm: string = '';
+    searchTerm: string = '';
+    users: User[] = [];
+    isLoading: boolean = false;
 
-  // 🚨 Datos de ejemplo
-  users: User[] = [
-    { id: 1, name: 'Cliente Juan Pérez', role: 'Cliente', actions: ['Cambiar Rol'] },
-    { id: 2, name: 'Coach María Gómez', role: 'Coach', actions: ['Cambiar Rol', 'Eliminar Coach'] },
-  ];
+    constructor(private authService: AuthService) { }
 
-  ngOnInit(): void { }
+    ngOnInit(): void {
+        this.cargarUsuarios();
+    }
 
-  // 🚨 Métodos para la interactividad (botón Buscar)
-  buscarUsuarios() {
-    console.log('Buscando:', this.searchTerm);
-    // Aquí iría tu lógica de filtro
-  }
+    cargarUsuarios() {
+        this.isLoading = true;
+        // 🛑 Llamada al servicio GET /api/admin/usuarios
+        this.authService.getAllUsers().subscribe({
+            next: (response: any) => {
+                // ✅ CORRECCIÓN: Verificamos 'ok' y asignamos la lista (puede estar vacía []).
+                if (response.ok) {
+                    // El backend devuelve 'users' y no 'usuarios' según tu admin.controller.js
+                    this.users = response.users || [];
+                } else {
+                    // Si el backend responde con ok: false, mostramos el error
+                    console.error('Respuesta con ok: false desde el servidor:', response);
+                }
+                this.isLoading = false;
+            },
+            error: (err) => {
+                console.error('❌ Error al cargar usuarios:', err);
+                console.error('Error: Verifique que el servidor esté activo, el token es válido y el usuario es Admin.');
+                this.isLoading = false;
+            }
+        });
+    }
 
-  cambiarRol(userId: number) {
-    alert(`Cambiando rol para el usuario ID: ${userId}`);
-    // Implementar lógica de servicio
-  }
+    buscarUsuarios() {
+        // Lógica pendiente de implementar en el backend
+        console.log('Buscando:', this.searchTerm);
+        console.log(`Búsqueda simulada: ${this.searchTerm}. Pendiente implementar en el backend.`);
+    }
 
-  eliminarCoach(userId: number) {
-    alert(`Eliminando Coach con ID: ${userId}`);
-    // Implementar lógica de servicio
-  }
+    cambiarRol(userId: number, currentRole: 'Cliente' | 'Administrador' | 'Coach') {
+        if (currentRole === 'Administrador') {
+            console.warn('Advertencia: No se puede cambiar el rol de un Administrador desde este panel.');
+            return;
+        }
 
-  agregarEntrenador() {
-    alert('Abriendo formulario para Agregar Entrenador.');
-  }
+        const newRole: 'Cliente' | 'Coach' = currentRole === 'Cliente' ? 'Coach' : 'Cliente';
+
+        console.warn(`Simulación de confirmación: ¿Estás seguro de cambiar el rol del usuario ${userId} a ${newRole}?`);
+
+        this.authService.updateUserRole(userId, newRole).subscribe({
+            next: (response) => {
+                console.log(response.msg);
+                this.cargarUsuarios(); // Recargar la lista
+            },
+            error: (err) => {
+                console.error('❌ Error al cambiar rol:', err);
+                console.error(`Error al cambiar rol: ${err.error.msg || 'Error de conexión.'}`);
+            }
+        });
+    }
+
+    eliminarUsuario(userId: number) {
+        console.warn(`Simulación de confirmación: ⚠️ ¿Estás seguro de ELIMINAR al usuario ${userId}?`);
+
+        this.authService.deleteUser(userId).subscribe({
+            next: (response) => {
+                console.log(response.msg);
+                this.cargarUsuarios(); // Recargar la lista
+            },
+            error: (err) => {
+                console.error('❌ Error al eliminar:', err);
+                console.error(`Error al eliminar usuario: ${err.error.msg || 'Error de conexión.'}`);
+            }
+        });
+    }
+
+    eliminarCoach(userId: number) {
+        this.eliminarUsuario(userId);
+    }
+
+    agregarEntrenador() {
+        console.log('Pendiente: Aquí iría la navegación a un formulario de registro de Coach (POST /api/admin/usuarios).');
+    }
 }

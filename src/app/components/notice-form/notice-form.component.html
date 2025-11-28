@@ -1,0 +1,36 @@
+<div class="container">
+  <h3 *ngIf="!isEdit">Crear aviso</h3>
+  <h3 *ngIf="isEdit">Editar aviso</h3>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mb-3">
+      <label class="form-label">Título</label>
+      <input type="text" class="form-control" formControlName="titulo">
+      <div *ngIf="form.get('titulo')?.touched && form.get('titulo')?.invalid" class="text-danger">Título es obligatorio.</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Contenido</label>
+      <textarea class="form-control" rows="4" formControlName="contenido"></textarea>
+      <div *ngIf="form.get('contenido')?.touched && form.get('contenido')?.invalid" class="text-danger">Contenido es obligatorio.</div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Fecha inicio</label>
+        <input type="date" class="form-control" formControlName="inicio">
+        <div *ngIf="form.get('inicio')?.touched && form.get('inicio')?.invalid" class="text-danger">Fecha inicio es obligatoria.</div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Fecha fin (opcional)</label>
+        <input type="date" class="form-control" formControlName="fin">
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button type="submit" class="btn btn-primary" [disabled]="loading">{{ isEdit ? 'Actualizar' : 'Crear' }}</button>
+      <button type="button" class="btn btn-secondary ms-2" (click)="cancel()">Cancelar</button>
+    </div>
+  </form>
+</div>

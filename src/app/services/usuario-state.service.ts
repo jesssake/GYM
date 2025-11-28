@@ -1,28 +1,32 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import { Usuario } from './usuario-api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioStateService {
 
-  // URL inicial (placeholder)
-  private initialUrl = 'https://placehold.co/150x150/ff5252/ffffff?text=TSG';
+  private userSubject = new BehaviorSubject<Usuario>({
+    id: 0, // ✅ CORREGIDO — debe ser number, no string
+    nombre: 'Martín',
+    email: 'martin@gym.com',
+    fechaNacimiento: '1990-01-01',
+    peso: 75,
+    altura: 175,
+    meta: 'ganar-musculo',
+    rol: 'Cliente',
+    fotoUrl: 'https://placehold.co/100x100/38a169/ffffff?text=M'
+  });
 
-  // BehaviorSubject: Almacena y emite la URL actual de la foto.
-  private fotoPerfilSubject = new BehaviorSubject<string>(this.initialUrl);
+  user$ = this.userSubject.asObservable();
 
-  // Observable: La fuente pública para la suscripción de otros componentes.
-  public fotoPerfilActual$: Observable<string> = this.fotoPerfilSubject.asObservable();
+  actualizarFotoPerfil(url: string) {
+    const usuarioActual = this.userSubject.value;
+    this.userSubject.next({ ...usuarioActual, fotoUrl: url });
+  }
 
-  constructor() { }
-
-  /**
-   * Actualiza el valor de la foto y notifica a todos los componentes suscritos (Sidebar, etc.).
-   * @param nuevaUrl La nueva imagen en formato Base64.
-   */
-  actualizarFotoPerfil(nuevaUrl: string): void {
-    this.fotoPerfilSubject.next(nuevaUrl);
-    console.log('[SERVICE] Nuevo estado de foto de perfil emitido.');
+  actualizarUsuario(usuario: Usuario) {
+    this.userSubject.next(usuario);
   }
 }
