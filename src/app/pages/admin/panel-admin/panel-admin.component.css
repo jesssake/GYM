@@ -1,18 +1,22 @@
-/* -------------------------------------------------- */
-/* 🛠️ Estilos del Layout Principal del Panel Admin */
-/* -------------------------------------------------- */
+/* ---------------------------------------------------- */
+/* 🛠️ Estilos del Layout Principal del Panel Admin (FLEXBOX) */
+/* ---------------------------------------------------- */
 
-/* Contenedor principal de la vista, debe tener un fondo oscuro */
+/* Contenedor principal: Usa Flex para disposición lateral */
 .admin-layout-content {
-    background-color: #1a1a1a; /* Fondo oscuro que coincide con tu tema */
-    padding: 30px; /* Relleno alrededor de la tarjeta de gestión */
+    display: flex; /* 🚨 CLAVE: Habilita el diseño flexible para alinear Sidebar y Contenido */
+    background-color: #1a1a1a;
     min-height: 100vh; /* Asegura que el fondo cubra toda la altura de la pantalla */
 }
 
 /* Área de contenido donde se carga la ruta (<router-outlet>) */
 .admin-content-area {
+    /* 🚨 CLAVE: Ocupa todo el espacio restante después del Sidebar */
+    flex-grow: 1;
+    padding: 30px; /* Relleno alrededor de la tarjeta de gestión (donde se cargan las rutas) */
+    /* Asegura que si el contenido es largo, se pueda hacer scroll solo en esta área */
+    overflow-y: auto;
     background-color: transparent;
-    display: block;
 }
 
 /* -------------------------------------------------- */
@@ -152,7 +156,7 @@ textarea {
     color: #ccc;
 }
 
-/* Botones */
+/* Botones de acción dentro de la tabla */
 .btn-action {
     padding: 8px 15px;
     border: none;

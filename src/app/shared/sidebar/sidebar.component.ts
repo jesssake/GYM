@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService, UserRole } from '../../services/auth.service'; // 🚨 Importar UserRole
+import { AuthService, UserRole } from '../../services/auth.service';
 import { UsuarioStateService } from '../../services/usuario-state.service';
 import { Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
@@ -17,20 +17,21 @@ interface NavItem {
     standalone: true,
     imports: [CommonModule, RouterLink, RouterLinkActive],
     templateUrl: './sidebar.component.html',
-    styleUrl: './sidebar.component.css',
+    styleUrls: ['./sidebar.component.css'],   // ✔ CORREGIDO
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent implements OnInit {
 
-    // 🚨 CORRECCIÓN CLAVE: Usamos el tipo UserRole que incluye 'Coach' | 'Administrador' | 'Cliente' | null.
-    // Opcionalmente, puedes definirlo inline así: currentRole: 'Cliente' | 'Administrador' | 'Coach' | null = null;
-    currentRole: UserRole = null;
+    // ✔ URL base del backend para mostrar imágenes
+    private readonly BASE_UPLOAD_URL = 'http://localhost:5000';
+
+    currentRole: UserRole | null = null;
     menuItems: NavItem[] = [];
 
-    public fotoPerfilSidebar$!: Observable<string>;
+    fotoPerfilSidebar$!: Observable<string>;
 
     // --------------------------------------------------------
-    // MENÚ DEL CLIENTE
+    // MENÚ CLIENTE
     // --------------------------------------------------------
     private menuCliente: NavItem[] = [
         { path: '/area-privada/dashboard', icon: 'fa-tachometer-alt', label: 'Dashboard' },
@@ -42,7 +43,7 @@ export class SidebarComponent implements OnInit {
     ];
 
     // --------------------------------------------------------
-    // MENÚ DEL COACH 🚨 NUEVO
+    // MENÚ COACH
     // --------------------------------------------------------
     private menuCoach: NavItem[] = [
         { path: '/area-privada/dashboard', icon: 'fa-tachometer-alt', label: 'Dashboard Coach' },
@@ -52,7 +53,7 @@ export class SidebarComponent implements OnInit {
     ];
 
     // --------------------------------------------------------
-    // MENÚ DEL ADMIN
+    // MENÚ ADMIN
     // --------------------------------------------------------
     private menuAdmin: NavItem[] = [
         { path: '/area-privada/admin/usuarios', icon: 'fa-users-cog', label: 'Gestión de Usuarios' },
@@ -68,8 +69,17 @@ export class SidebarComponent implements OnInit {
 
     ngOnInit(): void {
 
+        // ✔ CORRECCIÓN: cambiar usuario$ → user$ y prefijar URLs relativas
         this.fotoPerfilSidebar$ = this.usuarioStateService.user$.pipe(
-            map(user => user.fotoUrl || 'assets/default-profile.png'),
+            map(user => {
+                const fotoUrl = user?.fotoUrl;
+
+                if (fotoUrl && fotoUrl.startsWith('/uploads')) {
+                    return this.BASE_UPLOAD_URL + fotoUrl;
+                }
+
+                return fotoUrl || 'assets/default-profile.png';
+            }),
             tap(() => this.cdr.detectChanges())
         );
 
@@ -78,12 +88,9 @@ export class SidebarComponent implements OnInit {
 
         if (this.currentRole === 'Administrador') {
             this.menuItems = this.menuAdmin;
-        }
-        // 🚨 NUEVA CONDICIÓN PARA EL ROL COACH
-        else if (this.currentRole === 'Coach') {
+        } else if (this.currentRole === 'Coach') {
             this.menuItems = this.menuCoach;
-        }
-        else if (this.currentRole === 'Cliente') {
+        } else if (this.currentRole === 'Cliente') {
             this.menuItems = this.menuCliente;
         } else {
             this.menuItems = [];

@@ -23,7 +23,8 @@ interface User {
 export class GestionUsuariosComponent implements OnInit {
 
     searchTerm: string = '';
-    users: User[] = [];
+    allUsers: User[] = [];   // 🔥 lista completa
+    users: User[] = [];      // 🔥 lista mostrada (filtrada)
     isLoading: boolean = false;
 
     constructor(private authService: AuthService) { }
@@ -34,66 +35,72 @@ export class GestionUsuariosComponent implements OnInit {
 
     cargarUsuarios() {
         this.isLoading = true;
-        // 🛑 Llamada al servicio GET /api/admin/usuarios
+
         this.authService.getAllUsers().subscribe({
             next: (response: any) => {
-                // ✅ CORRECCIÓN: Verificamos 'ok' y asignamos la lista (puede estar vacía []).
                 if (response.ok) {
-                    // El backend devuelve 'users' y no 'usuarios' según tu admin.controller.js
-                    this.users = response.users || [];
+                    this.allUsers = response.users || [];
+                    this.users = [...this.allUsers]; // copia inicial
                 } else {
-                    // Si el backend responde con ok: false, mostramos el error
                     console.error('Respuesta con ok: false desde el servidor:', response);
                 }
                 this.isLoading = false;
             },
             error: (err) => {
                 console.error('❌ Error al cargar usuarios:', err);
-                console.error('Error: Verifique que el servidor esté activo, el token es válido y el usuario es Admin.');
                 this.isLoading = false;
             }
         });
     }
 
+    // 🔍 BÚSQUEDA FUNCIONAL
     buscarUsuarios() {
-        // Lógica pendiente de implementar en el backend
-        console.log('Buscando:', this.searchTerm);
-        console.log(`Búsqueda simulada: ${this.searchTerm}. Pendiente implementar en el backend.`);
+        const term = this.searchTerm.toLowerCase().trim();
+
+        if (term === '') {
+            this.users = [...this.allUsers];
+            return;
+        }
+
+        this.users = this.allUsers.filter(u =>
+            u.nombre.toLowerCase().includes(term) ||
+            u.email.toLowerCase().includes(term)
+        );
     }
 
+    // 🔄 Cambiar rol
     cambiarRol(userId: number, currentRole: 'Cliente' | 'Administrador' | 'Coach') {
         if (currentRole === 'Administrador') {
-            console.warn('Advertencia: No se puede cambiar el rol de un Administrador desde este panel.');
+            console.warn('No se puede cambiar el rol de un Administrador.');
             return;
         }
 
         const newRole: 'Cliente' | 'Coach' = currentRole === 'Cliente' ? 'Coach' : 'Cliente';
 
-        console.warn(`Simulación de confirmación: ¿Estás seguro de cambiar el rol del usuario ${userId} a ${newRole}?`);
+        console.warn(`Confirmación simulada: cambiar a ${newRole}`);
 
+        // El backend espera { nuevoRol }
         this.authService.updateUserRole(userId, newRole).subscribe({
             next: (response) => {
                 console.log(response.msg);
-                this.cargarUsuarios(); // Recargar la lista
+                this.cargarUsuarios();
             },
             error: (err) => {
                 console.error('❌ Error al cambiar rol:', err);
-                console.error(`Error al cambiar rol: ${err.error.msg || 'Error de conexión.'}`);
             }
         });
     }
 
     eliminarUsuario(userId: number) {
-        console.warn(`Simulación de confirmación: ⚠️ ¿Estás seguro de ELIMINAR al usuario ${userId}?`);
+        console.warn(`Confirmación simulada: eliminar ${userId}`);
 
         this.authService.deleteUser(userId).subscribe({
             next: (response) => {
                 console.log(response.msg);
-                this.cargarUsuarios(); // Recargar la lista
+                this.cargarUsuarios();
             },
             error: (err) => {
-                console.error('❌ Error al eliminar:', err);
-                console.error(`Error al eliminar usuario: ${err.error.msg || 'Error de conexión.'}`);
+                console.error('❌ Error al eliminar usuario:', err);
             }
         });
     }
@@ -103,6 +110,6 @@ export class GestionUsuariosComponent implements OnInit {
     }
 
     agregarEntrenador() {
-        console.log('Pendiente: Aquí iría la navegación a un formulario de registro de Coach (POST /api/admin/usuarios).');
+        console.log('Pendiente: navegación al formulario de registro de Coach.');
     }
 }

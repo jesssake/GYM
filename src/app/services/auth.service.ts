@@ -9,199 +9,248 @@ import { Observable, tap } from 'rxjs';
 export type UserRole = 'Cliente' | 'Administrador' | 'Coach' | null;
 
 export interface LoginCredentials {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 export interface RegisterData extends LoginCredentials {
-    nombre: string;
+  nombre: string;
 }
 
 export interface AuthResponse {
-    token: string;
-    rol: 'Cliente' | 'Administrador' | 'Coach';
+  token: string;
+  rol: 'Cliente' | 'Administrador' | 'Coach';
 }
 
 interface UserSession {
-    token: string;
-    rol: 'Cliente' | 'Administrador' | 'Coach';
+  token: string;
+  rol: UserRole;
 }
 
 // ----------------------------------------------------
 // SERVICIO
 // ----------------------------------------------------
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthService {
 
-    private apiUrl = 'http://localhost:5000/api/auth';
-    private adminUrl = 'http://localhost:5000/api/admin';
+  private apiAuth = 'http://localhost:5000/api/auth';
+  private apiUsers = 'http://localhost:5000/api/users';
+  private apiAdmin = 'http://localhost:5000/api/admin';
+  private apiContent = 'http://localhost:5000/api/content';
+  private apiNotifications = 'http://localhost:5000/api/notifications';
 
-    private readonly TOKEN_KEY = 'token';
-    private readonly SESSION_KEY = 'user_session_gym';
+  private readonly TOKEN_KEY = 'token';
+  private readonly SESSION_KEY = 'user_session_gym';
 
-    constructor(
-        private router: Router,
-        private http: HttpClient
-    ) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
-    // ----------------------------------------------------
-    // HEADERS CON TOKEN
-    // ----------------------------------------------------
-    private getAuthHeaders(): HttpHeaders {
-        const token = this.getToken();
-        return new HttpHeaders({
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        });
+  // ----------------------------------------------------
+  // HEADERS CON TOKEN
+  // ----------------------------------------------------
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.getToken();
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
+  // ----------------------------------------------------
+  // LOGIN
+  // ----------------------------------------------------
+  login(credentials: LoginCredentials): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiAuth}/login`, credentials)
+      .pipe(tap(res => this.handleAuthResponse(res)));
+  }
+
+  loginTest(email: string, password: string): boolean {
+    if (email === 'admin@gym.com' && password === 'admin') {
+      this.handleAuthResponse({ token: 'test', rol: 'Administrador' });
+      return true;
     }
 
-    // ----------------------------------------------------
-    // RECUPERAR CONTRASEÑA
-    // ----------------------------------------------------
-    requestPasswordReset(email: string): Observable<{ msg: string }> {
-        return this.http.post<{ msg: string }>(
-            `${this.apiUrl}/restablecer-solicitud`,
-            { email }
-        );
+    if (email === 'cliente@gym.com' && password === 'cliente') {
+      this.handleAuthResponse({ token: 'test', rol: 'Cliente' });
+      return true;
     }
 
-    resetPassword(token: string, password: string): Observable<{ msg: string }> {
-        return this.http.post<{ msg: string }>(
-            `${this.apiUrl}/restablecer-confirmar`,
-            { token, password }
-        );
+    return false;
+  }
+
+  // ----------------------------------------------------
+  // GUARDAR SESIÓN
+  // ----------------------------------------------------
+  private handleAuthResponse(response: AuthResponse): void {
+    localStorage.setItem(this.TOKEN_KEY, response.token);
+
+    const sessionData: UserSession = {
+      token: response.token,
+      rol: response.rol
+    };
+
+    localStorage.setItem(this.SESSION_KEY, JSON.stringify(sessionData));
+  }
+
+  // ----------------------------------------------------
+  // SESIÓN
+  // ----------------------------------------------------
+  isLoggedIn(): boolean {
+    const token = this.getToken();
+    return !!token && token.trim() !== '';
+  }
+
+  getUserRole(): UserRole {
+    const data = localStorage.getItem(this.SESSION_KEY);
+    if (!data) return null;
+
+    try {
+      const s: UserSession = JSON.parse(data);
+      return s.rol;
+    } catch {
+      return null;
     }
+  }
 
-    // ----------------------------------------------------
-    // REGISTRO
-    // ----------------------------------------------------
-    register(data: RegisterData): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
-            .pipe(tap(res => this.handleAuthResponse(res)));
-    }
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
 
-    // ----------------------------------------------------
-    // LOGIN
-    // ----------------------------------------------------
-    login(credentials: LoginCredentials): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials)
-            .pipe(tap(res => this.handleAuthResponse(res)));
-    }
+  logout(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.SESSION_KEY);
+    this.router.navigate(['/login']);
+  }
 
-    // ----------------------------------------------------
-    // GUARDAR SESIÓN
-    // ----------------------------------------------------
-    private handleAuthResponse(response: AuthResponse): void {
-        localStorage.setItem(this.TOKEN_KEY, response.token);
+  // ----------------------------------------------------
+  // ADMIN – USUARIOS
+  // ----------------------------------------------------
+  updateUserRole(userId: number, newRole: string): Observable<any> {
+    return this.http.put<any>(
+      `${this.apiAdmin}/usuarios/${userId}/rol`,
+      { nuevoRol: newRole },
+      { headers: this.getAuthHeaders() }
+    );
+  }
 
-        const sessionData: UserSession = {
-            token: response.token,
-            rol: response.rol
-        };
+  getAllUsers(): Observable<any> {
+    return this.http.get(`${this.apiAdmin}/usuarios`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-        localStorage.setItem(this.SESSION_KEY, JSON.stringify(sessionData));
-    }
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`${this.apiAdmin}/usuarios/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-    // ----------------------------------------------------
-    // SESIÓN
-    // ----------------------------------------------------
-    isLoggedIn(): boolean {
-        const token = this.getToken();
-        return !!token && token.trim() !== '';
-    }
+  // ----------------------------------------------------
+  // REGISTRO
+  // ----------------------------------------------------
+  register(data: RegisterData): Observable<any> {
+    return this.http.post(`${this.apiAuth}/register`, data);
+  }
 
-    getUserRole(): UserRole {
-        const data = localStorage.getItem(this.SESSION_KEY);
-        if (!data) return null;
+  // ----------------------------------------------------
+  // RESTABLECER CONTRASEÑA
+  // ----------------------------------------------------
+  requestPasswordReset(email: string): Observable<any> {
+    return this.http.post(`${this.apiAuth}/reset-request`, { email });
+  }
 
-        try {
-            const s: UserSession = JSON.parse(data);
-            return s.rol;
-        } catch {
-            return null;
-        }
-    }
+  resetPassword(token: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiAuth}/reset-password`, { token, password });
+  }
 
-    getToken(): string | null {
-        return localStorage.getItem(this.TOKEN_KEY);
-    }
+  processSocialLogin(token: string): Observable<any> {
+    return this.http.post(`${this.apiAuth}/social-login`, { token });
+  }
 
-    logout(): void {
-        localStorage.removeItem(this.TOKEN_KEY);
-        localStorage.removeItem(this.SESSION_KEY);
-        this.router.navigate(['/login']);
-    }
+  // ----------------------------------------------------
+  // ADMIN – CONTENIDO
+  // ----------------------------------------------------
+  createRoutine(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiContent}/routine`, formData, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.getToken()}`
+      })
+    });
+  }
 
-    processSocialLogin(token: string): void {
-        if (!token) return;
+  createNotice(data: any): Observable<any> {
+    return this.http.post(`${this.apiContent}/notice`, data, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-        localStorage.setItem(this.TOKEN_KEY, token);
+  // ----------------------------------------------------
+  // CLIENTE – RUTINAS
+  // ----------------------------------------------------
+  getAssignedRoutine(): Observable<any> {
+    return this.http.get(`${this.apiUsers}/rutina-asignada`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-        const sessionData: UserSession = { token, rol: 'Cliente' };
-        localStorage.setItem(this.SESSION_KEY, JSON.stringify(sessionData));
+  getRoutineDetails(): Observable<any> {
+    return this.http.get(`${this.apiUsers}/rutina-detalles`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-        this.router.navigate(['/dashboard']);
-    }
+  getActivities(): Observable<any> {
+    return this.http.get(`${this.apiUsers}/actividades`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-    getAllUsers(): Observable<any> {
-        return this.http.get<any>(`${this.adminUrl}/usuarios`, {
-            headers: this.getAuthHeaders()
-        });
-    }
+  getRecommendations(): Observable<any> {
+    return this.http.get(`${this.apiUsers}/recomendaciones`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-    updateUserRole(userId: number, rol: 'Cliente' | 'Administrador' | 'Coach'): Observable<any> {
-        return this.http.put<any>(
-            `${this.adminUrl}/usuarios/${userId}/rol`,
-            { rol },
-            { headers: this.getAuthHeaders() }
-        );
-    }
+// ----------------------------------------------------
+  // NOTIFICACIONES (ADMIN)
+  // ----------------------------------------------------
 
-    deleteUser(userId: number): Observable<any> {
-        return this.http.delete<any>(`${this.adminUrl}/usuarios/${userId}`, {
-            headers: this.getAuthHeaders()
-        });
-    }
+  getAlertConfig(): Observable<any> {
+    return this.http.get(`${this.apiNotifications}/config`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-    createRoutine(formData: FormData): Observable<any> {
-        const token = this.getToken();
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${token}`
-        });
-        return this.http.post<any>(`${this.adminUrl}/rutinas`, formData, { headers });
-    }
+  getExpiringClients(): Observable<any> {
+    return this.http.get(`${this.apiNotifications}/expiring`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-    createNotice(noticeData: any): Observable<any> {
-        return this.http.post<any>(`${this.adminUrl}/avisos`, noticeData, {
-            headers: this.getAuthHeaders()
-        });
-    }
+  updateAlertConfig(days: number): Observable<any> {
+    // 🚨 CORRECCIÓN CLAVE: Cambiamos la clave 'days' a 'diasAntes'
+    return this.http.put(`${this.apiNotifications}/config`, { diasAntes: days }, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-    updateAlertConfig(days: number): Observable<any> {
-        return this.http.put<any>(`${this.adminUrl}/config/alertas`, { diasAntes: days }, {
-            headers: this.getAuthHeaders()
-        });
-    }
+  // ----------------------------------------------------
+  // PERFIL
+  // ----------------------------------------------------
+  getUserProfile(): Observable<any> {
+    return this.http.get(`${this.apiUsers}/profile`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-    getAlertConfig(): Observable<any> {
-        return this.http.get<any>(`${this.adminUrl}/config/alertas`, {
-            headers: this.getAuthHeaders()
-        });
-    }
-
-    getExpiringClients(): Observable<any> {
-        return this.http.get<any>(`${this.adminUrl}/notificaciones/expiraciones`, {
-            headers: this.getAuthHeaders()
-        });
-    }
-
-    // ----------------------------------------------------
-    // VERIFICAR SI ES ADMIN
-    // ----------------------------------------------------
-    isAdmin(): boolean {
-        return this.getUserRole() === 'Administrador';
-    }
-
+  // ----------------------------------------------------
+  // UTILIDADES
+  // ----------------------------------------------------
+  isAdmin(): boolean {
+    return this.getUserRole() === 'Administrador';
+  }
 }

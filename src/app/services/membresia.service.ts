@@ -10,7 +10,7 @@ export class MembresiaService {
   private http = inject(HttpClient);
 
   // 🔥 URL REAL (ajústala si tu backend está en otra IP)
-  private api = 'http://localhost:3000/api/membresia';
+  private api = 'http://localhost:5000/api/membresia';
 
   getMembresia(): Observable<any> {
     return this.http.get(`${this.api}/actual`);

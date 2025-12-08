@@ -6,8 +6,7 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-panel-admin',
   standalone: true,
-  // CORRECCIÓN CLAVE: Solo necesitamos CommonModule y RouterOutlet
-  // RouterOutlet es necesario para que cargue las sub-rutas (Usuarios, Contenido, etc.)
+
   imports: [CommonModule, RouterOutlet],
   templateUrl: './panel-admin.component.html',
   styleUrl: './panel-admin.component.css'

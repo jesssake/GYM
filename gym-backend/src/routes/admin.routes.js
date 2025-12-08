@@ -23,26 +23,30 @@ router.delete('/usuarios/:id', adminController.deleteUser);
 // GESTIÓN DE CONTENIDO (Rutinas y Avisos)
 // =========================================================
 
-// ✔ Multer va antes del controlador
+// ✔ Crear rutina con imagen
 router.post(
     '/rutinas',
     uploadRoutineImage.single('image'),
     adminController.createRoutine
 );
 
+// ✔ Crear aviso
 router.post('/avisos', adminController.createNotice);
 
+// 🚨 NUEVA RUTA PARA ASIGNAR RUTINA A UN USUARIO
+router.post('/rutinas/asignar', adminController.assignRoutine);
+
 // =========================================================
-// CONFIG Y NOTIFICACIONES
+// CONFIGURACIÓN Y NOTIFICACIONES
 // =========================================================
-// RUTA NUEVA: Obtener la configuración actual de alertas
+
+// Obtener configuración de alertas
 router.get('/config/alertas', adminController.getAlertConfig);
-// Actualizar la configuración de alertas
-router.put('/config/alertas', adminController.updateAlertConfig);
-// Obtener clientes por expirar
-router.get('/notificaciones/expiraciones', adminController.getExpiringClients);
-// PUT /api/admin/config/alertas
+
+// Actualizar configuración de alertas
 router.put('/config/alertas', adminController.updateAlertConfig);
 
+// Obtener clientes que están por expirar
+router.get('/notificaciones/expiraciones', adminController.getExpiringClients);
 
 module.exports = router;

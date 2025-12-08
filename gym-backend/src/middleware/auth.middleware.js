@@ -19,11 +19,12 @@ exports.verifyToken = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Guardamos el usuario decodificado en req.user
-        req.user = {
-            id: decoded.id,
-            rol: decoded.rol
-        };
+        // ✅ CORRECCIÓN:
+        // Adjuntar directamente el ID como req.userId
+        req.userId = decoded.id;
+
+        // Mantener rol para middlewares como isAdmin
+        req.user = { rol: decoded.rol };
 
         next();
     } catch (err) {

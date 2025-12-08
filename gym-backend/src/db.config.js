@@ -1,6 +1,7 @@
 // src/db.config.js
 require('dotenv').config();
 const mysql = require('mysql2/promise');
+
 // ------------------------------------------------------------
 // POOL DE CONEXIÓN
 // ------------------------------------------------------------
@@ -13,6 +14,7 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
+
 // ------------------------------------------------------------
 // TABLA: USERS
 // ------------------------------------------------------------
@@ -39,6 +41,7 @@ const createUsersTable = async () => {
         console.error("❌ Error al crear tabla 'users':", error.message);
     }
 };
+
 // ------------------------------------------------------------
 // TABLA: MEMBRESIAS
 // ------------------------------------------------------------
@@ -52,7 +55,7 @@ const createMembresiasTable = async () => {
                 status VARCHAR(20),
                 price VARCHAR(20),
                 start_date DATE,
-                fecha_fin DATE,  -- ✔ Incluida para evitar el error de columna
+                fecha_fin DATE,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             );
         `;
@@ -62,6 +65,7 @@ const createMembresiasTable = async () => {
         console.error("❌ Error al crear tabla 'membresias':", error.message);
     }
 };
+
 // ------------------------------------------------------------
 // TABLA: PAGOS
 // ------------------------------------------------------------
@@ -83,6 +87,7 @@ const createPagosTable = async () => {
         console.error("❌ Error al crear tabla 'pagos':", error.message);
     }
 };
+
 // ------------------------------------------------------------
 // TABLA: RUTINAS
 // ------------------------------------------------------------
@@ -93,6 +98,8 @@ const createRutinasTable = async () => {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 titulo VARCHAR(255) NOT NULL,
                 descripcion TEXT NOT NULL,
+                objetivo VARCHAR(255) NULL,
+                dificultad VARCHAR(50) NULL,
                 imagen_url VARCHAR(255) NOT NULL,
                 fecha_creacion DATETIME NOT NULL
             );
@@ -103,6 +110,29 @@ const createRutinasTable = async () => {
         console.error("❌ Error al crear tabla 'rutinas':", error.message);
     }
 };
+
+// ------------------------------------------------------------
+// TABLA: USER_RUTINAS
+// ------------------------------------------------------------
+const createUserRutinasTable = async () => {
+    try {
+        const query = `
+            CREATE TABLE IF NOT EXISTS user_rutinas (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                rutina_id INT NOT NULL,
+                fecha_asignacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (rutina_id) REFERENCES rutinas(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(query);
+        console.log("✔ Tabla 'user_rutinas' verificada/creada.");
+    } catch (error) {
+        console.error("❌ Error al crear tabla 'user_rutinas':", error.message);
+    }
+};
+
 // ------------------------------------------------------------
 // TABLA: AVISOS
 // ------------------------------------------------------------
@@ -113,6 +143,7 @@ const createAvisosTable = async () => {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 titulo VARCHAR(255) NOT NULL,
                 mensaje TEXT NOT NULL,
+                contenido TEXT NULL,
                 fecha_inicio DATE NOT NULL,
                 fecha_fin DATE NULL,
                 fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -124,8 +155,9 @@ const createAvisosTable = async () => {
         console.error("❌ Error al crear tabla 'avisos':", error.message);
     }
 };
+
 // ------------------------------------------------------------
-// TABLA: CONFIGURACIÓN DE ALERTAS
+// TABLA: CONFIG_ALERTAS
 // ------------------------------------------------------------
 const createConfigAlertasTable = async () => {
     try {
@@ -138,14 +170,56 @@ const createConfigAlertasTable = async () => {
         await pool.query(query);
         console.log("✔ Tabla 'config_alertas' verificada/creada.");
 
-        // Asegurar que siempre haya un registro de configuración
         const [rows] = await pool.query('SELECT COUNT(*) AS count FROM config_alertas');
         if (rows[0].count === 0) {
-             await pool.query('INSERT INTO config_alertas (id, dias_antes) VALUES (1, 7)');
+            await pool.query('INSERT INTO config_alertas (id, dias_antes) VALUES (1, 7)');
         }
-
     } catch (error) {
         console.error("❌ Error al crear tabla 'config_alertas':", error.message);
+    }
+};
+
+// ------------------------------------------------------------
+// TABLA: ACTIVIDADES EXTRAS
+// ------------------------------------------------------------
+const createActividadesExtrasTable = async () => {
+    try {
+        const query = `
+            CREATE TABLE IF NOT EXISTS actividades_extras (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                titulo VARCHAR(255) NOT NULL,
+                descripcion TEXT,
+                fecha_actividad DATETIME,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(query);
+        console.log("✔ Tabla 'actividades_extras' verificada/creada.");
+    } catch (error) {
+        console.error("❌ Error al crear tabla 'actividades_extras':", error.message);
+    }
+};
+
+// ------------------------------------------------------------
+// TABLA: RECOMENDACIONES
+// ------------------------------------------------------------
+const createRecomendacionesTable = async () => {
+    try {
+        const query = `
+            CREATE TABLE IF NOT EXISTS recomendaciones (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                titulo VARCHAR(255) NOT NULL,
+                contenido TEXT,
+                fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(query);
+        console.log("✔ Tabla 'recomendaciones' verificada/creada.");
+    } catch (error) {
+        console.error("❌ Error al crear tabla 'recomendaciones':", error.message);
     }
 };
 
@@ -157,8 +231,11 @@ const initDB = async () => {
     await createMembresiasTable();
     await createPagosTable();
     await createRutinasTable();
+    await createUserRutinasTable();
     await createAvisosTable();
     await createConfigAlertasTable();
+    await createActividadesExtrasTable();
+    await createRecomendacionesTable();
 };
 
 initDB();

@@ -1,27 +1,30 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { AuthService } from './auth.service'; // 🚨 Importar el nombre correcto
+import { AuthService } from './auth.service';
 
-// Mock del Router para evitar errores de inyección en el ambiente de pruebas
+// Mock del Router
 class MockRouter {
+  // Utilizamos una función espía (spy) para simular la navegación
   navigate = jasmine.createSpy('navigate');
 }
 
 describe('AuthService', () => {
   let service: AuthService;
-  let router: MockRouter;
+  let router: any; // Usamos 'any' para evitar errores de tipado con el MockRouter
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         AuthService,
-        // Proveer el MockRouter
+        // Proporcionamos el MockRouter en lugar del Router real
         { provide: Router, useClass: MockRouter },
       ],
     });
+
     service = TestBed.inject(AuthService);
-    router = TestBed.inject(Router) as unknown as MockRouter; // Inyectar el mock
-    // Limpiar localStorage antes de cada prueba
+    router = TestBed.inject(Router);
+
+    // Limpiamos localStorage antes de cada prueba
     localStorage.clear();
   });
 
@@ -29,25 +32,39 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  // --- Pruebas de Login ---
+  // --------------------------------------------------
+  // LOGIN TESTS (Asumiendo que prueba 'loginTest')
+  // --------------------------------------------------
 
-  it('should return true and set session for admin login', () => {
-    const success = service.login('admin@gym.com', 'admin');
+  it('should return true and set session for admin login (via loginTest)', () => {
+    const success = service.loginTest('admin@gym.com', 'Administrador');
     expect(success).toBeTrue();
-    expect(localStorage.getItem('user_session_gym')).not.toBeNull();
+
+    // Rol guardado debe ser 'Administrador'
+    const role = service.getUserRole();
+    expect(role).toBe('Administrador');
+
+    const stored = localStorage.getItem('user_session_gym');
+    expect(stored).not.toBeNull();
   });
 
-  it('should return false for invalid login credentials', () => {
-    const success = service.login('bad@gym.com', 'pass');
+  it('should return false for invalid login credentials (via loginTest)', () => {
+    const success = service.loginTest('bad@gym.com', 'pass');
     expect(success).toBeFalse();
-    expect(localStorage.getItem('user_session_gym')).toBeNull();
+
+    const stored = localStorage.getItem('user_session_gym');
+    expect(stored).toBeNull();
   });
 
-  // --- Pruebas de Sesión ---
+  // --------------------------------------------------
+  // SESSION TESTS
+  // --------------------------------------------------
 
   it('should return true for isLoggedIn if session exists', () => {
-    // Simular sesión iniciada
-    localStorage.setItem('user_session_gym', JSON.stringify({ token: 'test', email: 'a', rol: 'Cliente' }));
+    localStorage.setItem(
+      'user_session_gym',
+      JSON.stringify({ token: 'test-token', rol: 'Cliente' })
+    );
     expect(service.isLoggedIn()).toBeTrue();
   });
 
@@ -55,15 +72,23 @@ describe('AuthService', () => {
     expect(service.isLoggedIn()).toBeFalse();
   });
 
-  // --- Pruebas de Rol ---
+  // --------------------------------------------------
+  // ROLE TESTS
+  // --------------------------------------------------
 
-  it('should return "Admin" role if session is admin', () => {
-    localStorage.setItem('user_session_gym', JSON.stringify({ token: 'test', email: 'a', rol: 'Admin' }));
-    expect(service.getUserRole()).toBe('Admin');
+  it('should return "Administrador" role if session is admin', () => {
+    localStorage.setItem(
+      'user_session_gym',
+      JSON.stringify({ token: 'test-token', rol: 'Administrador' })
+    );
+    expect(service.getUserRole()).toBe('Administrador');
   });
 
   it('should return "Cliente" role if session is client', () => {
-    localStorage.setItem('user_session_gym', JSON.stringify({ token: 'test', email: 'a', rol: 'Cliente' }));
+    localStorage.setItem(
+      'user_session_gym',
+      JSON.stringify({ token: 'test-token', rol: 'Cliente' })
+    );
     expect(service.getUserRole()).toBe('Cliente');
   });
 
@@ -71,10 +96,15 @@ describe('AuthService', () => {
     expect(service.getUserRole()).toBeNull();
   });
 
-  // --- Pruebas de Logout ---
+  // --------------------------------------------------
+  // LOGOUT TESTS
+  // --------------------------------------------------
 
   it('should clear session and navigate to /login on logout', () => {
-    localStorage.setItem('user_session_gym', JSON.stringify({ token: 'test', email: 'a', rol: 'Cliente' }));
+    localStorage.setItem(
+      'user_session_gym',
+      JSON.stringify({ token: 'test-token', rol: 'Cliente' })
+    );
 
     service.logout();
 

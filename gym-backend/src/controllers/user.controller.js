@@ -1,9 +1,10 @@
 const db = require('../db.config');
 const fs = require('fs');
 const path = require('path');
+const usuarioModel = require('../models/usuarioModel');
 
 // =========================================================
-// 1. OBTENER PERFIL (getProfile)
+// PERFIL
 // =========================================================
 exports.getProfile = async (req, res) => {
     const userId = req.userId;
@@ -28,9 +29,8 @@ exports.getProfile = async (req, res) => {
     }
 };
 
-
 // =========================================================
-// 2. ACTUALIZAR PERFIL (updateProfile) 🚨 FUNCIÓN FALTANTE
+// ACTUALIZAR PERFIL
 // =========================================================
 exports.updateProfile = async (req, res) => {
     const userId = req.userId;
@@ -39,37 +39,28 @@ exports.updateProfile = async (req, res) => {
     try {
         const query = `
             UPDATE users SET
-                nombre = ?,
-                fechaNacimiento = ?,
-                peso = ?,
-                altura = ?,
-                meta = ?
+                nombre = ?, fechaNacimiento = ?, peso = ?, altura = ?, meta = ?
             WHERE id = ?
         `;
-        const [result] = await db.query(query, [
-            nombre,
-            fechaNacimiento,
-            peso,
-            altura,
-            meta,
+        await db.query(query, [
+            nombre || null,
+            fechaNacimiento || null,
+            peso || null,
+            altura || null,
+            meta || null,
             userId
         ]);
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ ok: false, msg: 'Usuario no encontrado o no hay cambios que aplicar.' });
-        }
-
-        res.json({ ok: true, msg: 'Datos de perfil actualizados correctamente.' });
+        res.json({ ok: true, msg: 'Perfil actualizado correctamente.' });
 
     } catch (err) {
         console.error("Error al actualizar perfil:", err);
-        res.status(500).json({ ok: false, msg: 'Error del servidor al actualizar el perfil.' });
+        res.status(500).json({ ok: false, msg: 'Error al actualizar perfil.' });
     }
 };
 
-
 // =========================================================
-// 3. SUBIR FOTO DE PERFIL (uploadProfilePhoto) 🚨 FUNCIÓN FALTANTE
+// SUBIR FOTO DE PERFIL
 // =========================================================
 exports.uploadProfilePhoto = async (req, res) => {
     const userId = req.userId;
@@ -82,47 +73,53 @@ exports.uploadProfilePhoto = async (req, res) => {
     try {
         const matches = fotoBase64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
 
-        if (!matches || matches.length !== 3) {
-            return res.status(400).json({ ok: false, msg: 'Formato Base64 inválido.' });
+        if (!matches) {
+            return res.status(400).json({ ok: false, msg: 'Formato de imagen inválido.' });
         }
 
         const imageType = matches[1];
         const base64Data = matches[2];
         const fileExtension = imageType.split('/')[1];
 
+        const folderPath = path.join(__dirname, '..', '..', 'uploads', 'profile_photos');
+
+        if (!fs.existsSync(folderPath)) {
+            fs.mkdirSync(folderPath, { recursive: true });
+        }
+
         const fileName = `${userId}-${Date.now()}.${fileExtension}`;
-        const filePath = path.join(__dirname, '..', '..', 'uploads', 'profile_photos', fileName);
+        const filePath = path.join(folderPath, fileName);
 
         fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
 
         const publicUrl = `/uploads/profile_photos/${fileName}`;
 
-        const updateQuery = `UPDATE users SET fotoUrl = ? WHERE id = ?`;
-        await db.query(updateQuery, [publicUrl, userId]);
+        await db.query("UPDATE users SET fotoUrl = ? WHERE id = ?", [publicUrl, userId]);
 
-        res.json({
-            ok: true,
-            msg: 'Foto de perfil subida y actualizada correctamente.',
-            newUrl: publicUrl
-        });
+        res.json({ ok: true, msg: 'Foto actualizada.', newUrl: publicUrl });
 
     } catch (err) {
-        console.error("Error al subir foto de perfil:", err.message);
-        res.status(500).json({ ok: false, msg: 'Error del servidor al procesar la imagen.' });
+        console.error("Error al subir imagen:", err);
+        res.status(500).json({ ok: false, msg: 'Error al subir imagen.' });
     }
 };
 
-
 // =========================================================
-// 4. OBTENER RUTINA ASIGNADA (getCurrentRoutine)
+// RUTINA ACTUAL
 // =========================================================
 exports.getCurrentRoutine = async (req, res) => {
     const userId = req.userId;
-    // ... (cuerpo de la función 4) ...
+
     try {
-        // Asumiendo una tabla 'user_rutinas' que vincula user_id con rutina_id
         const query = `
-            SELECT r.titulo, r.objetivo, r.dificultad
+            SELECT
+                r.id,
+                r.titulo,
+                r.descripcion,
+                r.objetivo,
+                r.dificultad,
+                r.imagen_url,
+                r.fecha_creacion
             FROM user_rutinas ur
             JOIN rutinas r ON ur.rutina_id = r.id
             WHERE ur.user_id = ?
@@ -131,84 +128,208 @@ exports.getCurrentRoutine = async (req, res) => {
         `;
         const [rows] = await db.query(query, [userId]);
 
-        if (rows.length === 0) {
-            return res.status(200).json({ ok: true, routine: null, msg: 'No hay rutina asignada.' });
-        }
-
-        res.json({ ok: true, routine: rows[0] });
+        res.json({ ok: true, routine: rows[0] || null });
 
     } catch (err) {
-        console.error("Error al obtener rutina:", err);
-        res.status(500).json({ ok: false, msg: 'Error al obtener la rutina asignada.' });
+        console.error("Error rutina:", err);
+        res.status(500).json({ ok: false, msg: 'Error al obtener rutina.' });
     }
 };
 
+// =========================================================
+// DETALLES DE RUTINA (EJERCICIOS AGRUPADOS POR DÍA)
+// =========================================================
+exports.getRoutineDetails = async (req, res) => {
+    const userId = req.userId;
+
+    try {
+        // 1. Obtener rutina asignada
+        const [currentRoutine] = await db.query(`
+            SELECT r.id, r.titulo, r.descripcion, r.objetivo, r.dificultad
+            FROM user_rutinas ur
+            JOIN rutinas r ON ur.rutina_id = r.id
+            WHERE ur.user_id = ?
+            ORDER BY ur.fecha_asignacion DESC
+            LIMIT 1;
+        `, [userId]);
+
+        if (currentRoutine.length === 0) {
+            return res.json({ ok: true, rutina: null, msg: "No tienes una rutina asignada." });
+        }
+
+        const rutinaBase = currentRoutine[0];
+        const rutinaId = rutinaBase.id;
+
+        // 2. Obtener ejercicios (TABLA rutina_detalles DEBE EXISTIR)
+        const [detallesRows] = await db.query(`
+            SELECT
+                dia_semana, orden, nombre, descripcion, video_url,
+                series, repeticiones, descanso, completado
+            FROM rutina_detalles
+            WHERE rutina_id = ?
+            ORDER BY FIELD(dia_semana, 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'), orden ASC;
+        `, [rutinaId]);
+
+        // Si no hay ejercicios
+        if (detallesRows.length === 0) {
+            return res.json({
+                ok: true,
+                rutina: {
+                    titulo: rutinaBase.titulo,
+                    objetivo: rutinaBase.objetivo,
+                    dificultad: rutinaBase.dificultad,
+                    dias: {}
+                }
+            });
+        }
+
+        // 3. Agrupar por día
+        const diasAgrupados = {};
+
+        detallesRows.forEach(det => {
+            const dia = det.dia_semana;
+
+            if (!diasAgrupados[dia]) {
+                diasAgrupados[dia] = [];
+            }
+
+            diasAgrupados[dia].push({
+                orden: det.orden,
+                nombre: det.nombre,
+                descripcion: det.descripcion,
+                video_url: det.video_url,
+                series: det.series,
+                repeticiones: det.repeticiones,
+                descanso: det.descanso,
+                completado: det.completado || false,
+            });
+        });
+
+        // 4. Respuesta final
+        const rutinaFinal = {
+            titulo: rutinaBase.titulo,
+            objetivo: rutinaBase.objetivo || 'General',
+            dificultad: rutinaBase.dificultad || 'Principiante',
+            dias: diasAgrupados
+        };
+
+        res.json({ ok: true, rutina: rutinaFinal });
+
+    } catch (err) {
+        console.error("Error rutina-detalles:", err);
+        res.status(500).json({ ok: false, msg: "Error al cargar los detalles de rutina." });
+    }
+};
+// =========================================================
+// ACTIVIDADES EXTRAS
+// =========================================================
+exports.getExtraActivities = async (req, res) => {
+    const userId = req.userId;
+
+    try {
+        const [rows] = await db.query(
+            // 🚨 CORRECCIÓN: Busca contenido específico O contenido donde user_id es NULL (Global)
+            `SELECT * FROM actividades_extras WHERE user_id IS NULL OR user_id = ?`,
+            [userId]
+        );
+
+        res.json({ ok: true, actividades: rows });
+
+    } catch (err) {
+        console.error("Error actividades:", err);
+        res.status(500).json({ ok: false, msg: "Error al obtener actividades." });
+    }
+};
 
 // =========================================================
-// 5. OBTENER AVISOS ACTIVOS (getActiveNotices)
+// RECOMENDACIONES
+// =========================================================
+exports.getRecommendations = async (req, res) => {
+    const userId = req.userId;
+
+    try {
+        const [rows] = await db.query(
+            // 🚨 CORRECCIÓN: Busca contenido específico O contenido donde user_id es NULL (Global)
+            `SELECT * FROM recomendaciones WHERE user_id IS NULL OR user_id = ?`,
+            [userId]
+        );
+
+        res.json({ ok: true, recomendaciones: rows });
+
+    } catch (err) {
+        console.error("Error recomendaciones:", err);
+        res.status(500).json({ ok: false, msg: "Error al obtener recomendaciones." });
+    }
+};
+
+// =========================================================
+// AVISOS (CORREGIDO)
 // =========================================================
 exports.getActiveNotices = async (req, res) => {
-    const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
-    // ... (cuerpo de la función 5) ...
+    const today = new Date().toISOString().split("T")[0];
+
     try {
-        // Filtra los avisos cuya fecha de inicio sea hoy o en el pasado, y cuya fecha de fin no haya llegado.
         const query = `
-            SELECT titulo, mensaje, fecha_inicio
+            SELECT
+                titulo,
+                mensaje AS descripcion,
+                fecha_inicio
             FROM avisos
-            WHERE fecha_inicio <= ? AND fecha_fin >= ?
-            ORDER BY fecha_inicio DESC;
+            WHERE fecha_inicio <= ?
+              AND (fecha_fin IS NULL OR fecha_fin >= ?)
         `;
+
         const [rows] = await db.query(query, [today, today]);
 
         res.json({ ok: true, avisos: rows });
 
     } catch (err) {
-        console.error("Error al obtener avisos:", err);
-        res.status(500).json({ ok: false, msg: 'Error al obtener los avisos activos.' });
+        console.error("Error avisos:", err);
+        res.status(500).json({ ok: false, msg: "Error al obtener avisos." });
     }
 };
 
-
 // =========================================================
-// 6. OBTENER ESTADO DE MEMBRESÍA (getMembershipStatus)
+// MEMBRESÍA
 // =========================================================
 exports.getMembershipStatus = async (req, res) => {
     const userId = req.userId;
-    const today = new Date();
-    // ... (cuerpo de la función 6) ...
+
     try {
-        // Asumiendo una tabla 'membresias' que guarda el plan activo y la fecha de fin
         const query = `
-            SELECT p.nombre AS plan_name, m.fecha_fin, m.id
-            FROM membresias m
-            JOIN planes p ON m.plan_id = p.id
-            WHERE m.user_id = ? AND m.fecha_fin >= ?
-            ORDER BY m.fecha_fin DESC
-            LIMIT 1;
+            SELECT plan_name, fecha_fin
+            FROM membresias
+            WHERE user_id = ?
+            ORDER BY fecha_fin DESC
+            LIMIT 1
         `;
-        const [rows] = await db.query(query, [userId, today.toISOString().split('T')[0]]);
+        const [rows] = await db.query(query, [userId]);
 
-        if (rows.length === 0) {
-            return res.json({ ok: true, status: null, msg: 'Membresía inactiva.' });
-        }
-
-        const status = rows[0];
-        const endDate = new Date(status.fecha_fin);
-        const diffTime = endDate.getTime() - today.getTime();
-        const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        res.json({
-            ok: true,
-            status: {
-                plan_name: status.plan_name,
-                fecha_fin: status.fecha_fin,
-                days_remaining: daysRemaining,
-                is_active: true
-            }
-        });
+        res.json({ ok: true, status: rows[0] || null });
 
     } catch (err) {
-        console.error("Error al obtener membresía:", err);
-        res.status(500).json({ ok: false, msg: 'Error al obtener estado de membresía.' });
+        console.error("Error membresía:", err);
+        res.status(500).json({ ok: false, msg: "Error al obtener membresía." });
+    }
+};
+
+// =========================================================
+// BÚSQUEDA
+// =========================================================
+exports.searchUsers = async (req, res) => {
+    try {
+        const { query, limit, page } = req.query;
+
+        const queryTerm = query?.trim();
+        const limitNum = parseInt(limit) || 10;
+        const offset = ((parseInt(page) || 1) - 1) * limitNum;
+
+        const usuarios = await usuarioModel.buscarUsuarios(queryTerm, limitNum, offset);
+
+        res.json({ ok: true, usuarios });
+
+    } catch (err) {
+        console.error("Error búsqueda:", err);
+        res.status(500).json({ ok: false, msg: "Error en búsqueda." });
     }
 };
