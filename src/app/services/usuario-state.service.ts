@@ -9,14 +9,14 @@ export class UsuarioStateService {
 
   private userSubject = new BehaviorSubject<Usuario>({
     id: 0, // ✅ CORREGIDO — debe ser number, no string
-    nombre: 'Martín',
+    nombre: '',
     email: 'martin@gym.com',
     fechaNacimiento: '1990-01-01',
     peso: 75,
     altura: 175,
     meta: 'ganar-musculo',
     rol: 'Cliente',
-    fotoUrl: 'https://placehold.co/100x100/38a169/ffffff?text=M'
+    fotoUrl: 'https://placehold.co/100x100/38a169/ffffff?text=A'
   });
 
   user$ = this.userSubject.asObservable();

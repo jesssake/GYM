@@ -11,211 +11,227 @@ import { UsuarioStateService } from '../../services/usuario-state.service';
 
 // Interfaz para respuesta de foto
 interface PhotoUploadResponse {
-    ok: boolean;
-    msg: string;
-    newUrl: string;
+    ok: boolean;
+    msg: string;
+    newUrl: string; // Viene como /uploads/...
 }
 
 @Component({
-    selector: 'app-perfil-usuario',
-    standalone: true,
-    imports: [
-        CommonModule,
-        FormsModule,
-        EditarFotoComponent
-    ],
-    templateUrl: './perfil-usuario.component.html',
-    styleUrls: ['./perfil-usuario.component.css'],
+    selector: 'app-perfil-usuario',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        EditarFotoComponent
+    ],
+    templateUrl: './perfil-usuario.component.html',
+    styleUrls: ['./perfil-usuario.component.css'],
 })
 export class PerfilUsuarioComponent implements OnInit {
 
-    usuario: Usuario = {
-        id: 0,
-        nombre: '',
-        email: '',
-        rol: 'Cliente',
-        fechaNacimiento: '',
-        peso: 0,
-        altura: 0,
-        meta: '',
-        fotoUrl: null,
-    };
+    // 🚨 CORRECCIÓN: URL base del backend para archivos estáticos
+    private readonly BASE_UPLOAD_URL = 'http://localhost:5000';
 
-    isLoading: boolean = true;
+    usuario: Usuario = {
+        id: 0,
+        nombre: '',
+        email: '',
+        rol: 'Cliente',
+        fechaNacimiento: '',
+        peso: 0,
+        altura: 0,
+        meta: '',
+        fotoUrl: null,
+    };
 
-    fotoPerfil: string | null = null;
-    imagenPreviewBase64: string | null = null;
+    isLoading: boolean = true;
 
-    mostrarCropper: boolean = false;
-    isSavingPhoto: boolean = false;
-    isSavingData: boolean = false;
+    // fotoPerfil contendrá la URL COMPLETA para mostrar en la etiqueta <img>
+    fotoPerfil: string | null = null;
+    imagenPreviewBase64: string | null = null;
 
-    mensajeExito = '';
-    mensajeError = '';
+    mostrarCropper: boolean = false;
+    isSavingPhoto: boolean = false;
+    isSavingData: boolean = false;
 
-    constructor(
-        private usuarioService: UsuarioApiService,
-        private router: Router,
-        private userStateService: UsuarioStateService // <── 🚨 NUEVO: Servicio de estado
-    ) {}
+    mensajeExito = '';
+    mensajeError = '';
 
-    ngOnInit(): void {
-        this.cargarPerfil();
-    }
+    constructor(
+        private usuarioService: UsuarioApiService,
+        private router: Router,
+        private userStateService: UsuarioStateService
+    ) {}
 
-    // =====================================================
-    // 1. Cargar Perfil desde Backend + Guardar en State Global
-    // =====================================================
-    cargarPerfil() {
-        this.isLoading = true;
+    ngOnInit(): void {
+        this.cargarPerfil();
+    }
 
-        this.usuarioService.obtenerPerfil().subscribe({
-            next: (response) => {
-                if (response.ok) {
-                    const usuarioReal: Usuario = response.user;
+    // =====================================================
+    // 1. Cargar Perfil desde Backend + Guardar en State Global
+    // =====================================================
+    cargarPerfil() {
+        this.isLoading = true;
 
-                    // 🚨 GUARDAR EN STATE GLOBAL
-                    this.userStateService.actualizarUsuario(usuarioReal);
+        this.usuarioService.obtenerPerfil().subscribe({
+            next: (response) => {
+                if (response.ok) {
+                    const usuarioReal: Usuario = response.user;
 
-                    // Actualizamos el formulario local
-                    this.usuario = usuarioReal;
+                    // 🚨 GUARDAR EN STATE GLOBAL
+                    this.userStateService.actualizarUsuario(usuarioReal);
 
-                    if (this.usuario.fechaNacimiento) {
-                        this.usuario.fechaNacimiento = this.usuario.fechaNacimiento.split('T')[0];
-                    }
+                    // Actualizamos el formulario local
+                    this.usuario = usuarioReal;
 
-                    this.fotoPerfil = usuarioReal.fotoUrl || null;
-                    this.isLoading = false;
-                } else {
-                    this.mostrarMensaje("error", "Respuesta inválida del servidor.");
-                    this.isLoading = false;
-                }
-            },
-            error: (err) => {
-                this.isLoading = false;
+                    if (this.usuario.fechaNacimiento) {
+                        this.usuario.fechaNacimiento = this.usuario.fechaNacimiento.split('T')[0];
+                    }
 
-                if (err.status === 401 || err.status === 403) {
-                    this.mostrarMensaje("error", "Sesión expirada. Por favor, inicia sesión de nuevo.");
-                    localStorage.removeItem('token');
-                    this.router.navigate(['/login']);
-                } else {
-                    const errorMsg = err.error?.msg || "Error al cargar el perfil. Inténtalo más tarde.";
-                    this.mostrarMensaje("error", errorMsg);
-                }
-            }
-        });
-    }
+                    let urlFoto = usuarioReal.fotoUrl || null;
 
-    // =====================================================
-    // 2. Actualizar Datos del Perfil
-    // =====================================================
-    guardarDatosPerfil(form: NgForm) {
-        if (form.valid) {
-            this.isSavingData = true;
+                    // 🔑 CORRECCIÓN: Prefijar con la URL del backend si la ruta es relativa
+                    if (urlFoto && urlFoto.startsWith('/uploads')) {
+                        urlFoto = this.BASE_UPLOAD_URL + urlFoto;
+                    }
 
-            const observer: Observer<any> = {
-                next: (response) => {
-                    this.mostrarMensaje("exito", response.msg || "Datos de perfil actualizados correctamente.");
-                    this.isSavingData = false;
-                },
-                error: (err) => {
-                    const errorMessage = err.error?.msg || "Error al guardar los datos del perfil.";
-                    this.mostrarMensaje("error", errorMessage);
-                    this.isSavingData = false;
+                    this.fotoPerfil = urlFoto;
+                    this.isLoading = false;
+                } else {
+                    this.mostrarMensaje("error", "Respuesta inválida del servidor.");
+                    this.isLoading = false;
+                }
+            },
+            error: (err) => {
+                this.isLoading = false;
+               
+                if (err.status === 401 || err.status === 403) {
+                    this.mostrarMensaje("error", "Sesión expirada. Por favor, inicia sesión de nuevo.");
+                    localStorage.removeItem('token');
+                    this.router.navigate(['/login']);
+                } else {
+                    const errorMsg = err.error?.msg || "Error al cargar el perfil. Inténtalo más tarde.";
+                    this.mostrarMensaje("error", errorMsg);
+                }
+            }
+        });
+    }
 
-                    if (err.status === 401) {
-                        this.router.navigate(['/login']);
-                    }
-                },
-                complete: () => {}
-            };
+    // =====================================================
+    // 2. Actualizar Datos del Perfil
+    // =====================================================
+    guardarDatosPerfil(form: NgForm) {
+        if (form.valid) {
+            this.isSavingData = true;
 
-            const dataToUpdate = {
-                nombre: this.usuario.nombre,
-                fechaNacimiento: this.usuario.fechaNacimiento,
-                peso: this.usuario.peso,
-                altura: this.usuario.altura,
-                meta: this.usuario.meta,
-            };
+            const observer: Observer<any> = {
+                next: (response) => {
+                    this.mostrarMensaje("exito", response.msg || "Datos de perfil actualizados correctamente.");
+                    this.isSavingData = false;
+                },
+                error: (err) => {
+                    const errorMessage = err.error?.msg || "Error al guardar los datos del perfil.";
+                    this.mostrarMensaje("error", errorMessage);
+                    this.isSavingData = false;
 
-            this.usuarioService.actualizarDatos(dataToUpdate).subscribe(observer);
-        }
-    }
+                    if (err.status === 401) {
+                        this.router.navigate(['/login']);
+                    }
+                },
+                complete: () => {}
+            };
 
-    // =====================================================
-    // 3. Subir Foto de Perfil + Actualizar Estado Global
-    // =====================================================
-    guardarFoto() {
-        if (!this.imagenPreviewBase64) {
-            this.mostrarMensaje("error", "No hay imagen recortada para subir.");
-            return;
-        }
+            const dataToUpdate = {
+                nombre: this.usuario.nombre,
+                fechaNacimiento: this.usuario.fechaNacimiento,
+                peso: this.usuario.peso,
+                altura: this.usuario.altura,
+                meta: this.usuario.meta,
+            };
 
-        this.isSavingPhoto = true;
+            this.usuarioService.actualizarDatos(dataToUpdate).subscribe(observer);
+        }
+    }
 
-        const observer: Observer<PhotoUploadResponse> = {
-            next: (response) => {
-                if (response.ok) {
-                    const newUrl = response.newUrl;
+    // =====================================================
+    // 3. Subir Foto de Perfil + Actualizar Estado Global
+    // =====================================================
+    guardarFoto() {
+        if (!this.imagenPreviewBase64) {
+            this.mostrarMensaje("error", "No hay imagen recortada para subir.");
+            return;
+        }
 
-                    // 🚨 ACTUALIZAR GLOBALMENTE LA FOTO DE PERFIL
-                    this.userStateService.actualizarFotoPerfil(newUrl);
+        this.isSavingPhoto = true;
 
-                    this.fotoPerfil = newUrl;
-                    this.usuario.fotoUrl = newUrl;
+        const observer: Observer<PhotoUploadResponse> = {
+            next: (response) => {
+                if (response.ok) {
+                    let newUrl = response.newUrl;
 
-                    this.mostrarMensaje("exito", response.msg || "Foto actualizada correctamente.");
-                } else {
-                    this.mostrarMensaje("error", response.msg || "Error desconocido al subir foto.");
-                }
+                    // 🔑 CORRECCIÓN: Prefijar la nueva URL para mostrarla inmediatamente
+                    if (newUrl.startsWith('/uploads')) {
+                        newUrl = this.BASE_UPLOAD_URL + newUrl;
+                    }
 
-                this.isSavingPhoto = false;
-                this.mostrarCropper = false;
-            },
-            error: (err) => {
-                const errorMessage = err.error?.msg || "Ocurrió un error al subir la foto.";
-                this.mostrarMensaje("error", errorMessage);
-                this.isSavingPhoto = false;
+                    // ACTUALIZAR GLOBALMENTE con la URL COMPLETA
+                    this.userStateService.actualizarFotoPerfil(newUrl);
 
-                if (err.status === 401) {
-                    this.router.navigate(['/login']);
-                }
-            },
-            complete: () => {}
-        };
+                    this.fotoPerfil = newUrl; // Componente usa la URL COMPLETA
+                    this.usuario.fotoUrl = response.newUrl; // Usuario model guarda la URL RELATIVA (como está en DB)
 
-        this.usuarioService.subirFotoPerfil(this.imagenPreviewBase64).subscribe(observer);
-    }
+                    this.mostrarMensaje("exito", response.msg || "Foto actualizada correctamente.");
+                } else {
+                    this.mostrarMensaje("error", response.msg || "Error desconocido al subir foto.");
+                }
 
-    // =====================================================
-    // Métodos Auxiliares
-    // =====================================================
-    abrirCropper() {
-        this.mostrarCropper = true;
-    }
+                this.isSavingPhoto = false;
+                this.mostrarCropper = false;
+            },
+            error: (err) => {
+                const errorMessage = err.error?.msg || "Ocurrió un error al subir la foto.";
+                this.mostrarMensaje("error", errorMessage);
+                this.isSavingPhoto = false;
 
-    cerrarCropper() {
-        this.mostrarCropper = false;
-    }
+                if (err.status === 401) {
+                    this.router.navigate(['/login']);
+                }
+            },
+            complete: () => {}
+        };
 
-    recibirImagenFinal(base64: string) {
-        this.imagenPreviewBase64 = base64;
-        this.guardarFoto();
-    }
+        this.usuarioService.subirFotoPerfil(this.imagenPreviewBase64).subscribe(observer);
+    }
 
-    private mostrarMensaje(tipo: 'exito' | 'error', mensaje: string) {
-        this.mensajeExito = '';
-        this.mensajeError = '';
+    // =====================================================
+    // Métodos Auxiliares
+    // =====================================================
+    abrirCropper() {
+        this.mostrarCropper = true;
+    }
 
-        if (tipo === 'exito') {
-            this.mensajeExito = mensaje;
-        } else {
-            this.mensajeError = mensaje;
-        }
+    cerrarCropper() {
+        this.mostrarCropper = false;
+    }
 
-        setTimeout(() => {
-            this.mensajeExito = '';
-            this.mensajeError = '';
-        }, 5000);
-    }
+    recibirImagenFinal(base64: string) {
+        this.imagenPreviewBase64 = base64;
+        this.guardarFoto();
+    }
+
+    private mostrarMensaje(tipo: 'exito' | 'error', mensaje: string) {
+        this.mensajeExito = '';
+        this.mensajeError = '';
+
+        if (tipo === 'exito') {
+            this.mensajeExito = mensaje;
+        } else {
+            this.mensajeError = mensaje;
+        }
+
+        setTimeout(() => {
+            this.mensajeExito = '';
+            this.mensajeError = '';
+        }, 5000);
+    }
 }

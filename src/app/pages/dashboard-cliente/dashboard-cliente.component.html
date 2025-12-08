@@ -17,7 +17,7 @@
                 <p>Expira el: <strong>{{ membershipStatus.fecha_fin | date: 'longDate' }}</strong></p>
             </ng-container>
             <ng-template #noMembresia>
-                <p style="color: #f44336; font-weight: bold;">⚠️ No tienes una membresía activa.</p>
+                <p style="color: #f44336; font-weight: bold;"> No tienes una membresía activa.</p>
                 <a [routerLink]="['/area-privada/planes']" class="btn-primary">Ver Planes Disponibles</a>
             </ng-template>
         </ng-template>
@@ -49,7 +49,7 @@
     </div>
 
     <div class="content-section">
-        <h2>📢 Avisos y Noticias</h2>
+        <h2> Avisos y Noticias</h2>
 
         <ng-container *ngIf="activeNotices.length > 0; else noNotices">
             <div class="highlight-card notice-card" *ngFor="let notice of activeNotices | slice:0:3">

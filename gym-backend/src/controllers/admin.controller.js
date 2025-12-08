@@ -1,5 +1,6 @@
 const pool = require('../db.config');
 const fs = require('fs');
+
 // =========================================================
 // OBTENER TODOS LOS USUARIOS
 // =========================================================
@@ -30,6 +31,7 @@ exports.getAllUsers = async (req, res) => {
         });
     }
 };
+
 // =========================================================
 // ACTUALIZAR ROL DE USUARIO
 // =========================================================
@@ -45,9 +47,7 @@ exports.updateUserRole = async (req, res) => {
     }
 
     try {
-        const query = `
-            UPDATE users SET rol = ? WHERE id = ?
-        `;
+        const query = `UPDATE users SET rol = ? WHERE id = ?`;
 
         const [result] = await pool.query(query, [nuevoRol, id]);
 
@@ -71,6 +71,7 @@ exports.updateUserRole = async (req, res) => {
         });
     }
 };
+
 // =========================================================
 // ELIMINAR USUARIO
 // =========================================================
@@ -102,13 +103,13 @@ exports.deleteUser = async (req, res) => {
         });
     }
 };
+
 // =========================================================
 // CREAR RUTINA
 // =========================================================
 exports.createRoutine = async (req, res) => {
     const { name, description } = req.body;
 
-    // 1. Validar imagen
     if (!req.file) {
         return res.status(400).json({
             ok: false,
@@ -118,7 +119,6 @@ exports.createRoutine = async (req, res) => {
 
     const imageUrl = `/uploads/rutinas/${req.file.filename}`;
 
-    // 2. Validar campos obligatorios
     if (!name || !description) {
         fs.unlinkSync(req.file.path);
         return res.status(400).json({
@@ -148,7 +148,6 @@ exports.createRoutine = async (req, res) => {
 
     } catch (err) {
         console.error('❌ Error al crear rutina:', err);
-
         fs.unlinkSync(req.file.path);
 
         res.status(500).json({
@@ -157,6 +156,7 @@ exports.createRoutine = async (req, res) => {
         });
     }
 };
+
 // =========================================================
 // CREAR AVISO
 // =========================================================
@@ -200,6 +200,7 @@ exports.createNotice = async (req, res) => {
         });
     }
 };
+
 // =========================================================
 // OBTENER CONFIGURACIÓN DE ALERTAS
 // =========================================================
@@ -211,15 +212,12 @@ exports.getAlertConfig = async (req, res) => {
 
         res.json({
             ok: true,
-            config: config
+            config
         });
 
     } catch (err) {
         console.error('❌ Error al obtener configuración de alertas:', err);
-        res.status(500).json({
-            ok: false,
-            msg: 'Error interno al obtener configuración de alertas.'
-        });
+        res.status(500).json({ ok: false, msg: 'Error interno al obtener configuración de alertas.' });
     }
 };
 
@@ -237,12 +235,7 @@ exports.updateAlertConfig = async (req, res) => {
     }
 
     try {
-        // La actualización usa WHERE id = 1, asumiendo un solo registro
-        const query = `
-            UPDATE config_alertas SET dias_antes = ? WHERE id = 1
-        `;
-
-        await pool.query(query, [diasAntes]);
+        await pool.query(`UPDATE config_alertas SET dias_antes = ? WHERE id = 1`, [diasAntes]);
 
         res.json({
             ok: true,
@@ -251,22 +244,18 @@ exports.updateAlertConfig = async (req, res) => {
 
     } catch (err) {
         console.error('❌ Error al actualizar alertas:', err);
-        res.status(500).json({
-            ok: false,
-            msg: 'Error interno al actualizar configuración.'
-        });
+        res.status(500).json({ ok: false, msg: 'Error interno al actualizar configuración.' });
     }
 };
+
 // =========================================================
-// OBTENER CLIENTES CUYA MEMBRESÍA ESTÁ POR EXPIRAR
+// OBTENER CLIENTES POR EXPIRAR
 // =========================================================
 exports.getExpiringClients = async (req, res) => {
     try {
-        // 1. Obtener los días de alerta configurados
         const [configRows] = await pool.query('SELECT dias_antes FROM config_alertas WHERE id = 1');
-        const dias = configRows.length > 0 ? configRows[0].dias_antes : 7; // Usa el valor de la BD o 7 por defecto
+        const dias = configRows.length > 0 ? configRows[0].dias_antes : 7;
 
-        // 2. Ejecutar la consulta usando los días dinámicos
         const query = `
             SELECT
                 u.id,
@@ -275,7 +264,6 @@ exports.getExpiringClients = async (req, res) => {
                 m.fecha_fin
             FROM membresias m
             INNER JOIN users u ON u.id = m.user_id
-            -- Filtra membresías que expiran HOY o en los próximos [dias]
             WHERE m.fecha_fin BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL ? DAY)
         `;
 
@@ -292,6 +280,41 @@ exports.getExpiringClients = async (req, res) => {
         res.status(500).json({
             ok: false,
             msg: 'Error interno al obtener expiraciones.'
+        });
+    }
+};
+
+// =========================================================
+// ASIGNAR RUTINA A USUARIO
+// =========================================================
+exports.assignRoutine = async (req, res) => {
+    const { userId, rutinaId } = req.body;
+
+    if (!userId || !rutinaId) {
+        return res.status(400).json({
+            ok: false,
+            msg: 'Debe proporcionar userId y rutinaId.'
+        });
+    }
+
+    try {
+        const query = `
+            INSERT INTO user_rutinas (user_id, rutina_id, fecha_asignacion)
+            VALUES (?, ?, NOW())
+        `;
+
+        await pool.query(query, [userId, rutinaId]);
+
+        res.status(201).json({
+            ok: true,
+            msg: `Rutina ${rutinaId} asignada al usuario ${userId} correctamente.`
+        });
+
+    } catch (err) {
+        console.error('❌ Error al asignar rutina:', err);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error interno al asignar la rutina.'
         });
     }
 };
