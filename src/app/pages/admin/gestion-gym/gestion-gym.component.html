@@ -1,0 +1,352 @@
+<!-- gestion-gym.component.html -->
+<div class="admin-container">
+  <!-- SECCIÓN CONFIGURACIÓN DE PORTADA -->
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fas fa-home"></i> Configuración de Portada</h2>
+      <button *ngIf="!isEditingPortada" class="btn-edit" (click)="editarPortada()">
+        <i class="fas fa-edit"></i> Editar
+      </button>
+      <div *ngIf="isEditingPortada" class="edit-buttons">
+        <button class="btn-save" (click)="guardarPortada()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+        <button class="btn-cancel" (click)="cancelarEdicionPortada()">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div *ngIf="isEditingPortada; else vistaPortada" class="portada-edicion">
+        <div class="form-group">
+          <label>Título Principal:</label>
+          <input type="text" class="form-control" [(ngModel)]="configPortada.titulo">
+        </div>
+        
+        <div class="form-group">
+          <label>Descripción:</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="configPortada.descripcion"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Subtítulo:</label>
+          <input type="text" class="form-control" [(ngModel)]="configPortada.subtitulo">
+        </div>
+        
+        <div class="servicios-section">
+          <label>Servicios/Instalaciones:</label>
+          <div class="servicios-lista">
+            <div *ngFor="let servicio of servicios; let i = index" class="servicio-item">
+              <span>{{ servicio }}</span>
+              <button type="button" class="btn-eliminar-servicio" (click)="eliminarServicio(i)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="agregar-servicio">
+            <input type="text" class="form-control" [(ngModel)]="nuevoServicio" 
+                   placeholder="Agregar nuevo servicio...">
+            <button class="btn btn-sm btn-primary" (click)="agregarServicio()">
+              <i class="fas fa-plus"></i> Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <ng-template #vistaPortada>
+        <div class="portada-vista">
+          <h3 class="portada-titulo">{{ configPortada.titulo }}</h3>
+          <p class="portada-descripcion">{{ configPortada.descripcion }}</p>
+          <h4 class="portada-subtitulo">{{ configPortada.subtitulo }}</h4>
+          <div class="servicios-grid">
+            <div *ngFor="let servicio of servicios" class="servicio-card">
+              <i class="fas fa-check-circle"></i> {{ servicio }}
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- SECCIÓN GESTIÓN DE CATEGORÍAS -->
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fas fa-tags"></i> Gestión de Categorías</h2>
+      <button class="btn-edit" (click)="editandoCategorias = !editandoCategorias">
+        <i class="fas" [class.fa-edit]="!editandoCategorias" [class.fa-times]="editandoCategorias"></i>
+        {{ editandoCategorias ? 'Cancelar' : 'Editar' }}
+      </button>
+    </div>
+
+    <div class="card-body">
+      <div *ngIf="editandoCategorias" class="categorias-edicion">
+        <div class="categorias-lista">
+          <div *ngFor="let categoria of categorias; let i = index" class="categoria-item">
+            <div *ngIf="categoriaEditandoIndex !== i; else editandoCategoria">
+              <span>{{ categoria }}</span>
+              <div class="categoria-acciones">
+                <button class="btn-accion btn-editar" (click)="editarCategoria(categoria, i)" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-accion btn-eliminar" (click)="eliminarCategoria(i)" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            
+            <ng-template #editandoCategoria>
+              <div class="categoria-edicion">
+                <input type="text" class="form-control" [(ngModel)]="categoriaEditando">
+                <div class="categoria-edicion-acciones">
+                  <button class="btn btn-sm btn-success" (click)="guardarCategoriaEditada()">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button class="btn btn-sm btn-secondary" (click)="cancelarEdicionCategoria()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+        
+        <div class="agregar-categoria">
+          <input type="text" class="form-control" [(ngModel)]="nuevaCategoria" 
+                 placeholder="Nombre de nueva categoría...">
+          <button class="btn btn-primary" (click)="agregarCategoria()">
+            <i class="fas fa-plus"></i> Agregar Categoría
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="!editandoCategorias" class="categorias-vista">
+        <div class="categorias-chips">
+          <span *ngFor="let categoria of categorias" class="categoria-chip">
+            {{ categoria }}
+          </span>
+        </div>
+        <p class="text-muted mt-3">Hay {{ categorias.length }} categorías disponibles para tus imágenes.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN GESTIÓN DE IMÁGENES (se mantiene igual pero con algunas mejoras) -->
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fas fa-images"></i> Gestión de Imágenes</h2>
+    </div>
+
+    <div class="card-body">
+      <!-- Formulario para subir/editar imágenes -->
+      <div class="upload-section" *ngIf="isEditingImagen || !imagenes.length">
+        <h3>{{ isEditingImagen ? 'Editar Imagen' : 'Subir Nueva Imagen' }}</h3>
+        
+        <div class="form-group">
+          <label>Título *</label>
+          <input type="text" class="form-control" [(ngModel)]="imagenEditando.titulo" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea class="form-control" rows="2" [(ngModel)]="imagenEditando.descripcion"></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Categoría *</label>
+            <select class="form-control" [(ngModel)]="imagenEditando.categoria" required>
+              <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group col-md-6">
+            <label>Orden de visualización</label>
+            <input type="number" class="form-control" [(ngModel)]="imagenEditando.orden" min="1">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Imagen *</label>
+          <div class="file-upload-area" (click)="fileInput.click()">
+            <input #fileInput type="file" class="d-none" (change)="onFileSelected($event)" accept="image/*">
+            
+            <div *ngIf="!archivoSeleccionado && !imagenEditando.url" class="upload-placeholder">
+              <i class="fas fa-cloud-upload-alt fa-3x"></i>
+              <p>Haz clic para seleccionar una imagen</p>
+              <small class="text-muted">Formatos: JPG, PNG, GIF, WebP (Máx. 5MB)</small>
+            </div>
+            
+            <div *ngIf="archivoSeleccionado || imagenEditando.url" class="file-selected">
+              <div class="file-info">
+                <i class="fas fa-image"></i>
+                <div>
+                  <strong *ngIf="archivoSeleccionado">{{ archivoSeleccionado.name }}</strong>
+                  <span *ngIf="archivoSeleccionado">({{ (archivoSeleccionado.size / 1024).toFixed(0) }} KB)</span>
+                  <p class="text-muted mb-0">Haz clic para cambiar la imagen</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Vista previa -->
+          <div *ngIf="imagenEditando.url" class="image-preview mt-3">
+            <label>Vista previa:</label>
+            <div class="preview-container">
+              <img [src]="imagenEditando.url" alt="Vista previa" class="preview-img">
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" [(ngModel)]="imagenEditando.activa" id="activa">
+          <label class="form-check-label" for="activa">
+            <i class="fas fa-eye"></i> Imagen activa (visible al público)
+          </label>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" 
+                  (click)="isEditingImagen ? actualizarImagen() : iniciarSubidaImagen()"
+                  [disabled]="isUploading || (!archivoSeleccionado && !isEditingImagen)">
+            <i class="fas" [class.fa-upload]="!isEditingImagen" [class.fa-save]="isEditingImagen"></i>
+            {{ isUploading ? 'Procesando...' : (isEditingImagen ? 'Actualizar Imagen' : 'Subir Imagen') }}
+          </button>
+          
+          <button *ngIf="isEditingImagen" type="button" class="btn btn-secondary" (click)="resetFormImagen()">
+            <i class="fas fa-times"></i> Cancelar Edición
+          </button>
+          
+          <div *ngIf="isUploading" class="upload-progress mt-3">
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                   style="width: 100%"></div>
+            </div>
+            <small class="text-muted">Subiendo imagen...</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de confirmación para eliminar -->
+      <div *ngIf="imagenParaEliminar" class="modal-overlay">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-danger"></i> Confirmar Eliminación</h5>
+            </div>
+            <div class="modal-body">
+              <div class="text-center mb-3">
+                <i class="fas fa-trash-alt fa-3x text-danger"></i>
+              </div>
+              <p>¿Estás seguro de que deseas eliminar la imagen:</p>
+              <p class="text-center"><strong>"{{ imagenParaEliminar.titulo }}"</strong></p>
+              <div class="alert alert-warning">
+                <i class="fas fa-exclamation-circle"></i> Esta acción <strong>no se puede deshacer</strong> y eliminará la imagen permanentemente.
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="cancelarEliminacionImagen()">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+              <button type="button" class="btn btn-danger" (click)="eliminarImagen()">
+                <i class="fas fa-trash"></i> Sí, Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Galería de imágenes -->
+      <div class="gallery-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3><i class="fas fa-images"></i> Galería de Imágenes</h3>
+          <span class="badge badge-primary">{{ imagenes.length }} imágenes</span>
+        </div>
+
+        <!-- Filtros por categoría -->
+        <div class="category-filters mb-4">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary" 
+                    [class.active]="categoriaFiltro === ''"
+                    (click)="categoriaFiltro = ''">
+              Todas ({{ imagenes.length }})
+            </button>
+            <button *ngFor="let cat of categorias" type="button" class="btn btn-outline-primary"
+                    [class.active]="categoriaFiltro === cat"
+                    (click)="categoriaFiltro = cat">
+              {{ cat }} ({{ getImagenesPorCategoria(cat).length }})
+            </button>
+          </div>
+        </div>
+
+        <!-- Mensaje si no hay imágenes -->
+        <div *ngIf="imagenes.length === 0" class="text-center py-5">
+          <i class="fas fa-image fa-4x text-muted mb-3"></i>
+          <h4>No hay imágenes subidas</h4>
+          <p class="text-muted">Comienza subiendo tu primera imagen usando el formulario de arriba.</p>
+        </div>
+
+        <!-- Grid de imágenes -->
+        <div class="images-container">
+          <div *ngFor="let categoria of categorias">
+            <div *ngIf="getImagenesPorCategoria(categoria).length > 0 && (!categoriaFiltro || categoriaFiltro === categoria)">
+              <h4 class="category-title">
+                <i class="fas fa-folder"></i> {{ categoria }}
+                <span class="badge badge-secondary">{{ getImagenesPorCategoria(categoria).length }}</span>
+              </h4>
+              
+              <div class="images-grid">
+                <div *ngFor="let imagen of getImagenesPorCategoria(categoria)" class="image-card">
+                  <div class="image-wrapper">
+                    <div class="image-container">
+                      <img [src]="imagen.url" [alt]="imagen.titulo" class="img-fluid">
+                      <div class="image-overlay">
+                        <span class="status-badge" [class.bg-success]="imagen.activa" [class.bg-danger]="!imagen.activa">
+                          {{ imagen.activa ? 'Activa' : 'Oculta' }}
+                        </span>
+                        <span class="order-badge">
+                          <i class="fas fa-sort-numeric-down"></i> {{ imagen.orden }}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div class="image-details">
+                      <h5 class="image-title">{{ imagen.titulo }}</h5>
+                      <p *ngIf="imagen.descripcion" class="image-description">{{ imagen.descripcion }}</p>
+                      <div class="image-meta">
+                        <small><i class="fas fa-tag"></i> {{ imagen.categoria }}</small>
+                        <small><i class="fas fa-sort-amount-up"></i> Orden: {{ imagen.orden }}</small>
+                      </div>
+                    </div>
+                    
+                    <div class="image-actions">
+                      <button class="btn btn-sm btn-outline-primary" (click)="editarImagen(imagen)" title="Editar">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      
+                      <div class="order-controls">
+                        <button class="btn btn-sm btn-outline-info" (click)="moverArribaImagen(imagen)" 
+                                [disabled]="imagen.orden === 1" title="Mover arriba">
+                          <i class="fas fa-arrow-up"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" (click)="moverAbajoImagen(imagen)" 
+                                [disabled]="imagen.orden === imagenes.length" title="Mover abajo">
+                          <i class="fas fa-arrow-down"></i>
+                        </button>
+                      </div>
+                      
+                      <button class="btn btn-sm btn-outline-danger" (click)="confirmarEliminacionImagen(imagen)" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

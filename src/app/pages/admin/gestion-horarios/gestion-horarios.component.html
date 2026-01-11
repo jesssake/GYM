@@ -1,0 +1,254 @@
+<div class="admin-container">
+  <div class="header">
+    <h1><i class="fas fa-clock"></i> Gestión de Horarios</h1>
+    <p>Administra los horarios del gimnasio para clientes</p>
+  </div>
+
+  <!-- Vista previa del cliente -->
+  <div class="preview-section">
+    <div class="card">
+      <div class="card-header preview-header">
+        <h2><i class="fas fa-eye"></i> Vista Previa - Como ven los clientes</h2>
+      </div>
+      <div class="card-body preview-body">
+        <div class="preview-content">
+          <h3 class="preview-title">Horarios</h3>
+          <div class="preview-text">
+            <div *ngFor="let linea of getResumenSemana().split('\n')" class="preview-line">
+              {{ linea }}
+            </div>
+          </div>
+          
+          <div class="preview-notas" *ngIf="getDiasCerrados().length > 0">
+            <p><strong>Nota:</strong> Cerrado los días: {{ getDiasCerrados().join(', ') }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Horarios regulares por día -->
+    <div class="horarios-section">
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-calendar-alt"></i> Horarios Regulares por Día</h2>
+          <p>Configura los horarios de cada día de la semana</p>
+        </div>
+        
+        <div class="card-body">
+          <!-- Formulario de edición -->
+          <div *ngIf="editandoHorario && horarioEditando" class="edit-form">
+            <h3>Editando: {{ horarioEditando.dia }}</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Apertura:</label>
+                <select [(ngModel)]="horarioEditando.apertura" class="form-control">
+                  <option value="Cerrado">Cerrado</option>
+                  <option *ngFor="let hora of generarHoras()" [value]="hora">{{ formatearHora(hora) }}</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Cierre:</label>
+                <select [(ngModel)]="horarioEditando.cierre" class="form-control">
+                  <option value="Cerrado">Cerrado</option>
+                  <option *ngFor="let hora of generarHoras()" [value]="hora">{{ formatearHora(hora) }}</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Tipo:</label>
+                <select [(ngModel)]="horarioEditando.tipo" class="form-control">
+                  <option value="Normal">Normal</option>
+                  <option value="Festivo">Festivo</option>
+                  <option value="Especial">Especial</option>
+                </select>
+              </div>
+              
+              <div class="form-group full-width">
+                <label>Notas (opcional):</label>
+                <input type="text" [(ngModel)]="horarioEditando.notas" class="form-control" placeholder="Ej: Horario extendido los viernes">
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button class="btn-save" (click)="guardarHorario()">
+                <i class="fas fa-save"></i> Guardar Cambios
+              </button>
+              <button class="btn-cancel" (click)="cancelarEdicionHorario()">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista de horarios -->
+          <div class="horarios-grid">
+            <div *ngFor="let horario of horarios" class="horario-card" [class.inactive]="!horario.activo">
+              <div class="horario-header">
+                <div class="horario-dia">
+                  <h3>{{ horario.dia }}</h3>
+                  <span class="horario-tipo">{{ horario.tipo }}</span>
+                </div>
+                <div class="horario-status">
+                  <span class="status-badge" [class.active]="horario.activo">
+                    {{ horario.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="horario-body">
+                <div class="horario-horas">
+                  <div class="hora-item">
+                    <i class="fas fa-door-open"></i>
+                    <strong>Apertura:</strong>
+                    <span>{{ formatearHora(horario.apertura) }}</span>
+                  </div>
+                  <div class="hora-item">
+                    <i class="fas fa-door-closed"></i>
+                    <strong>Cierre:</strong>
+                    <span>{{ formatearHora(horario.cierre) }}</span>
+                  </div>
+                </div>
+                
+                <div class="horario-display">
+                  <span class="display-text">{{ getHorarioDisplay(horario) }}</span>
+                </div>
+                
+                <div *ngIf="horario.notas" class="horario-notas">
+                  <i class="fas fa-info-circle"></i> {{ horario.notas }}
+                </div>
+              </div>
+              
+              <div class="horario-actions">
+                <button class="btn-action edit" (click)="editarHorario(horario)" title="Editar horario">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action toggle" [class.active]="horario.activo" (click)="toggleActivoHorario(horario)" [title]="horario.activo ? 'Desactivar' : 'Activar'">
+                  <i class="fas" [ngClass]="horario.activo ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            <p>Los cambios en los horarios se reflejarán inmediatamente en la vista de los clientes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horarios especiales -->
+    <div class="especiales-section">
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-calendar-star"></i> Horarios Especiales</h2>
+          <p>Agrega horarios especiales para días festivos o eventos</p>
+        </div>
+        
+        <div class="card-body">
+          <!-- Formulario para horarios especiales -->
+          <div class="form-especial">
+            <h3>{{ editandoEspecial ? 'Editar Horario Especial' : 'Agregar Nuevo Horario Especial' }}</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Fecha *</label>
+                <input type="date" [(ngModel)]="nuevoHorarioEspecial.fecha" class="form-control">
+              </div>
+              
+              <div class="form-group">
+                <label>Motivo *</label>
+                <input type="text" [(ngModel)]="nuevoHorarioEspecial.motivo" class="form-control" placeholder="Ej: Navidad, Mantenimiento">
+              </div>
+              
+              <div class="form-group">
+                <label>Apertura</label>
+                <select [(ngModel)]="nuevoHorarioEspecial.apertura" class="form-control">
+                  <option value="Cerrado">Cerrado</option>
+                  <option *ngFor="let hora of generarHoras()" [value]="hora">{{ formatearHora(hora) }}</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Cierre</label>
+                <select [(ngModel)]="nuevoHorarioEspecial.cierre" class="form-control">
+                  <option value="Cerrado">Cerrado</option>
+                  <option *ngFor="let hora of generarHoras()" [value]="hora">{{ formatearHora(hora) }}</option>
+                </select>
+              </div>
+              
+              <div class="form-group full-width">
+                <label>Notas</label>
+                <input type="text" [(ngModel)]="nuevoHorarioEspecial.notas" class="form-control" placeholder="Información adicional para los clientes">
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button *ngIf="!editandoEspecial" class="btn-primary" (click)="agregarHorarioEspecial()" [disabled]="!nuevoHorarioEspecial.fecha || !nuevoHorarioEspecial.motivo">
+                <i class="fas fa-plus"></i> Agregar Horario Especial
+              </button>
+              
+              <div *ngIf="editandoEspecial" class="edit-actions">
+                <button class="btn-save" (click)="guardarEdicionEspecial()">
+                  <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+                <button class="btn-cancel" (click)="cancelarEdicionEspecial()">
+                  <i class="fas fa-times"></i> Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lista de horarios especiales -->
+          <div class="especiales-list">
+            <h3>Próximos Horarios Especiales</h3>
+            
+            <div *ngIf="getProximosEspeciales().length === 0" class="empty-state">
+              <i class="fas fa-calendar-times"></i>
+              <p>No hay horarios especiales programados</p>
+            </div>
+            
+            <div *ngFor="let especial of getProximosEspeciales()" class="especial-card" [class.inactive]="!especial.activo">
+              <div class="especial-header">
+                <div class="especial-fecha">
+                  <span class="fecha-dia">{{ formatDate(especial.fecha) }}</span>
+                  <span class="fecha-motivo">{{ especial.motivo }}</span>
+                </div>
+                <div class="especial-status">
+                  <span class="status-badge" [class.active]="especial.activo">
+                    {{ especial.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="especial-body">
+                <div class="especial-horas">
+                  <span class="horas-display">
+                    {{ formatearHora(especial.apertura) }} - {{ formatearHora(especial.cierre) }}
+                  </span>
+                </div>
+                
+                <div class="especial-notas">
+                  {{ especial.notas }}
+                </div>
+              </div>
+              
+              <div class="especial-actions">
+                <button class="btn-action edit" (click)="editarEspecial(especial)" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action toggle" [class.active]="especial.activo" (click)="toggleActivoEspecial(especial)" [title]="especial.activo ? 'Desactivar' : 'Activar'">
+                  <i class="fas" [ngClass]="especial.activo ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                </button>
+                <button class="btn-action delete" (click)="eliminarHorarioEspecial(especial.id)" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

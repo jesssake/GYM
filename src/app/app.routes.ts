@@ -25,6 +25,14 @@ import { GestionUsuariosComponent } from './pages/admin/gestion-usuarios/gestion
 import { GestionContenidoComponent } from './pages/admin/gestion-contenido/gestion-contenido.component';
 import { GestionNotificacionesComponent } from './pages/admin/gestion-notificaciones/gestion-notificaciones.component';
 
+// NUEVOS COMPONENTES ADMINISTRADOR - IMPORTAR
+import { GestionGymComponent } from './pages/admin/gestion-gym/gestion-gym.component';
+import { GestionPlanesComponent } from './pages/admin/gestion-planes/gestion-planes.component';
+import { GestionServiciosComponent } from './pages/admin/gestion-servicios/gestion-servicios.component';
+import { GestionHorariosComponent } from './pages/admin/gestion-horarios/gestion-horarios.component';
+import { GestionContactoComponent } from './pages/admin/gestion-contacto/gestion-contacto.component';
+import { GestionRedesComponent } from './pages/admin/gestion-redes/gestion-redes.component';
+
 // ----------------------------------------------------
 // Componentes Privados - Cliente
 // ----------------------------------------------------
@@ -82,6 +90,14 @@ export const routes: Routes = [
                     { path: 'usuarios', component: GestionUsuariosComponent, title: 'Administrar Usuarios' },
                     { path: 'contenido', component: GestionContenidoComponent, title: 'Administrar Contenido' },
                     { path: 'notificaciones', component: GestionNotificacionesComponent, title: 'Administrar Notificaciones' },
+                    
+                    // NUEVAS RUTAS AGREGADAS PARA EL ADMINISTRADOR
+                    { path: 'conoce-gym', component: GestionGymComponent, title: 'Conoce el Gym - Administración' },
+                    { path: 'gestion-planes', component: GestionPlanesComponent, title: 'Gestión de Planes' },
+                    { path: 'servicios', component: GestionServiciosComponent, title: 'Nuestros Servicios - Administración' },
+                    { path: 'horarios', component: GestionHorariosComponent, title: 'Horarios - Administración' },
+                    { path: 'contacto', component: GestionContactoComponent, title: 'Contacto - Administración' },
+                    { path: 'redes-sociales', component: GestionRedesComponent, title: 'Redes Sociales - Administración' },
 
                     // Redirección por defecto del admin
                     { path: '', redirectTo: 'usuarios', pathMatch: 'full' },

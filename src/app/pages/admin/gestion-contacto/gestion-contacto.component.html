@@ -1,0 +1,199 @@
+<!-- gestión-contacto.component.html -->
+<div class="gestion-contacto-container">
+  <h2>Gestión de Información de Contacto</h2>
+  
+  <form (ngSubmit)="guardarCambios()" class="contacto-form">
+    
+    <!-- Dirección Física con Google Places Autocomplete -->
+    <div class="form-group">
+      <label for="direccionFisica">Dirección Física:</label>
+      <div class="direccion-busqueda">
+        <input 
+          type="text" 
+          id="direccionFisica" 
+          [(ngModel)]="direccionBusqueda" 
+          name="direccionBusqueda"
+          placeholder="Escribe y selecciona una dirección..."
+          class="form-control direccion-input"
+          #direccionInput
+        />
+        <div class="botones-busqueda">
+          <button type="button" (click)="usarMiUbicacion()" class="btn-mi-ubicacion" title="Usar mi ubicación actual">
+            📍 Mi Ubicación
+          </button>
+          <button type="button" (click)="buscarDireccion()" class="btn-buscar">
+            🔍 Buscar Dirección
+          </button>
+        </div>
+      </div>
+      <small>Escribe la dirección y selecciona de la lista, o usa tu ubicación actual</small>
+    </div>
+
+    <!-- Selector de tipo de lugar -->
+    <div class="form-group" *ngIf="mostrarSelectorTipo">
+      <label for="tipoLugar">Tipo de Lugar:</label>
+      <select 
+        id="tipoLugar" 
+        [(ngModel)]="tipoLugarSeleccionado" 
+        name="tipoLugar"
+        class="form-control"
+        (change)="actualizarUrlConTipoLugar()"
+      >
+        <option value="place">Lugar específico</option>
+        <option value="view">Vista de mapa</option>
+        <option value="streetview">Street View</option>
+      </select>
+      <small>Elige cómo quieres mostrar la ubicación en el mapa</small>
+    </div>
+
+    <!-- Opciones del mapa -->
+    <div class="opciones-mapa" *ngIf="mostrarMapa">
+      <h4>Opciones del Mapa:</h4>
+      <div class="opciones-grid">
+        <div class="opcion">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="mostrarControles" 
+              name="mostrarControles"
+              (change)="actualizarOpcionesMapa()"
+            />
+            Mostrar controles de navegación
+          </label>
+        </div>
+        <div class="opcion">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="mostrarEtiquetas" 
+              name="mostrarEtiquetas"
+              (change)="actualizarOpcionesMapa()"
+            />
+            Mostrar etiquetas de lugares
+          </label>
+        </div>
+        <div class="opcion">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="modoSatelite" 
+              name="modoSatelite"
+              (change)="actualizarOpcionesMapa()"
+            />
+            Vista satélite
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Número Telefónico:</label>
+      <input 
+        type="tel" 
+        id="telefono" 
+        [(ngModel)]="contactoInfo.telefono" 
+        name="telefono"
+        placeholder="+525555123456"
+        class="form-control"
+        pattern="^\+[1-9]\d{1,14}$"
+      />
+      <small>Formato internacional: +525555123456</small>
+    </div>
+
+    <div class="form-group">
+      <label for="correoElectronico">Correo Electrónico:</label>
+      <input 
+        type="email" 
+        id="correoElectronico" 
+        [(ngModel)]="contactoInfo.correoElectronico" 
+        name="correoElectronico"
+        placeholder="contacto@ejemplo.com"
+        class="form-control"
+      />
+      <small>Correo electrónico de contacto principal</small>
+    </div>
+
+    <!-- Vista previa del mapa generado -->
+    <div class="vista-mapa-directo" *ngIf="mostrarMapa">
+      <h4>Vista Previa del Mapa:</h4>
+      <div class="mapa-generado">
+        <iframe 
+          [src]="mapaUrl" 
+          width="100%" 
+          height="300" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade"
+          [title]="'Ubicación: ' + contactoInfo.direccionFisica"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+        ></iframe>
+      </div>
+      <div class="url-generada">
+        <p><strong>URL del Mapa Embed:</strong></p>
+        <div class="url-container">
+          <code class="url-codigo">{{ contactoInfo.direccionGoogleMaps | truncateUrl:70 }}</code>
+          <div class="acciones-url">
+            <button type="button" (click)="copiarUrl()" class="btn-copiar" title="Copiar URL">
+              📋 Copiar
+            </button>
+            <button type="button" (click)="abrirEnNuevaPestana()" class="btn-abrir" title="Abrir en nueva pestaña">
+              ↗ Abrir
+            </button>
+            <button type="button" (click)="generarUrlCorta()" class="btn-corto" title="Generar URL corta">
+              🔗 Corta
+            </button>
+          </div>
+        </div>
+        <div class="info-coordenadas" *ngIf="coordenadas">
+          <p><strong>Coordenadas:</strong> {{ coordenadas.lat | number:'1.6-6' }}, {{ coordenadas.lng | number:'1.6-6' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="probarMapa()" class="btn-probar" *ngIf="mostrarMapa">
+        🔄 Probar Mapa
+      </button>
+      <button type="submit" class="btn-guardar">
+        💾 Guardar Cambios
+      </button>
+    </div>
+
+  </form>
+
+  <!-- Mapa final guardado -->
+  <div class="mapa-final" *ngIf="contactoInfo.direccionGoogleMaps && contactoInfo.direccionGoogleMaps !== 'https://maps.google.com/maps?q=&output=embed'">
+    <div class="header-mapa-final">
+      <h3>📍 Mapa de Contacto Guardado</h3>
+      <div class="acciones-mapa-final">
+        <button type="button" (click)="editarMapa()" class="btn-editar">
+          ✏️ Editar
+        </button>
+      </div>
+    </div>
+    <div class="mapa-frame-final">
+      <iframe 
+        [src]="mapaUrl" 
+        width="100%" 
+        height="400" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade"
+        [title]="'Ubicación guardada: ' + contactoInfo.direccionFisica"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+      ></iframe>
+    </div>
+    <div class="info-mapa-final">
+      <p><strong>Dirección:</strong> {{ contactoInfo.direccionFisica }}</p>
+      <p><strong>Teléfono:</strong> {{ contactoInfo.telefono }}</p>
+      <p><strong>Email:</strong> {{ contactoInfo.correoElectronico }}</p>
+      <p><strong>URL del mapa:</strong> 
+        <a [href]="contactoInfo.direccionGoogleMaps" target="_blank" rel="noopener noreferrer" class="link-mapa">
+          {{ contactoInfo.direccionGoogleMaps | truncateUrl:50 }}
+        </a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -2,19 +2,23 @@
 
   <div class="profile-miniatura">
     <img
-        [src]="fotoPerfilSidebar$ | async"
-        alt="Foto de Perfil"
-        class="miniatura-img"
+      [src]="fotoPerfilSidebar$ | async"
+      alt="Foto de Perfil"
+      class="miniatura-img"
+      (error)="handleImageError($event)"
     >
     <div class="miniatura-info">
-      <h4>Hola, {{ currentRole }}!</h4>
-      <p>Área de Cliente</p>
+      <h4>Hola!</h4>
+      <p *ngIf="currentRole === 'cliente'">Área de Cliente</p>
+      <p *ngIf="currentRole === 'admin'">Panel Administrador</p>
+      <p *ngIf="currentRole === 'coach'">Panel Coach</p>
     </div>
   </div>
 
   <div class="menu-header">
-    <h3 *ngIf="currentRole === 'Cliente'">Área Cliente</h3>
-    <h3 *ngIf="currentRole === 'Administrador'">Panel Admin</h3>
+    <h3 *ngIf="currentRole === 'cliente'">Área Cliente</h3>
+    <h3 *ngIf="currentRole === 'admin'">Panel Admin</h3>
+    <h3 *ngIf="currentRole === 'coach'">Panel Coach</h3>
   </div>
 
   <nav class="sidebar-nav">

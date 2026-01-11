@@ -1,0 +1,244 @@
+<div class="admin-container">
+  <div class="header">
+    <h1><i class="fas fa-share-alt"></i> Gestión de Redes Sociales</h1>
+    <p>Administra las redes sociales del gimnasio (WhatsApp y Facebook)</p>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-share-alt"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalRedes() }}</h3>
+        <p>Redes Configuradas</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #25D366;">
+        <i class="fab fa-whatsapp"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getRedesWhatsApp() }}</h3>
+        <p>WhatsApp</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #1877F2;">
+        <i class="fab fa-facebook"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getRedesFacebook() }}</h3>
+        <p>Facebook</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #2ecc71;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalRedesActivas() }}</h3>
+        <p>Redes Activas</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Formulario para agregar/editar redes -->
+    <div class="form-section">
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-plus-circle"></i> {{ editando ? 'Editar Red Social' : 'Agregar Nueva Red Social' }}</h2>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="plataforma">Plataforma *</label>
+              <select id="plataforma" [(ngModel)]="nuevaRedSocial.plataforma" class="form-control" (change)="nuevaRedSocial.icono = nuevaRedSocial.plataforma.toLowerCase()">
+                <option value="Facebook">Facebook</option>
+                <option value="WhatsApp">WhatsApp</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="nombreUsuario">Usuario/Identificador *</label>
+              <input type="text" id="nombreUsuario" [(ngModel)]="nuevaRedSocial.nombreUsuario" 
+                [placeholder]="nuevaRedSocial.plataforma === 'WhatsApp' ? 'Ej: +1 234 567 8900' : 'Ej: @TrainStationGym'" 
+                class="form-control">
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="enlace">Enlace/URL *</label>
+              <div class="input-group">
+                <input type="text" id="enlace" [(ngModel)]="nuevaRedSocial.enlace" 
+                  [placeholder]="nuevaRedSocial.plataforma === 'WhatsApp' ? 'https://wa.me/12345678900' : 'https://facebook.com/TrainStationGym'" 
+                  class="form-control">
+                <span class="input-hint">
+                  <i class="fas fa-info-circle"></i>
+                  <span *ngIf="nuevaRedSocial.plataforma === 'WhatsApp'">
+                    Formato: https://wa.me/[númeroteléfono]
+                  </span>
+                  <span *ngIf="nuevaRedSocial.plataforma === 'Facebook'">
+                    Formato: https://facebook.com/[página]
+                  </span>
+                </span>
+              </div>
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="descripcion">Descripción (opcional)</label>
+              <textarea id="descripcion" [(ngModel)]="nuevaRedSocial.descripcion" rows="2" 
+                placeholder="Ej: Página oficial para noticias y eventos" class="form-control"></textarea>
+            </div>
+          </div>
+          
+          <div class="form-group full-width">
+            <div class="checkboxes">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="nuevaRedSocial.activa">
+                <span class="checkmark"></span>
+                Mostrar en la página web
+              </label>
+            </div>
+          </div>
+          
+          <div class="preview-card">
+            <div class="preview-header">
+              <h3><i class="fas fa-eye"></i> Vista Previa</h3>
+            </div>
+            <div class="preview-content">
+              <div *ngIf="nuevaRedSocial.plataforma && nuevaRedSocial.nombreUsuario" class="red-preview">
+                <div class="preview-icon" [style.background]="nuevaRedSocial.plataforma === 'WhatsApp' ? '#25D366' : '#1877F2'">
+                  <i class="fab" [ngClass]="'fa-' + nuevaRedSocial.icono"></i>
+                </div>
+                <div class="preview-info">
+                  <h4>{{ nuevaRedSocial.plataforma }}</h4>
+                  <p>{{ nuevaRedSocial.nombreUsuario }}</p>
+                  <small>{{ previewEnlace(nuevaRedSocial.enlace) || 'Sin enlace' }}</small>
+                </div>
+                <div class="preview-status" [class.active]="nuevaRedSocial.activa">
+                  {{ nuevaRedSocial.activa ? 'Activo' : 'Inactivo' }}
+                </div>
+              </div>
+              <div *ngIf="!nuevaRedSocial.plataforma || !nuevaRedSocial.nombreUsuario" class="preview-empty">
+                <i class="fas fa-share-alt"></i>
+                <p>Completa el formulario para ver la vista previa</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button *ngIf="!editando" class="btn-primary" (click)="agregarRedSocial()" [disabled]="!nuevaRedSocial.nombreUsuario || !nuevaRedSocial.enlace">
+              <i class="fas fa-plus"></i> Agregar Red Social
+            </button>
+            
+            <div *ngIf="editando" class="edit-actions">
+              <button class="btn-save" (click)="guardarEdicion()">
+                <i class="fas fa-save"></i> Guardar Cambios
+              </button>
+              <button class="btn-cancel" (click)="cancelarEdicion()">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de Redes Sociales -->
+    <div class="list-section">
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-list"></i> Redes Sociales Configuradas</h2>
+          <p>{{ getTotalRedes() }} redes configuradas</p>
+        </div>
+        <div class="card-body">
+          <div class="info-alert">
+            <i class="fas fa-info-circle"></i>
+            <p>Estas redes sociales se mostrarán en la sección "Síguenos" de la página web.</p>
+          </div>
+          
+          <div class="redes-list">
+            <div *ngFor="let red of redesSociales; let i = index" class="red-card" [class.inactive]="!red.activa">
+              <div class="red-header">
+                <div class="red-icon" [style.background]="red.plataforma === 'WhatsApp' ? '#25D366' : '#1877F2'">
+                  <i class="fab" [ngClass]="'fa-' + red.icono"></i>
+                </div>
+                <div class="red-info">
+                  <h3>{{ red.plataforma }}</h3>
+                  <p class="red-usuario">{{ red.nombreUsuario }}</p>
+                  <p *ngIf="red.descripcion" class="red-descripcion">{{ red.descripcion }}</p>
+                </div>
+                <div class="red-status">
+                  <span class="status-badge" [class.active]="red.activa">
+                    {{ red.activa ? 'Activo' : 'Inactivo' }}
+                  </span>
+                  <span class="orden-badge">
+                    Orden: {{ red.orden }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="red-body">
+                <div class="red-enlace">
+                  <i class="fas fa-link"></i>
+                  <a [href]="red.enlace" target="_blank" class="enlace-url">{{ previewEnlace(red.enlace) }}</a>
+                  <span class="enlace-copy" (click)="copiarEnlace(red.enlace)" title="Copiar enlace">
+                    <i class="fas fa-copy"></i>
+                  </span>
+                </div>
+                
+                <div class="red-stats">
+                  <span class="stat">
+                    <i class="fas fa-sort"></i> Posición {{ red.orden }}
+                  </span>
+                  <span class="stat">
+                    <i class="fas fa-calendar"></i> Actualizado: Hoy
+                  </span>
+                </div>
+              </div>
+              
+              <div class="red-actions">
+                <div class="order-actions">
+                  <button class="btn-order" (click)="moverArriba(i)" [disabled]="i === 0" title="Mover arriba">
+                    <i class="fas fa-arrow-up"></i>
+                  </button>
+                  <button class="btn-order" (click)="moverAbajo(i)" [disabled]="i === redesSociales.length - 1" title="Mover abajo">
+                    <i class="fas fa-arrow-down"></i>
+                  </button>
+                </div>
+                
+                <div class="main-actions">
+                  <button class="btn-action edit" (click)="editarRedSocial(red)" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-action toggle" [class.active]="red.activa" (click)="toggleActiva(red)" [title]="red.activa ? 'Desactivar' : 'Activar'">
+                    <i class="fas" [ngClass]="red.activa ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                  </button>
+                  <button class="btn-action delete" (click)="eliminarRedSocial(red.id)" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="redesSociales.length === 0" class="empty-state">
+            <i class="fas fa-share-alt fa-3x"></i>
+            <h3>No hay redes sociales configuradas</h3>
+            <p>Comienza agregando tu primera red social usando el formulario.</p>
+          </div>
+          
+          <div class="final-notice">
+            <i class="fas fa-lightbulb"></i>
+            <p><strong>Consejo:</strong> Mantén actualizados los enlaces de WhatsApp y Facebook para mejorar la comunicación con tus clientes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

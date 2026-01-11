@@ -1,0 +1,253 @@
+<div class="admin-container">
+  <div class="header">
+    <h1><i class="fas fa-tags"></i> Gestión de Planes de Membresía</h1>
+    <p>Administra los planes disponibles para los clientes</p>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-layer-group"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalPlanes() }}</h3>
+        <p>Total de Planes</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #2ecc71;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getPlanesActivos() }}</h3>
+        <p>Planes Activos</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #f39c12;">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="stat-content">
+        <h3>${{ getPrecioPromedio() }}</h3>
+        <p>Precio Promedio</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #9b59b6;">
+        <i class="fas fa-star"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getPlanesPopulares() }}</h3>
+        <p>Planes Populares</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Formulario para agregar/editar planes -->
+    <div class="form-section">
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-plus-circle"></i> {{ editando ? 'Editar Plan' : 'Agregar Nuevo Plan' }}</h2>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="nombre">Nombre del Plan *</label>
+              <input type="text" id="nombre" [(ngModel)]="nuevoPlan.nombre" placeholder="Ej: PLAN PREMIUM" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="precio">Precio ($) *</label>
+              <input type="number" id="precio" [(ngModel)]="nuevoPlan.precio" min="0" step="0.01" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="precioAnterior">Precio Anterior (opcional)</label>
+              <input type="number" id="precioAnterior" [(ngModel)]="nuevoPlan.precioAnterior" min="0" step="0.01" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="duracion">Duración</label>
+              <select id="duracion" [(ngModel)]="nuevoPlan.duracion" class="form-control">
+                <option *ngFor="let duracion of duraciones" [value]="duracion">{{ duracion }}</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="icono">Icono</label>
+              <select id="icono" [(ngModel)]="nuevoPlan.icono" class="form-control">
+                <option *ngFor="let icono of iconos" [value]="icono.value">{{ icono.label }}</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="color">Color</label>
+              <select id="color" [(ngModel)]="nuevoPlan.color" class="form-control">
+                <option *ngFor="let color of colores" [value]="color.value">{{ color.label }}</option>
+              </select>
+              <div class="color-preview" [style.background]="nuevoPlan.color"></div>
+            </div>
+          </div>
+          
+          <div class="form-group full-width">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" [(ngModel)]="nuevoPlan.descripcion" rows="2" placeholder="Describe brevemente el plan..." class="form-control"></textarea>
+          </div>
+          
+          <div class="form-group full-width">
+            <label>Características del Plan</label>
+            <div class="caracteristicas-input">
+              <input type="text" [(ngModel)]="caracteristicaTemporal" placeholder="Agregar una característica" class="form-control" (keyup.enter)="agregarCaracteristica()">
+              <button type="button" class="btn-add" (click)="agregarCaracteristica()">
+                <i class="fas fa-plus"></i> Agregar
+              </button>
+            </div>
+            
+            <div class="caracteristicas-list" *ngIf="nuevoPlan.caracteristicas.length > 0">
+              <div class="caracteristica-item" *ngFor="let caracteristica of nuevoPlan.caracteristicas; let i = index">
+                <span class="caracteristica-text">
+                  <i class="fas fa-check"></i> {{ caracteristica }}
+                </span>
+                <div class="caracteristica-actions">
+                  <button type="button" class="btn-move" (click)="moverCaracteristicaArriba(i)" [disabled]="i === 0">
+                    <i class="fas fa-arrow-up"></i>
+                  </button>
+                  <button type="button" class="btn-move" (click)="moverCaracteristicaAbajo(i)" [disabled]="i === nuevoPlan.caracteristicas.length - 1">
+                    <i class="fas fa-arrow-down"></i>
+                  </button>
+                  <button type="button" class="btn-remove" (click)="eliminarCaracteristica(i)">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group full-width">
+            <div class="checkboxes">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="nuevoPlan.activo">
+                <span class="checkmark"></span>
+                Plan Activo
+              </label>
+              
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="nuevoPlan.destacado">
+                <span class="checkmark"></span>
+                Destacado
+              </label>
+              
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="nuevoPlan.popular">
+                <span class="checkmark"></span>
+                Marcar como Popular
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button *ngIf="!editando" class="btn-primary" (click)="agregarPlan()" [disabled]="!nuevoPlan.nombre || nuevoPlan.precio <= 0">
+              <i class="fas fa-plus"></i> Agregar Plan
+            </button>
+            
+            <div *ngIf="editando" class="edit-actions">
+              <button class="btn-save" (click)="guardarEdicion()">
+                <i class="fas fa-save"></i> Guardar Cambios
+              </button>
+              <button class="btn-cancel" (click)="cancelarEdicion()">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de Planes Existentes -->
+    <div class="list-section">
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-list"></i> Planes Existentes ({{ planes.length }})</h2>
+        </div>
+        <div class="card-body">
+          <div class="planes-grid">
+            <div *ngFor="let plan of planes" class="plan-card" [style.border-color]="plan.color">
+              <div class="plan-header" [style.background]="plan.color">
+                <div class="plan-icon">
+                  <i class="fas fa-{{ plan.icono }}"></i>
+                </div>
+                <div class="plan-title">
+                  <h3>{{ plan.nombre }}</h3>
+                  <span class="plan-duration">{{ plan.duracion }}</span>
+                </div>
+                <div class="plan-badges">
+                  <span *ngIf="plan.popular" class="badge popular">
+                    <i class="fas fa-star"></i> POPULAR
+                  </span>
+                  <span *ngIf="plan.destacado" class="badge destacado">
+                    <i class="fas fa-crown"></i> DESTACADO
+                  </span>
+                  <span *ngIf="!plan.activo" class="badge inactivo">
+                    <i class="fas fa-pause"></i> INACTIVO
+                  </span>
+                </div>
+              </div>
+              
+              <div class="plan-body">
+                <div class="plan-pricing">
+                  <div class="current-price">
+                    ${{ plan.precio }}
+                    <span class="price-period">/ {{ plan.duracion === 'Anual' ? 'Año' : 'Mes' }}</span>
+                  </div>
+                  <div *ngIf="plan.precioAnterior" class="old-price">
+                    ${{ plan.precioAnterior }}
+                  </div>
+                </div>
+                
+                <p class="plan-description">{{ plan.descripcion }}</p>
+                
+                <div class="plan-features">
+                  <div class="feature-item" *ngFor="let feature of plan.caracteristicas">
+                    <i class="fas fa-check"></i> {{ feature }}
+                  </div>
+                </div>
+                
+                <div class="plan-stats">
+                  <span class="stat">
+                    <i class="fas fa-check-circle"></i> {{ plan.caracteristicas.length }} beneficios
+                  </span>
+                </div>
+              </div>
+              
+              <div class="plan-actions">
+                <button class="btn-action edit" (click)="editarPlan(plan)" title="Editar plan">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action duplicate" (click)="duplicarPlan(plan)" title="Duplicar plan">
+                  <i class="fas fa-copy"></i>
+                </button>
+                <button class="btn-action toggle" [class.active]="plan.activo" (click)="toggleActivo(plan)" [title]="plan.activo ? 'Desactivar plan' : 'Activar plan'">
+                  <i class="fas" [ngClass]="plan.activo ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                </button>
+                <button class="btn-action delete" (click)="eliminarPlan(plan.id)" title="Eliminar plan">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="planes.length === 0" class="empty-state">
+            <i class="fas fa-tags fa-3x"></i>
+            <h3>No hay planes creados</h3>
+            <p>Comienza agregando tu primer plan usando el formulario.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

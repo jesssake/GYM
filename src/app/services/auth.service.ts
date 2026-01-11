@@ -4,9 +4,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 // ----------------------------------------------------
-// TIPOS / INTERFACES
+// TIPOS
 // ----------------------------------------------------
-export type UserRole = 'Cliente' | 'Administrador' | 'Coach' | null;
+export type UserRole = 'admin' | 'cliente' | 'coach' | null;
 
 export interface LoginCredentials {
   email: string;
@@ -19,12 +19,6 @@ export interface RegisterData extends LoginCredentials {
 
 export interface AuthResponse {
   token: string;
-  rol: 'Cliente' | 'Administrador' | 'Coach';
-}
-
-interface UserSession {
-  token: string;
-  rol: UserRole;
 }
 
 // ----------------------------------------------------
@@ -42,7 +36,6 @@ export class AuthService {
   private apiNotifications = 'http://localhost:5000/api/notifications';
 
   private readonly TOKEN_KEY = 'token';
-  private readonly SESSION_KEY = 'user_session_gym';
 
   constructor(
     private router: Router,
@@ -50,67 +43,14 @@ export class AuthService {
   ) {}
 
   // ----------------------------------------------------
-  // HEADERS CON TOKEN
+  // TOKEN / JWT
   // ----------------------------------------------------
-  private getAuthHeaders(): HttpHeaders {
+  private decodeToken(): any | null {
     const token = this.getToken();
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
-  }
-
-  // ----------------------------------------------------
-  // LOGIN
-  // ----------------------------------------------------
-  login(credentials: LoginCredentials): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiAuth}/login`, credentials)
-      .pipe(tap(res => this.handleAuthResponse(res)));
-  }
-
-  loginTest(email: string, password: string): boolean {
-    if (email === 'admin@gym.com' && password === 'admin') {
-      this.handleAuthResponse({ token: 'test', rol: 'Administrador' });
-      return true;
-    }
-
-    if (email === 'cliente@gym.com' && password === 'cliente') {
-      this.handleAuthResponse({ token: 'test', rol: 'Cliente' });
-      return true;
-    }
-
-    return false;
-  }
-
-  // ----------------------------------------------------
-  // GUARDAR SESIÓN
-  // ----------------------------------------------------
-  private handleAuthResponse(response: AuthResponse): void {
-    localStorage.setItem(this.TOKEN_KEY, response.token);
-
-    const sessionData: UserSession = {
-      token: response.token,
-      rol: response.rol
-    };
-
-    localStorage.setItem(this.SESSION_KEY, JSON.stringify(sessionData));
-  }
-
-  // ----------------------------------------------------
-  // SESIÓN
-  // ----------------------------------------------------
-  isLoggedIn(): boolean {
-    const token = this.getToken();
-    return !!token && token.trim() !== '';
-  }
-
-  getUserRole(): UserRole {
-    const data = localStorage.getItem(this.SESSION_KEY);
-    if (!data) return null;
+    if (!token) return null;
 
     try {
-      const s: UserSession = JSON.parse(data);
-      return s.rol;
+      return JSON.parse(atob(token.split('.')[1]));
     } catch {
       return null;
     }
@@ -120,33 +60,108 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  getUserRole(): UserRole {
+    const payload = this.decodeToken();
+    if (!payload) return null;
+    
+    // ✅ CORRECCIÓN: Obtener el rol y normalizar a minúsculas
+    const roleValue = payload.rol || payload.role;
+    
+    if (!roleValue) return null;
+    
+    // Convertir a minúsculas para comparación consistente
+    const roleLower = roleValue.toString().toLowerCase();
+    
+    if (roleLower === 'admin') return 'admin';
+    if (roleLower === 'coach') return 'coach';
+    if (roleLower === 'cliente') return 'cliente';
+    
+    return null;
+  }
+
+  getUserId(): number | null {
+    const payload = this.decodeToken();
+    return payload?.id ?? null;
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  isAdmin(): boolean {
+    // ✅ CORRECCIÓN: Usar getUserRole() que ya maneja mayúsculas/minúsculas
+    return this.getUserRole() === 'admin';
+  }
+
+  // ----------------------------------------------------
+  // HEADERS
+  // ----------------------------------------------------
+  private getAuthHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this.getToken()}`
+    });
+  }
+
+  // ----------------------------------------------------
+  // LOGIN NORMAL
+  // ----------------------------------------------------
+  login(credentials: LoginCredentials): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.apiAuth}/login`, credentials)
+      .pipe(
+        tap(res => {
+          localStorage.setItem(this.TOKEN_KEY, res.token);
+        })
+      );
+  }
+
+  // ----------------------------------------------------
+  // ✅ LOGIN SOCIAL (CORRECCIÓN CLAVE)
+  // ----------------------------------------------------
+  processSocialLogin(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+
+    const payload = this.decodeToken();
+    const role = payload?.rol as UserRole;
+
+    // ✅ CORRECCIÓN: Comparar ignorando mayúsculas/minúsculas
+    if (role && role.toString().toLowerCase() === 'admin') {
+      this.router.navigate(['/area-privada/admin']);
+    } else if (role && role.toString().toLowerCase() === 'coach') {
+      this.router.navigate(['/area-privada/coach']);
+    } else {
+      this.router.navigate(['/area-privada/dashboard']);
+    }
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.SESSION_KEY);
     this.router.navigate(['/login']);
   }
 
   // ----------------------------------------------------
   // ADMIN – USUARIOS
   // ----------------------------------------------------
-  updateUserRole(userId: number, newRole: string): Observable<any> {
-    return this.http.put<any>(
-      `${this.apiAdmin}/usuarios/${userId}/rol`,
-      { nuevoRol: newRole },
-      { headers: this.getAuthHeaders() }
-    );
-  }
-
   getAllUsers(): Observable<any> {
     return this.http.get(`${this.apiAdmin}/usuarios`, {
       headers: this.getAuthHeaders()
     });
   }
 
+  updateUserRole(userId: number, newRole: UserRole): Observable<any> {
+    return this.http.put(
+      `${this.apiAdmin}/usuarios/${userId}/rol`,
+      { nuevoRol: newRole },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
   deleteUser(id: number): Observable<any> {
-    return this.http.delete(`${this.apiAdmin}/usuarios/${id}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.delete(
+      `${this.apiAdmin}/usuarios/${id}`,
+      { headers: this.getAuthHeaders() }
+    );
   }
 
   // ----------------------------------------------------
@@ -167,17 +182,13 @@ export class AuthService {
     return this.http.post(`${this.apiAuth}/reset-password`, { token, password });
   }
 
-  processSocialLogin(token: string): Observable<any> {
-    return this.http.post(`${this.apiAuth}/social-login`, { token });
-  }
-
   // ----------------------------------------------------
   // ADMIN – CONTENIDO
   // ----------------------------------------------------
   createRoutine(formData: FormData): Observable<any> {
     return this.http.post(`${this.apiContent}/routine`, formData, {
       headers: new HttpHeaders({
-        'Authorization': `Bearer ${this.getToken()}`
+        Authorization: `Bearer ${this.getToken()}`
       })
     });
   }
@@ -215,28 +226,28 @@ export class AuthService {
     });
   }
 
-// ----------------------------------------------------
-  // NOTIFICACIONES (ADMIN)
-  // ----------------------------------------------------
+  // ----------------------------------------------------
+  // NOTIFICACIONES – ADMIN
+  // ----------------------------------------------------
+  getAlertConfig(): Observable<any> {
+    return this.http.get(`${this.apiNotifications}/config`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-  getAlertConfig(): Observable<any> {
-    return this.http.get(`${this.apiNotifications}/config`, {
-      headers: this.getAuthHeaders()
-    });
-  }
+  getExpiringClients(): Observable<any> {
+    return this.http.get(`${this.apiNotifications}/expiring`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-  getExpiringClients(): Observable<any> {
-    return this.http.get(`${this.apiNotifications}/expiring`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  updateAlertConfig(days: number): Observable<any> {
-    // 🚨 CORRECCIÓN CLAVE: Cambiamos la clave 'days' a 'diasAntes'
-    return this.http.put(`${this.apiNotifications}/config`, { diasAntes: days }, {
-      headers: this.getAuthHeaders()
-    });
-  }
+  updateAlertConfig(days: number): Observable<any> {
+    return this.http.put(
+      `${this.apiNotifications}/config`,
+      { diasAntes: days },
+      { headers: this.getAuthHeaders() }
+    );
+  }
 
   // ----------------------------------------------------
   // PERFIL
@@ -245,12 +256,5 @@ export class AuthService {
     return this.http.get(`${this.apiUsers}/profile`, {
       headers: this.getAuthHeaders()
     });
-  }
-
-  // ----------------------------------------------------
-  // UTILIDADES
-  // ----------------------------------------------------
-  isAdmin(): boolean {
-    return this.getUserRole() === 'Administrador';
   }
 }

@@ -6,7 +6,7 @@ export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // 1. Verificar si está logueado
+  // 1. Verificar login
   if (!authService.isLoggedIn()) {
     router.navigate(['/login']);
     return false;
@@ -14,12 +14,12 @@ export const adminGuard: CanActivateFn = () => {
 
   const userRole = authService.getUserRole();
 
-  // Verificar rol permitido
-  if (userRole === 'Administrador' || userRole === 'Coach') {
+  // 2. SOLO admin o coach
+  if (userRole === 'admin' || userRole === 'coach') {
     return true;
   }
 
-  // Redirección para usuarios no autorizados
+  // 3. Usuario sin permisos
   router.navigate(['/area-privada/dashboard']);
   return false;
 };

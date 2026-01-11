@@ -1,66 +1,81 @@
 <div class="management-card">
-    <h1>Gestión de Usuarios</h1>
-    <p>Panel para administrar usuarios registrados, roles, y entrenadores (añadir/eliminar coach).</p>
+  <h1>Gestión de Usuarios</h1>
+  <p>
+    Panel para administrar usuarios registrados, roles y entrenadores.
+  </p>
 
-    <div class="action-panel">
-        <input
-            type="text"
-            placeholder="Buscar usuario, rol o correo electrónico..."
-            class="text-input search-input"
-            style="flex-grow: 1;"
-            [(ngModel)]="searchTerm"
-            (keyup.enter)="buscarUsuarios()"
-        >
-        <button class="btn-primary" (click)="buscarUsuarios()">Buscar</button>
-        <button class="btn-secondary" (click)="agregarEntrenador()">Agregar Entrenador</button>
-    </div>
+  <div class="action-panel">
+    <input
+      type="text"
+      placeholder="Buscar usuario o correo electrónico..."
+      class="text-input search-input"
+      style="flex-grow: 1;"
+      [(ngModel)]="searchTerm"
+      (keyup.enter)="buscarUsuarios()"
+    />
 
-    <!-- Indicador de Carga -->
-    <div *ngIf="isLoading" class="loading-indicator" style="text-align: center; padding: 20px;">
-        Cargando usuarios...
-    </div>
+    <button class="btn-primary" (click)="buscarUsuarios()">
+      Buscar
+    </button>
 
-    <table class="data-table" *ngIf="!isLoading && users.length > 0">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Correo Electrónico</th>
-                <th>Rol</th>
-                <th>Fecha Registro</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let user of users">
-                <td>{{ user.id }}</td>
-                <td>{{ user.nombre }}</td> <!-- ✅ Usar la propiedad 'nombre' del backend -->
-                <td>{{ user.email }}</td>
-                <td>{{ user.rol }}</td> <!-- ✅ Usar la propiedad 'rol' del backend -->
-                <td>{{ user.fecha_registro | date: 'mediumDate' }}</td>
-                <td>
-                    <!-- Cambiar Rol: Cliente <-> Coach -->
-                    <button
-                        *ngIf="user.rol !== 'Administrador'"
-                        class="btn-action"
-                        (click)="cambiarRol(user.id, user.rol)"
-                    >
-                        Cambiar a {{ user.rol === 'Cliente' ? 'Coach' : 'Cliente' }}
-                    </button>
+    <button class="btn-secondary" (click)="agregarEntrenador()">
+      Agregar Entrenador
+    </button>
+  </div>
 
-                    <!-- Eliminar Usuario -->
-                    <button
-                        class="btn-action danger"
-                        (click)="eliminarUsuario(user.id)"
-                    >
-                        Eliminar
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <!-- CARGANDO -->
+  <div *ngIf="isLoading" class="loading-indicator" style="text-align:center; padding:20px;">
+    Cargando usuarios...
+  </div>
 
-    <div *ngIf="!isLoading && users.length === 0" style="text-align: center; padding: 20px;">
-        No se encontraron usuarios.
-    </div>
+  <!-- TABLA -->
+  <table class="data-table" *ngIf="!isLoading && users.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Rol</th>
+        <th>Fecha Registro</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.id }}</td>
+        <td>{{ user.nombre }}</td>
+        <td>{{ user.email }}</td>
+
+        <!-- ✅ Rol en minúsculas -->
+        <td>{{ user.rol }}</td>
+
+        <td>{{ user.fecha_registro | date:'mediumDate' }}</td>
+
+        <td>
+          <!-- 🔄 CAMBIAR ROL (cliente <-> coach) -->
+          <button
+            *ngIf="user.rol !== 'admin'"
+            class="btn-action"
+            (click)="cambiarRol(user.id, user.rol)"
+          >
+            Cambiar a {{ user.rol === 'cliente' ? 'coach' : 'cliente' }}
+          </button>
+
+          <!-- 🗑 ELIMINAR -->
+          <button
+            class="btn-action danger"
+            (click)="eliminarUsuario(user.id)"
+          >
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- VACÍO -->
+  <div *ngIf="!isLoading && users.length === 0" style="text-align:center; padding:20px;">
+    No se encontraron usuarios.
+  </div>
 </div>
